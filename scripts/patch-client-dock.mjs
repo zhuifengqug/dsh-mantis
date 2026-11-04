@@ -1,5 +1,5 @@
 /**
- * 把 client.js 改成右侧 dsh-purge 双页签（清洗 + 演练台），并嵌入 vendor 演练台 UI。
+ * 把 client.js 改成右侧 tianshu-pozhen 双页签（清洗 + 演练台），并嵌入 vendor 演练台 UI。
  * node scripts/patch-client-dock.mjs
  */
 import { readFileSync, writeFileSync } from "node:fs";
@@ -11,8 +11,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const clientPath = join(root, "client.js");
 const legalPath = join(root, "docs", "drill-auth-legal.html");
 
-const BEGIN = "/* __DSH_PURGE_DRILL_BEGIN__ */";
-const END = "/* __DSH_PURGE_DRILL_END__ */";
+const BEGIN = "/* __TIANSHU_POZHEN_DRILL_BEGIN__ */";
+const END = "/* __TIANSHU_POZHEN_DRILL_END__ */";
 
 const LEGAL = readFileSync(legalPath, "utf8").trim();
 
@@ -22,11 +22,11 @@ let client = readFileSync(clientPath, "utf8").replace(/\r\n/g, "\n");
 if (!client.includes('"dock.clean"')) {
 	client = client.replace(
 		'\t\t\tnav: "规则设定",',
-		`\t\t\tnav: "dsh-purge",
+		`\t\t\tnav: "tianshu-pozhen",
 			"dock.clean": "清洗",
 			"dock.drill": "演练台",
-			"dock.toggle": "dsh-purge",
-			"dock.newSession": "dsh-purge",
+			"dock.toggle": "tianshu-pozhen",
+			"dock.newSession": "tianshu-pozhen",
 			"dock.full": "全面浏览",
 			"dock.close": "收起",
 			"dock.unauthorized": "未授权",
@@ -46,11 +46,11 @@ if (!client.includes('"dock.clean"')) {
 	);
 	client = client.replace(
 		'\t\t\tnav: "Rules",',
-		`\t\t\tnav: "dsh-purge",
+		`\t\t\tnav: "tianshu-pozhen",
 			"dock.clean": "Clean",
 			"dock.drill": "Drill",
-			"dock.toggle": "dsh-purge",
-			"dock.newSession": "dsh-purge",
+			"dock.toggle": "tianshu-pozhen",
+			"dock.newSession": "tianshu-pozhen",
 			"dock.full": "Full view",
 			"dock.close": "Collapse",
 			"dock.unauthorized": "Unauthorized",
@@ -136,11 +136,11 @@ if (!client.includes(".dshp-dock{")) {
 
 // 3) Insert dock/auth/marker block before installRewindUi
 const dockBlock = `
-		const AUTH_KEY = "dsh-purge-drill-auth";
+		const AUTH_KEY = "tianshu-pozhen-drill-auth";
 		const AUTH_LEGAL_HTML = ${JSON.stringify(LEGAL)};
 
 		${BEGIN}
-		const __dshPurgeDrill = { CSS: "", Panel: null, setUI: () => {}, useUI: () => ({ open: false }), isFullWindow: () => false, setDockWidth: () => {} };
+		const __tianshuPozhenDrill = { CSS: "", Panel: null, setUI: () => {}, useUI: () => ({ open: false }), isFullWindow: () => false, setDockWidth: () => {} };
 		${END}
 
 		function readDrillAuth() {
@@ -173,7 +173,7 @@ const dockBlock = `
 			const pending = kind || "tab";
 			if (readDrillAuth()) {
 				setDock({ open: true, tab: "drill", authOpen: false, pending: "tab" });
-				try { if (__dshPurgeDrill && __dshPurgeDrill.setUI) __dshPurgeDrill.setUI({ open: true }); } catch { /* ignore */ }
+				try { if (__tianshuPozhenDrill && __tianshuPozhenDrill.setUI) __tianshuPozhenDrill.setUI({ open: true }); } catch { /* ignore */ }
 				if (pending === "full") {
 					try { window.open(window.location.href.split("#")[0] + "#redteam-full", "_blank", "noopener"); } catch { /* ignore */ }
 				}
@@ -261,7 +261,7 @@ const dockBlock = `
 								writeDrillAuth(true);
 								const kind = props.pending || "tab";
 								setDock({ authOpen: false, open: true, tab: "drill", pending: "tab" });
-								try { if (__dshPurgeDrill && __dshPurgeDrill.setUI) __dshPurgeDrill.setUI({ open: true }); } catch { /* ignore */ }
+								try { if (__tianshuPozhenDrill && __tianshuPozhenDrill.setUI) __tianshuPozhenDrill.setUI({ open: true }); } catch { /* ignore */ }
 								if (kind === "full") {
 									try { window.open(window.location.href.split("#")[0] + "#redteam-full", "_blank", "noopener"); } catch { /* ignore */ }
 								}
@@ -276,21 +276,21 @@ const dockBlock = `
 			const t = useT();
 			const st = useDock();
 			useEffect(() => {
-				if (!__dshPurgeDrill || !__dshPurgeDrill.CSS) return undefined;
+				if (!__tianshuPozhenDrill || !__tianshuPozhenDrill.CSS) return undefined;
 				const styleTag = document.createElement("style");
-				styleTag.setAttribute("data-dsh-purge-drill", "1");
-				styleTag.textContent = __dshPurgeDrill.CSS;
+				styleTag.setAttribute("data-tianshu-pozhen-drill", "1");
+				styleTag.textContent = __tianshuPozhenDrill.CSS;
 				document.head.append(styleTag);
 				const widthTag = document.createElement("style");
-				widthTag.setAttribute("data-dsh-purge-dock-w", "1");
+				widthTag.setAttribute("data-tianshu-pozhen-dock-w", "1");
 				widthTag.textContent = ":root{--dshp-dock-w:620px;--rt-dock-w:620px}";
 				document.head.append(widthTag);
-				try { if (__dshPurgeDrill.setDockWidth) __dshPurgeDrill.setDockWidth(620); } catch { /* ignore */ }
+				try { if (__tianshuPozhenDrill.setDockWidth) __tianshuPozhenDrill.setDockWidth(620); } catch { /* ignore */ }
 				return () => { styleTag.remove(); widthTag.remove(); };
 			}, []);
 			useEffect(() => {
-				if (st.tab === "drill" && readDrillAuth() && __dshPurgeDrill && __dshPurgeDrill.setUI) {
-					try { __dshPurgeDrill.setUI({ open: true }); } catch { /* ignore */ }
+				if (st.tab === "drill" && readDrillAuth() && __tianshuPozhenDrill && __tianshuPozhenDrill.setUI) {
+					try { __tianshuPozhenDrill.setUI({ open: true }); } catch { /* ignore */ }
 				}
 			}, [st.tab, st.open]);
 			const onTab = (id) => {
@@ -299,13 +299,13 @@ const dockBlock = `
 			};
 			const body = st.tab === "clean"
 				? h(SettingsRoot, { t })
-				: (readDrillAuth() && __dshPurgeDrill.Panel
-					? h(__dshPurgeDrill.Panel, { embedded: true })
+				: (readDrillAuth() && __tianshuPozhenDrill.Panel
+					? h(__tianshuPozhenDrill.Panel, { embedded: true })
 					: h("div", { style: { padding: 16, color: "var(--dsw-alias-label-secondary)" } }, t("dock.unauthorized")));
 			return h(react.Fragment, null,
 				h("div", { className: "dshp-dock", "data-open": st.open ? "1" : "0" },
 					h("div", { className: "dshp-dock-head" },
-						h("b", null, "dsh-purge"),
+						h("b", null, "tianshu-pozhen"),
 						h("span", { style: { flex: 1 } }),
 						st.tab === "drill" && readDrillAuth()
 							? h("button", { type: "button", onClick: () => requestDrill("full") }, t("dock.full"))
@@ -385,12 +385,12 @@ if (!client.includes("function PurgeDock()")) {
 
 // 4) Replace apply() settings.section with dock slots
 const oldApply = `		function apply(ctx) {
-			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "dsh-purge: dictionaries");
+			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "tianshu-pozhen: dictionaries");
 			const t = ctx.locale.bind(NS);
 			translate = t;
 			ctx.slots.inject("settings.section", () => ctx.slots.register({
 				name: "settings.section",
-				id: "dsh-purge",
+				id: "tianshu-pozhen",
 				order: 40,
 				label: () => t("nav"),
 				locale: NS,
@@ -403,17 +403,17 @@ const oldApply = `		function apply(ctx) {
 					installRewindUi(ctx);
 				}
 			} catch (e) {
-				try { console.warn("[dsh-purge] rewind ui skipped:", e); } catch { /* ignore */ }
+				try { console.warn("[tianshu-pozhen] rewind ui skipped:", e); } catch { /* ignore */ }
 			}
 		}`;
 
 const newApply = `		function apply(ctx) {
-			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "dsh-purge: dictionaries");
+			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "tianshu-pozhen: dictionaries");
 			const t = ctx.locale.bind(NS);
 			translate = t;
 			ctx.slots.inject("shell.overlay", () => ctx.slots.register({
 				name: "shell.overlay",
-				id: "dsh-purge-dock",
+				id: "tianshu-pozhen-dock",
 				order: 50,
 			}, () => h(react.Fragment, null, h(PurgeDock), h(HeroNewSessionMount), h(TabRowPurgeMount), h(EnvAdaptSendGate))));
 			try {
@@ -428,12 +428,12 @@ const newApply = `		function apply(ctx) {
 						ctx.inject(["sessions", "uiWorkspace", "conversation"], (host) => installRewindUi(host));
 					}
 				} catch (e2) {
-					try { console.warn("[dsh-purge] rewind ui skipped:", e2 || e); } catch { /* ignore */ }
+					try { console.warn("[tianshu-pozhen] rewind ui skipped:", e2 || e); } catch { /* ignore */ }
 				}
 			}
 		}`;
 
-if (client.includes('id: "dsh-purge-dock"')) {
+if (client.includes('id: "tianshu-pozhen-dock"')) {
 	// already patched apply
 } else if (client.includes(oldApply)) {
 	client = client.replace(oldApply, newApply);

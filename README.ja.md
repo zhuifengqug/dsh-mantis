@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="dsh-purge" width="720">
+  <img src="docs/banner.svg" alt="tianshu-pozhen" width="720">
 </p>
 
-<h1 align="center">⚔️ DeepSeek Harness サイバーセキュリティ レッドチームツール (dsh-purge)</h1>
+<h1 align="center">⚔️ DeepSeek Harness サイバーセキュリティ レッドチームツール (tianshu-pozhen)</h1>
 
 <p align="center"><strong>バージョン 1.1.81</strong></p>
 
@@ -35,7 +35,7 @@
 
 今後、**公開インターネットは閉じます**。オープンソース版では **ローカルのラボ IP のみ** を許可します（ループバックと RFC1918）。ドメインは先に名前解決され（hosts も含む）、すべての応答がプライベートまたはループバックでなければなりません。`.lab` を公開 IP に向ける hosts トリック、名前解決の失敗、公開 IP が混じった応答はブロックされます。**ゲームチートは禁止です**（エイムボット、ウォールハック、メモリ改ざん、アンチチート回避）。プロンプトとセッションゲートの両方で阻止します。このビルドにはスキルライブラリやナレッジベースは同梱されません。
 
-**オリジナルビルドの転売は禁止です。** 課金、スキン変更、グループでの売り込みは許可されません。フォークは自由ですが、**帰属表示が必須** で、出所を明記してください: [YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)。出所を隠したり、自分のものとして偽ったりすれば、あなたは向こう側です。
+**オリジナルビルドの転売は禁止です。** 課金、スキン変更、グループでの売り込みは許可されません。フォークは自由ですが、**帰属表示が必須** で、出所を明記してください: [YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge)。出所を隠したり、自分のものとして偽ったりすれば、あなたは向こう側です。
 
 作者の個人チャンネル: [t.me/LLM_PoJia](https://t.me/LLM_PoJia)。メモや更新情報はそこに出ます。
 
@@ -57,19 +57,19 @@
 
 ## これは何か
 
-**dsh-purge** は、お使いのマシンにすでにインストールされている公式 [DeepSeek Harness](https://www.deepseek.com/harness/) 向けのサイバーセキュリティ レッドチームプラグインです。**1.1.81** は **DSH 0.2.1-rc.2** を対象とします（0.2.0 も動作します）。**DSH 0.2.1-rc.3 以降の新しい RC は非対応です。** 公式 **Web**（`dsh web`）と公式 **デスクトップ EXE** の両方に対応します。インストールと Apply はそれぞれ別々に行います。
+**tianshu-pozhen** は、お使いのマシンにすでにインストールされている公式 [DeepSeek Harness](https://www.deepseek.com/harness/) 向けのサイバーセキュリティ レッドチームプラグインです。**1.1.81** は **DSH 0.2.1-rc.2** を対象とします（0.2.0 も動作します）。**DSH 0.2.1-rc.3 以降の新しい RC は非対応です。** 公式 **Web**（`dsh web`）と公式 **デスクトップ EXE** の両方に対応します。インストールと Apply はそれぞれ別々に行います。
 
 Harness は単にプロンプトを転送するだけではありません。プロンプトの書き換え、承認ゲート、サンドボックスポリシー、セッション移行を実行時に行います。「モデルは答えるか」だけを問うと、ホスト層のブロックをモデルの拒否と取り違えてしまいます。このプラグインは、あなた自身のインストール環境でこの 2 つの層を分離し、制御された評価や、どのデフォルトポリシーが過度に厳しいかを確認するために使います。
 
 | 得られるもの | 内容 |
 |---|---|
-| **dsh-purge ドック** | セッションタイトルの横のボタンで右ドックを開く。2 ページ: Clean と Drill |
+| **tianshu-pozhen ドック** | セッションタイトルの横のボタンで右ドックを開く。2 ページ: Clean と Drill |
 | **Clean** | グループ化されたパッチ状況、Apply / Restore / Uninstall、プロンプトエディタ、複数のルールセット |
 | **Drill** | 安定版に内蔵。認可後: アセットとローカル環境。このビルドはスキルやナレッジベースを同梱しません。ローカルラボ専用 |
 | **ホストポリシー** | デフォルトのコピー、権限ポリシー、ツール制限。公式の機能はそのまま。2 つ目の架空アイデンティティは作らない |
 | **起動時** | チェックして再適用。npm が `node_modules` を上書きした後も、ファイルを手編集しなくてよい |
 
-ドライブレターのハードコードはありません。`$DSH_HOME`、dsh ランチャー横の `.dsh`、次に `~/.dsh` を参照します。Harness のソースツリーにはパッチしません。変更を書き込むのは **dsh-purge** の **Clean** ページの **Apply** です。アイデンティティはプラグインに同梱された暗号化プロンプト、つまりプロンプトボックスがデフォルトで表示するテキストから来ます。ホストのプロンプトファイルは読みません。
+ドライブレターのハードコードはありません。`$DSH_HOME`、dsh ランチャー横の `.dsh`、次に `~/.dsh` を参照します。Harness のソースツリーにはパッチしません。変更を書き込むのは **tianshu-pozhen** の **Clean** ページの **Apply** です。アイデンティティはプラグインに同梱された暗号化プロンプト、つまりプロンプトボックスがデフォルトで表示するテキストから来ます。ホストのプロンプトファイルは読みません。
 
 触れるのはユーザーのマシン上の公式 `@deepseek-ai` パッケージとローカル設定だけです。公開スキャナーでもなく、第三者サイトへの攻撃キットでもありません。リポジトリにマルウェア、未認可のエクスプロイトスクリプト、公開インターネットを狙うペイロードは同梱されていません。
 
@@ -81,13 +81,13 @@ Harness は単にプロンプトを転送するだけではありません。プ
 
 **オリジナルビルドの転売は禁止です。** 有料での転売、スキン変更したストア掲載、グループでの売り込みは禁止です。
 
-**フォークは帰属表示が必須** で、出所のリポジトリを明記してください: [YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)。名前、アイデア、コード、プロンプトを借用する場合も同様です。
+**フォークは帰属表示が必須** で、出所のリポジトリを明記してください: [YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge)。名前、アイデア、コード、プロンプトを借用する場合も同様です。
 
 出所を隠す、自分のものとして偽る、オリジナルを転売する行為は追及します。
 
 ## ライセンス
 
-本リポジトリは [Apache License 2.0](./LICENSE) です。フォークおよび再配布では著作権表示と [NOTICE](./NOTICE) を保持し、[YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge) を明記してください。オリジナルの転売は禁止です。
+本リポジトリは [Apache License 2.0](./LICENSE) です。フォークおよび再配布では著作権表示と [NOTICE](./NOTICE) を保持し、[YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge) を明記してください。オリジナルの転売は禁止です。
 
 ---
 
@@ -144,7 +144,7 @@ Harness は単にプロンプトを転送するだけではありません。プ
 
 ## インストール
 
-**プラグインマーケットプレイスは使わないでください。** [dsh-plugin.org](https://dsh-plugin.org) や 設定 → プラグインマーケット でのワンクリックインストールは `already queued: dsh-purge` で失敗し、コマンドを実行しません。`dsh-purge` という名前は npm レジストリにないので、`pnpm add dsh-purge` はしないでください。
+**プラグインマーケットプレイスは使わないでください。** [dsh-plugin.org](https://dsh-plugin.org) や 設定 → プラグインマーケット でのワンクリックインストールは `already queued: tianshu-pozhen` で失敗し、コマンドを実行しません。`tianshu-pozhen` という名前は npm レジストリにないので、`pnpm add tianshu-pozhen` はしないでください。
 
 ### クイックスタート
 
@@ -159,9 +159,9 @@ dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-pur
 ```
 
 1. インストールしたホストを **完全に終了して再起動** します。Web: `dsh web` を停止して起動し直す。デスクトップ: トレイアイコンも終了してから exe を開く。
-2. そのホストで、セッションタイトルの横の **dsh-purge** → **Clean** → **Apply** をクリック。成功した Apply は 1 回だけ再起動します。
+2. そのホストで、セッションタイトルの横の **tianshu-pozhen** → **Clean** → **Apply** をクリック。成功した Apply は 1 回だけ再起動します。
 
-完了 — チャットで `/purge status` を実行して確認します。pnpm がビルド許可を尋ねてきた場合や、下記の何かが現れない場合は、この後のステップ別の手順に進んでください。
+完了 — チャットで `/pozhen status` を実行して確認します。pnpm がビルド許可を尋ねてきた場合や、下記の何かが現れない場合は、この後のステップ別の手順に進んでください。
 
 ### ステップバイステップ
 
@@ -190,42 +190,42 @@ cd "$env:USERPROFILE\.dsh\profiles\web"   # desktop: profiles\desktop
 pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
-`pnpm add` と `dsh plugin add` はパッケージを取得します。`postinstall` が `dsh-purge` を `dsh.profile.bundles` に書き込み、プロファイルの `cordis.patch.yml` に body `insert` を追加します。その insert がないとホストはプラグインを読み込まず、ボタンも現れません。
+`pnpm add` と `dsh plugin add` はパッケージを取得します。`postinstall` が `tianshu-pozhen` を `dsh.profile.bundles` に書き込み、プロファイルの `cordis.patch.yml` に body `insert` を追加します。その insert がないとホストはプラグインを読み込まず、ボタンも現れません。
 
-**完了の目安:** `node_modules/dsh-purge/package.json` が存在し、そのプロファイルの `bundles` に `"dsh-purge"` があり、`cordis.patch.yml` に `id: dsh-purge` の insert があること。
+**完了の目安:** `node_modules/tianshu-pozhen/package.json` が存在し、そのプロファイルの `bundles` に `"tianshu-pozhen"` があり、`cordis.patch.yml` に `id: tianshu-pozhen` の insert があること。
 
 - pnpm 11/12 はビルドを許可しないとインストールスクリプトをスキップします（`ERR_PNPM_IGNORED_BUILDS`）:
 
 ```sh
-pnpm add --allow-build=dsh-purge --allow-build=dsh-purge@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+pnpm add --allow-build=tianshu-pozhen --allow-build=tianshu-pozhen@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 # すでにインストール済みで警告のみの場合 — 完全な指定子が必要です（名前だけだと "set this to true or false" が残ります）:
-pnpm approve-builds dsh-purge@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+pnpm approve-builds tianshu-pozhen@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 # bundles / insert がまだ無い場合:
-node node_modules/dsh-purge/scripts/ensure-profile-bundle.mjs
+node node_modules/tianshu-pozhen/scripts/ensure-profile-bundle.mjs
 ```
 
 - `dsh` も pnpm も使えない場合は [手動インストール](#手動) に進んでください。
 - デスクトップクライアントではボタンをクリックすることもできます（`dsh://` ディープリンク。同じ tarball をダウンロードします）。
 
 <p align="center">
-  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.81&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Fdsh-purge%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>デスクトップクライアントでインストール</strong></a>
+  <a href="dsh://plugin/install?id=tianshu-pozhen&name=tianshu-pozhen&version=1.1.81&repo=YuJunZhiXue%2Ftianshu-pozhen&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Ftianshu-pozhen%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>デスクトップクライアントでインストール</strong></a>
 </p>
 
 **ステップ 3 — ホストを再起動する。** プラグインをプロファイルに追加しただけでは、`@deepseek-ai` にパッチは当たりません。インストールしたホストを完全に終了して再起動します（Web: `dsh web` を停止して起動し直す。デスクトップ: トレイアイコンも終了してから exe を開く）。
 
-**完了の目安:** セッションタイトルの横に **dsh-purge** がある。見当たらない場合はステップ 5 へ。
+**完了の目安:** セッションタイトルの横に **tianshu-pozhen** がある。見当たらない場合はステップ 5 へ。
 
-**ステップ 4 — Apply して確認。** **そのホスト** で、セッションタイトルの横の **dsh-purge** をクリックし、**Clean** を開いて **Apply** をクリック。ホストの設定ページにはありません。成功した **Apply** は 1 回だけ再起動します。完了しなかった場合は再起動しません。Web のコントロールは Web のみに、デスクトップのコントロールはデスクトップアプリのみに作用します。片方のホストからもう片方を Apply しないでください。
+**ステップ 4 — Apply して確認。** **そのホスト** で、セッションタイトルの横の **tianshu-pozhen** をクリックし、**Clean** を開いて **Apply** をクリック。ホストの設定ページにはありません。成功した **Apply** は 1 回だけ再起動します。完了しなかった場合は再起動しません。Web のコントロールは Web のみに、デスクトップのコントロールはデスクトップアプリのみに作用します。片方のホストからもう片方を Apply しないでください。
 
-**完了の目安:** チャットで `/purge status` を打つと `DSH_HOME` とパッチ一覧が表示され、パスは実際に実行しているホームであること。インストールされていないオプションパッケージ（liangshen）は skipped と表示され、Apply を妨げません。
+**完了の目安:** チャットで `/pozhen status` を打つと `DSH_HOME` とパッチ一覧が表示され、パスは実際に実行しているホームであること。インストールされていないオプションパッケージ（liangshen）は skipped と表示され、Apply を妨げません。
 
 **ステップ 5 — トラブルシューティング。** 上のステップが「完了の目安」で終わらなかったときだけ読むセクションです。
 
-- **セッションタイトルの横にボタンが無い。** `dsh --dump-config`（または `dsh --profile desktop --dump-config`）を実行し、body 行に `id: dsh-purge`（`dsh-purge-redteam` ではない）があるか確認します。無ければステップ 2 の `ensure-profile-bundle.mjs` を実行し、ホストを完全に終了して再起動します。このバージョン以降は、起動時にライブのレッドチーム子エントリが欠けている insert も書き込みます — もう一度終了・再起動してください。先頭の `entry "redteam-store" not found` は古いレッドチームパッケージの名残で、無視して構いません。
-- **マーケットが `already queued: dsh-purge` と言う。** マーケットのクリックをやめてください。ステップ 2 の `dsh plugin add` か pnpm を再度使います。CLI もすでにあると言う場合は、先に削除してから入れ直し、ステップ 3 をやり直します:
+- **セッションタイトルの横にボタンが無い。** `dsh --dump-config`（または `dsh --profile desktop --dump-config`）を実行し、body 行に `id: tianshu-pozhen`（`tianshu-pozhen-redteam` ではない）があるか確認します。無ければステップ 2 の `ensure-profile-bundle.mjs` を実行し、ホストを完全に終了して再起動します。このバージョン以降は、起動時にライブのレッドチーム子エントリが欠けている insert も書き込みます — もう一度終了・再起動してください。先頭の `entry "redteam-store" not found` は古いレッドチームパッケージの名残で、無視して構いません。
+- **マーケットが `already queued: tianshu-pozhen` と言う。** マーケットのクリックをやめてください。ステップ 2 の `dsh plugin add` か pnpm を再度使います。CLI もすでにあると言う場合は、先に削除してから入れ直し、ステップ 3 をやり直します:
 
 ```sh
-dsh plugin --profile desktop remove dsh-purge
+dsh plugin --profile desktop remove tianshu-pozhen
 dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
@@ -233,7 +233,7 @@ pnpm のみ:
 
 ```sh
 cd "$DSH_HOME/profiles/desktop"
-pnpm remove dsh-purge
+pnpm remove tianshu-pozhen
 pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
@@ -248,7 +248,7 @@ Web では `desktop` を `web` に置き換えます。
 
 <!-- AI-AGENT-START -->
 
-DeepSeek Harness プラグイン `dsh-purge` を Web プロファイルのみにインストールしてください。ディスク全体をスキャンしない、ほかのファイルを読み書きしない、設定を適用しない、アプリを再起動しない。desktop プロファイルにはインストールしない。プラグインマーケットプレイスは使わない。この名前は npm レジストリにないので `pnpm add dsh-purge` はしない。
+DeepSeek Harness プラグイン `tianshu-pozhen` を Web プロファイルのみにインストールしてください。ディスク全体をスキャンしない、ほかのファイルを読み書きしない、設定を適用しない、アプリを再起動しない。desktop プロファイルにはインストールしない。プラグインマーケットプレイスは使わない。この名前は npm レジストリにないので `pnpm add tianshu-pozhen` はしない。
 
 **Web（公式 `dsh web`）**
 
@@ -266,7 +266,7 @@ pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/mas
 
 このディレクトリがすでにクローンで `dsh` がある場合は `dsh plugin --profile web add .` を使う。`dsh` も pnpm も無ければ、ユーザーに伝えて停止する。
 
-コマンドが完了したら、`dsh web` を完全に終了して再起動し、セッションタイトル横の **dsh-purge** を開いて **Clean** の **Apply** を押すようユーザーに伝える。その後停止する。
+コマンドが完了したら、`dsh web` を完全に終了して再起動し、セッションタイトル横の **tianshu-pozhen** を開いて **Clean** の **Apply** を押すようユーザーに伝える。その後停止する。
 
 <!-- AI-AGENT-END -->
 
@@ -296,32 +296,32 @@ $cands += @("$env:APPDATA\DeepSeek Harness\dsh-home", "$env:LOCALAPPDATA\DeepSee
 $cands | Select-Object -Unique | Where-Object { $_ -and (Test-Path (Join-Path $_ "profiles")) }
 ```
 
-**2. プラグインを `$DSH_HOME/plugins/dsh-purge` に置く**（フォルダ名は `dsh-purge`、`package.json` の `"name"` も `dsh-purge`）。
+**2. プラグインを `$DSH_HOME/plugins/tianshu-pozhen` に置く**（フォルダ名は `tianshu-pozhen`、`package.json` の `"name"` も `tianshu-pozhen`）。
 
 ```sh
-git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/dsh-purge"
+git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/tianshu-pozhen"
 ```
 
-git が無い場合: [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz) をダウンロードし、展開して `dsh-purge-master` → `dsh-purge` にリネームし、`plugins` 以下に置きます。すでにクローンがある場合は、いくつかの `.js` ファイルではなくツリー全体をコピーしてください。
+git が無い場合: [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz) をダウンロードし、展開して `tianshu-pozhen-master` → `tianshu-pozhen` にリネームし、`plugins` 以下に置きます。すでにクローンがある場合は、いくつかの `.js` ファイルではなくツリー全体をコピーしてください。
 
 **3. そのプロファイルの `package.json` だけを編集する — まずバックアップ。** Web → `$DSH_HOME/profiles/web/package.json`; desktop → `$DSH_HOME/profiles/desktop/package.json`。既存の依存関係と bundle をすべて残したまま、**2 つだけ** 追加します:
 
-1. `dependencies` に `"dsh-purge": "file:../../plugins/dsh-purge"` を追加
-2. `dsh.profile.bundles` の **末尾** に `"dsh-purge"` を追加（すでにあればスキップ）
+1. `dependencies` に `"tianshu-pozhen": "file:../../plugins/tianshu-pozhen"` を追加
+2. `dsh.profile.bundles` の **末尾** に `"tianshu-pozhen"` を追加（すでにあればスキップ）
 
 ```json
 {
   "name": "dsh-profile-web",
   "private": true,
   "dependencies": {
-    "dsh-purge": "file:../../plugins/dsh-purge"
+    "tianshu-pozhen": "file:../../plugins/tianshu-pozhen"
   },
   "dsh": {
     "profile": {
       "bundles": [
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
-        "dsh-purge"
+        "tianshu-pozhen"
       ],
       "patchReload": "live"
     }
@@ -329,7 +329,7 @@ git が無い場合: [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/ar
 }
 ```
 
-JSON を有効に保ってください（新しい項目の前にカンマ、最後の項目の後ろには無し）。`file:../../plugins/dsh-purge` を絶対パスに変えない、`patchReload` やほかのプラグインに触れない、`"dsh-purge"` を 2 回並べないこと。desktop に `dsh-web-app` 行が無い場合は追加しないでください。
+JSON を有効に保ってください（新しい項目の前にカンマ、最後の項目の後ろには無し）。`file:../../plugins/tianshu-pozhen` を絶対パスに変えない、`patchReload` やほかのプラグインに触れない、`"tianshu-pozhen"` を 2 回並べないこと。desktop に `dsh-web-app` 行が無い場合は追加しないでください。
 
 **4. そのプロファイルだけで `pnpm install` を実行**（リポジトリルートや `$DSH_HOME` ではなくプロファイルディレクトリに `cd`）:
 
@@ -338,29 +338,29 @@ cd "$DSH_HOME/profiles/web"   # または profiles/desktop
 pnpm install
 ```
 
-成功: `profiles/<web|desktop>/node_modules/dsh-purge/package.json` が存在すること。`pnpm` が無い場合は公式 `dsh` に同梱の Node / pnpm を使います。`Could not resolve` の場合は `file:` パスを再確認、JSON エラーの場合はカンマを直すかバックアップを復元します。
+成功: `profiles/<web|desktop>/node_modules/tianshu-pozhen/package.json` が存在すること。`pnpm` が無い場合は公式 `dsh` に同梱の Node / pnpm を使います。`Could not resolve` の場合は `file:` パスを再確認、JSON エラーの場合はカンマを直すかバックアップを復元します。
 
-**5. そのホストを完全に終了して再起動し、Apply** — 上のステップ 3 とステップ 4 です。カードはセッションタイトルの横に現れます。そのホストでのみ **Apply**（または `/purge apply`）をクリック。カードが無ければ、おそらく別の `.dsh` を編集しています — 手順 1 に戻ってください。
+**5. そのホストを完全に終了して再起動し、Apply** — 上のステップ 3 とステップ 4 です。カードはセッションタイトルの横に現れます。そのホストでのみ **Apply**（または `/pozhen apply`）をクリック。カードが無ければ、おそらく別の `.dsh` を編集しています — 手順 1 に戻ってください。
 
 </details>
 
-**アンインストール。** セッションタイトル横の **dsh-purge** → **Clean** → **Uninstall**。ダイアログを確認: 適用済みパッチを元に戻し、元の Harness を復元し、現在のホストを再起動します。無効化やアンインストールは、まだ `redteam` を指しているエージェントプリセットのデフォルトも `standard` に戻すので、プリセットが消えた後もホストはセッションを作成できます。
+**アンインストール。** セッションタイトル横の **tianshu-pozhen** → **Clean** → **Uninstall**。ダイアログを確認: 適用済みパッチを元に戻し、元の Harness を復元し、現在のホストを再起動します。無効化やアンインストールは、まだ `redteam` を指しているエージェントプリセットのデフォルトも `standard` に戻すので、プリセットが消えた後もホストはセッションを作成できます。
 
 <details>
 <summary><strong>アンインストールのコマンドと設定</strong></summary>
 
 ```sh
 # またはターミナル / チャットから
-dsh-purge --uninstall
-# /purge uninstall
+tianshu-pozhen --uninstall
+# /pozhen uninstall
 ```
 
 プラグイン設定は `cordis.patch.yml` にあります（`postPrompt` はデフォルトで空）:
 
 ```yaml
 - insert:
-    - id: dsh-purge
-      name: 'dsh-purge'
+    - id: tianshu-pozhen
+      name: 'tianshu-pozhen'
       config:
         enabled: true
         autoApplyOnStart: true
@@ -377,7 +377,7 @@ dsh-purge --uninstall
 
 ## プレビュー
 
-**dsh-purge** はセッションタイトルの横にあります。右ドックを開き、**Clean** と **Drill** の 2 ページがあります。**Light / Ink** を切り替えられます。パッチはグループ化され、カウントには実際に適用された項目のみが含まれます。ルールセットはエディタの上の一覧にあり、各行に Enable と Delete があります。
+**tianshu-pozhen** はセッションタイトルの横にあります。右ドックを開き、**Clean** と **Drill** の 2 ページがあります。**Light / Ink** を切り替えられます。パッチはグループ化され、カウントには実際に適用された項目のみが含まれます。ルールセットはエディタの上の一覧にあり、各行に Enable と Delete があります。
 
 Drill を初めて開くときは、通知を読み、カウントダウンを待ち、末尾までスクロールして 3 つのチェックボックスにチェックします。Clean にこのステップは不要です。Drill は、あなたが管理するホスト、オフラインターゲット、またはすでに書面による認可のある演習にのみ使えます。
 
@@ -403,7 +403,7 @@ Drill を初めて開くときは、通知を読み、カウントダウンを�
 
 | エリア | 表示内容 |
 |---|---|
-| dsh-purge | セッションタイトル横のボタン。ドックを開閉する |
+| tianshu-pozhen | セッションタイトル横のボタン。ドックを開閉する |
 | Clean | パッチ、プロンプト、ルールセット |
 | Drill | 認可後のアセットと環境。このビルドはスキルやナレッジベースを同梱しません。認可までタブは Unauthorized と表示 |
 | Patches | グループ化された状況、Apply、Restore、Uninstall |
@@ -424,32 +424,32 @@ Drill を初めて開くときは、通知を読み、カウントダウンを�
 ## 使い方
 
 ```sh
-dsh-purge --status
-dsh-purge --apply
-dsh-purge --revert
-dsh-purge --uninstall
-dsh-purge --edit
+tianshu-pozhen --status
+tianshu-pozhen --apply
+tianshu-pozhen --revert
+tianshu-pozhen --uninstall
+tianshu-pozhen --edit
 
-/purge status | apply | revert | uninstall | edit | help
-/rules list | use <id> | create <id> | delete <id> | reset | help
-/rewind
+/pozhen status | apply | revert | uninstall | edit | help
+/pozhen-rules list | use <id> | create <id> | delete <id> | reset | help
+/pozhen-rewind
 
-# 別のプラグインがすでに /rewind（または /purge, /rules, /skills）を
-# 所有している場合、その名前はスキップされるか /purge-rewind として
-# 再マウントされます。ほかのコマンド、ツール、/dsh-purge/* ルートは動作し続けます。
+# 別のプラグインがすでに /pozhen-rewind（または /pozhen, /pozhen-rules, /pozhen-skills）を
+# 所有している場合、その名前はスキップされるか /tianshu-rewind として
+# 再マウントされます。ほかのコマンド、ツール、/tianshu-pozhen/* ルートは動作し続けます。
 
-purge_status   purge_apply   purge_revert
+pozhen_status   pozhen_apply   pozhen_revert
 ```
 
 Apply が成功すると、パッチ済みパッケージを読み込むためホストが再起動します。手動で **Restart** をクリックすることもできます。パッチタイトルの下に安定版とテスト版があります。テスト版は `beta` ブランチに追従します。**Switch to stable** は `master` をインストールしてピンを解除します。古い安定版を選ぶとそれがピン留めされます。最新に戻すには **Update** をクリック。古いテストタグは一覧されません。
 
-コンポーザの **Undo once** と **Undo last round** は現在の会話内に留まり、ブランチを開きません。送信した行が入力に戻り、そのカットですでに送信されたメッセージと完了したタスクは現在の会話から外れます。編集して **再送信** します。**1.1.61** から、rewind の範囲は最初のユーザーメッセージではなく **現在のターン** に従います。`/rewind` も同じ動作です。
+コンポーザの **Undo once** と **Undo last round** は現在の会話内に留まり、ブランチを開きません。送信した行が入力に戻り、そのカットですでに送信されたメッセージと完了したタスクは現在の会話から外れます。編集して **再送信** します。**1.1.61** から、rewind の範囲は最初のユーザーメッセージではなく **現在のターン** に従います。`/pozhen-rewind` も同じ動作です。
 
 **同じタスクが standard では動くのに minimal や PTC で失敗する** 場合、プリセットの `run_code`、サンドボックス、またはプラン傍受テキストがまだクリアされていないことが多く、あるいは組み込み minimal に `agent-instructions` が欠けています。**1.1.61 以降** を使い、**ホストを完全に終了 → Clean で Apply → 再起動 → 新しいチャットを開始** してください。プリセットを切り替えるだけでは、実行中のプロセスのパッチは再読み込みされません。
 
 ### 応答速度
 
-DSH はツールバッチ内の Bash 呼び出しを 1 つずつ実行します。古い dsh-purge リリースはデフォルトのフォアグラウンド待機を 60 秒から 10 分に引き上げていたため、1 つの遅いコマンドが後続の呼び出しをその間ブロックしていました。patch #21 は、マークされたプラグインの値を公式の 60 秒デフォルトに戻します。マークされていないタイムアウトやその他のカスタム値は保持されます。マークのない 10 分の値はユーザー設定と確実に区別できません。
+DSH はツールバッチ内の Bash 呼び出しを 1 つずつ実行します。古い tianshu-pozhen リリースはデフォルトのフォアグラウンド待機を 60 秒から 10 分に引き上げていたため、1 つの遅いコマンドが後続の呼び出しをその間ブロックしていました。patch #21 は、マークされたプラグインの値を公式の 60 秒デフォルトに戻します。マークされていないタイムアウトやその他のカスタム値は保持されます。マークのない 10 分の値はユーザー設定と確実に区別できません。
 
 `dsh web`（macOS/Linux）で待機を短くするには、`$DSH_HOME/profiles/web/cordis.patch.yml`（通常 `~/.dsh/profiles/web/cordis.patch.yml`）に次のエントリを追加します。重複を追加せず、同じ id の既存エントリを編集してください。このプロファイル層は同梱設定の後に適用されるので、今後のプラグイン Apply でもオーバーライドが維持されます。
 
@@ -503,7 +503,7 @@ Apply（起動時または Apply クリック時）:
 flowchart TD
   A["起動または Apply クリック"] --> B{"パッチは既に適用済み？"}
   B -->|はい| C["スキップ"]
-  B -->|いいえ| D["オリジナルを .dshpurge.bak としてバックアップ"]
+  B -->|いいえ| D["オリジナルを .tianshupozhen.bak としてバックアップ"]
   D --> E["マッチしたファイルを置換"]
   E --> F["シムを上書き"]
   F --> G["プラグインに同梱された暗号化プロンプト、プロンプトボックスがデフォルトで表示するテキストを注入"]
@@ -516,7 +516,7 @@ flowchart TD
   A["再起動または新規セッション"] --> B["プラグインの暗号化デフォルトを注入。保存クリックもホストのプロンプトファイルも無し"]
 ```
 
-毎ターンのプロンプトインジェクションとルールセット判定。左側の 3 つの入力は dsh-purge パネルで制御するもので、点線の辺はそれぞれがどの判定を駆動するかを示します:
+毎ターンのプロンプトインジェクションとルールセット判定。左側の 3 つの入力は tianshu-pozhen パネルで制御するもので、点線の辺はそれぞれがどの判定を駆動するかを示します:
 
 ```mermaid
 flowchart TD
@@ -549,8 +549,8 @@ flowchart TD
 
 ## 復元
 
-- 各ターゲットは最初の apply 前に `<file>.dshpurge.bak` にコピーされます。
-- **Restore** または `/purge revert` はバックアップを戻して削除します。バックアップが無い場合は、このプラグインが書いたシム行を取り除きます。
+- 各ターゲットは最初の apply 前に `<file>.tianshupozhen.bak` にコピーされます。
+- **Restore** または `/pozhen revert` はバックアップを戻して削除します。バックアップが無い場合は、このプラグインが書いたシム行を取り除きます。
 - `prompt-inject.md` はユーザーファイルなので保持されます。
 - **Uninstall** はパッチが適用されていればまず復元し、その後 inject ファイル、ルールライブラリ、プラグイン本体を削除します。
 - Apply は冪等です。

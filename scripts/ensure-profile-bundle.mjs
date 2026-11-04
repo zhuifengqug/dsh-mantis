@@ -50,12 +50,12 @@ function findProfileDir() {
 function ensureProfileInsert(profileDir) {
   const result = ensureProfileBodyInsert(profileDir);
   if (result.wrote) {
-    process.stdout.write(`dsh-purge: wrote body insert (${result.path})\n`);
+    process.stdout.write(`tianshu-pozhen: wrote body insert (${result.path})\n`);
   } else if (result.ok === false) {
     // 宿主 / 用户自己的 cordis.patch.yml 内容，宁可不动也别写坏（#191）
-    process.stdout.write(`dsh-purge: skipped body insert, unrecognized patch body (${result.path})\n`);
+    process.stdout.write(`tianshu-pozhen: skipped body insert, unrecognized patch body (${result.path})\n`);
   } else {
-    process.stdout.write(`dsh-purge: insert already in ${result.path}\n`);
+    process.stdout.write(`tianshu-pozhen: insert already in ${result.path}\n`);
   }
   return result.wrote;
 }
@@ -67,20 +67,20 @@ function main() {
   const fp = path.join(profileDir, "package.json");
   const pkg = readJson(fp);
   if (!pkg) {
-    process.stderr.write(`dsh-purge: cannot read ${fp}\n`);
+    process.stderr.write(`tianshu-pozhen: cannot read ${fp}\n`);
     process.exit(1);
   }
   const bundles = ensureProfileBundles(profileDir);
   process.stdout.write(bundles.wrote
-    ? `dsh-purge: appended to bundles (${profileDir})\n`
-    : `dsh-purge: already in bundles (${profileDir})\n`);
+    ? `tianshu-pozhen: appended to bundles (${profileDir})\n`
+    : `tianshu-pozhen: already in bundles (${profileDir})\n`);
 
   try {
     ensureProfileInsert(profileDir);
     const pnpm = ensurePnpmAllowBuild(profileDir);
-    if (pnpm.wrote) process.stdout.write(`dsh-purge: allowed pnpm build for ${NAME}\n`);
+    if (pnpm.wrote) process.stdout.write(`tianshu-pozhen: allowed pnpm build for ${NAME}\n`);
   } catch (e) {
-    process.stderr.write(`dsh-purge: insert failed: ${e && e.message ? e.message : e}\n`);
+    process.stderr.write(`tianshu-pozhen: insert failed: ${e && e.message ? e.message : e}\n`);
     process.exit(1);
   }
 }

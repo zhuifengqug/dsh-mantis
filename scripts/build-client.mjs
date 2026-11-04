@@ -1,6 +1,6 @@
 /**
  * 把 lib/redteam/client.js 抽成可嵌入的工厂片段，
- * 写进 client.js 里的 DSH_PURGE_DRILL 标记之间。
+ * 写进 client.js 里的 TIANSHU_POZHEN_DRILL 标记之间。
  *
  * 用法：node scripts/build-client.mjs
  */
@@ -12,8 +12,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const drillSrc = join(root, "lib", "redteam", "client.js");
 const clientPath = join(root, "client.js");
 
-const BEGIN = "/* __DSH_PURGE_DRILL_BEGIN__ */";
-const END = "/* __DSH_PURGE_DRILL_END__ */";
+const BEGIN = "/* __TIANSHU_POZHEN_DRILL_BEGIN__ */";
+const END = "/* __TIANSHU_POZHEN_DRILL_END__ */";
 
 let raw = readFileSync(drillSrc, "utf8").replace(/\r\n/g, "\n");
 const startMark = "factory: (require) => {";
@@ -54,7 +54,7 @@ body = body.slice(0, applyAt) + applyParts + body.slice(j);
 
 const fragment = `${BEGIN}
 		// 内嵌演练台（源码在 lib/redteam，已并进本插件）
-		const __dshPurgeDrill = (() => {
+		const __tianshuPozhenDrill = (() => {
 			var module = { exports: {} };
 			var exports = module.exports;
 ${body}

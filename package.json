@@ -1,7 +1,7 @@
 {
-  "name": "dsh-purge",
-  "version": "1.1.90",
-  "description": "DeepSeek Harness 破甲：让所有模型都能破甲，不同模型可换不同提示词；默认提示词面向国模「小码酱」。Jailbreak for every model — swap prompts per model. 求 Star 收藏 ⭐ 如要二开，请查看署名要求部分",
+  "name": "@zhuifengqug/dsh-tianshu-pozhen",
+  "version": "1.0.0",
+  "description": "天枢 · 破阵：DeepSeek Harness 本机红队评测与宿主清洗插件（本地自建版）。基于 YuJunZhiXue/dsh-purge 1.1.90 全树，去掉区域门禁，吸收 dsh-purge-community 1.6.69 的独有能力。Jailbreak + host patch suite for local lab use.",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -16,7 +16,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "dsh-purge": "bin/dsh-purge.js"
+    "tianshu-pozhen": "bin/tianshu-pozhen.js"
   },
   "files": [
     "lib",
@@ -25,6 +25,7 @@
     "docs",
     "presets",
     "scripts",
+    "skills",
     "client.js",
     "cordis.patch.yml",
     "screenshots.json",
@@ -81,10 +82,8 @@
       ]
     },
     "install": {
-      "preferred": "tarball",
-      "tarball": "https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master",
-      "zip": "https://codeload.github.com/YuJunZhiXue/dsh-purge/zip/refs/heads/master",
-      "git": "https://github.com/YuJunZhiXue/dsh-purge.git"
+      "preferred": "local",
+      "note": "本地自建版：从本目录 npm pack 后 dsh plugin add，不拉任何远端。"
     }
   },
   "publishConfig": {

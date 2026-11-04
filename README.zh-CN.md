@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="dsh-purge" width="720">
+  <img src="docs/banner.svg" alt="tianshu-pozhen" width="720">
 </p>
 
-<h1 align="center">⚔️ DeepSeek Harness 网络安全红队工具（dsh-purge）</h1>
+<h1 align="center">⚔️ DeepSeek Harness 网络安全红队工具（tianshu-pozhen）</h1>
 
 <p align="center"><strong>Version 1.1.81</strong></p>
 
@@ -35,7 +35,7 @@
 
 从今往后，**公网一律不许碰**。开源版攻击任务只认**本地靶场 IP**：本机回环和 RFC1918 私网。域名会先按系统解析（含 hosts），解析到的每一个地址都必须是私网或回环；hosts 把 `.lab` 指到公网、解析失败、混有公网地址，一律拦。不是本地靶场就别跑，也跑不过去。**禁止制作外挂**（自瞄、透视、改内存打游戏、过反作弊），提示词和会话门口一起拦。开源版不下发技能库和知识库。
 
-**原版不允许倒卖。** 收费、当货挂群，一律不行。二开可以，但**必须署名**，写明来源仓库：[YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)。不署名、隐瞒来源、改头换面据为己有，作者一律当对家。
+**原版不允许倒卖。** 收费、当货挂群，一律不行。二开可以，但**必须署名**，写明来源仓库：[YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge)。不署名、隐瞒来源、改头换面据为己有，作者一律当对家。
 
 作者个人频道：[t.me/LLM_PoJia](https://t.me/LLM_PoJia)。有话、有更新，会发在那里。
 
@@ -57,21 +57,21 @@
 
 ## 介绍
 
-**dsh-purge** 是装在本机官方 [DeepSeek Harness](https://www.deepseek.com/harness/) 上的网络安全红队评测插件。当前 **1.1.81** 已适配 **DSH 0.2.1-rc.2**（0.2.0 仍可用）。**不支持 DSH 0.2.1-rc.3 及更新的 rc。** 官方 **Web**（`dsh web`）和官方 **桌面端**（EXE）都支持，两边分开装、分开应用。
+**tianshu-pozhen** 是装在本机官方 [DeepSeek Harness](https://www.deepseek.com/harness/) 上的网络安全红队评测插件。当前 **1.1.81** 已适配 **DSH 0.2.1-rc.2**（0.2.0 仍可用）。**不支持 DSH 0.2.1-rc.3 及更新的 rc。** 官方 **Web**（`dsh web`）和官方 **桌面端**（EXE）都支持，两边分开装、分开应用。
 
 Harness 不只是把问题交给模型。它还会在运行时改提示词、审批门、沙箱和会话格式。只看「模型答不答」，会把宿主拦截误当成模型拒绝。这个插件在你自己的安装里把这两层分开，用来做受控评测，也用来看默认策略该不该收紧。
 
 
 | 你会用到             | 它做什么                                            |
 | ---------------- | ----------------------------------------------- |
-| **dsh-purge 侧栏** | 会话标题旁的按钮打开右侧栏。里面两页：清洗、演练台                       |
+| **tianshu-pozhen 侧栏** | 会话标题旁的按钮打开右侧栏。里面两页：清洗、演练台                       |
 | **清洗**           | 分组查看补丁，应用、还原、卸载；编辑提示词和多套规则                      |
 | **演练台**          | 正式版内置。授权后查看资产和本机环境。开源版不下发技能库和知识库。只用于本机/内网本地靶场 |
 | **宿主策略**         | 调整默认文案、权限策略和工具上限。官方能力保留，不另写一套身份                 |
 | **启动时**          | 自动再检查并应用。npm 升级盖掉 `node_modules` 之后不用手改文件       |
 
 
-不写死盘符。按 `$DSH_HOME`、dsh 启动器旁边的 `.dsh`，再退回 `~/.dsh`。不改 Harness 源码仓库，在 **dsh-purge** 的「清洗」里点「应用」才写入。身份来自插件里的加密提示词，也就是提示词框默认显示的那一份。不读取宿主磁盘上的提示词文件。
+不写死盘符。按 `$DSH_HOME`、dsh 启动器旁边的 `.dsh`，再退回 `~/.dsh`。不改 Harness 源码仓库，在 **tianshu-pozhen** 的「清洗」里点「应用」才写入。身份来自插件里的加密提示词，也就是提示词框默认显示的那一份。不读取宿主磁盘上的提示词文件。
 
 本插件只处理使用者本机已安装的官方 `@deepseek-ai` 包和本机配置。它不是公网扫描器，也不是针对第三方站点的攻击套件。仓库内不含木马、未授权渗透脚本或对外攻击载荷。
 
@@ -83,13 +83,13 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 
 **原版不允许倒卖。** 不得收费转卖、换皮上架、当货挂群。
 
-**二开必须署名**，并写明来源仓库：[YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)。借用本项目的名称、思路、代码或提示词，同样必须署名。
+**二开必须署名**，并写明来源仓库：[YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge)。借用本项目的名称、思路、代码或提示词，同样必须署名。
 
 不署名、隐瞒来源、改头换面据为己有，或把原版拿去倒卖，作者将依法追究责任。
 
 ## 许可证
 
-本仓库使用 [Apache License 2.0](./LICENSE)。二开、再分发必须保留版权声明和 [NOTICE](./NOTICE)，写明来源 [YuJunZhiXue/dsh-purge](https://github.com/YuJunZhiXue/dsh-purge)。原版不允许倒卖。
+本仓库使用 [Apache License 2.0](./LICENSE)。二开、再分发必须保留版权声明和 [NOTICE](./NOTICE)，写明来源 [YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge)。原版不允许倒卖。
 
 ---
 
@@ -105,7 +105,7 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 
 **【零容忍严正申明】**：本项目坚决反对并严禁任何形式的违法犯罪行为！本项目开发者绝不支持、不鼓励、不协助任何未授权网络攻击、漏洞利用、数据窃取、非法侵入计算机信息系统或生成违法违禁内容的活动。**任何将本项目用于违法犯罪的行为，均与开发者无关，由行为人依法独立承担全部法律责任。**
 
-1. **本仓库不含违法内容**：`dsh-purge` 发布的代码、文档、补丁与默认提示词**不是**木马、后门、未授权渗透工具、勒索软件、撞库脚本，也**不是**针对公网或第三方系统的攻击载荷。项目本身不提供违法内容，也不教唆、组织、协助实施违法犯罪。
+1. **本仓库不含违法内容**：`tianshu-pozhen` 发布的代码、文档、补丁与默认提示词**不是**木马、后门、未授权渗透工具、勒索软件、撞库脚本，也**不是**针对公网或第三方系统的攻击载荷。项目本身不提供违法内容，也不教唆、组织、协助实施违法犯罪。
 2. **只作用于本机官方 Harness**：安全评测补丁、提示词注入全部发生在使用者**本机已安装的官方 DeepSeek Harness**（`@deepseek-ai` 包、本机 profile / `$DSH_HOME`）上。对象是使用者自己的官方本地软件，**不是**他人的网站、服务器、账号或信息系统。
 3. **评测补丁不对外网目标联网**：应用补丁、写入注入、回滚、卸载均在本机文件与本机进程内完成，**不对任何公网主机、未授权系统进行扫描、探测、入侵或攻击发包**。不得把本项目当作跳板去打外网。插件若开启「检测更新」，仅可能访问本插件自己的 GitHub 仓库以核对版本，**与对第三方系统的网络攻击无关**，也不能被解释为授权对外渗透。
 4. **合法受控范围限定**：本项目定位为使用者在**自己有权管理的本机官方 Harness**上，进行红队科研与鲁棒性评测的辅助工具。**严禁在未经所有者合法书面授权的目标、公网在线系统或生产业务上运行本项目**。一切测试必须限制在**本机已授权安装的官方 Harness、离线本地合成靶标、授权网络安全演练靶场及合规实验室受控环境**中进行。
@@ -146,7 +146,7 @@ Harness 不只是把问题交给模型。它还会在运行时改提示词、审
 
 ## 安装
 
-**不要走插件市场**：[dsh-plugin.org](https://dsh-plugin.org) 或设置里的「插件市场」一键安装会报 `already queued: dsh-purge`，命令也走不成。npm 仓库没有 `dsh-purge` 这个名字，不要 `pnpm add dsh-purge`。
+**不要走插件市场**：[dsh-plugin.org](https://dsh-plugin.org) 或设置里的「插件市场」一键安装会报 `already queued: tianshu-pozhen`，命令也走不成。npm 仓库没有 `tianshu-pozhen` 这个名字，不要 `pnpm add tianshu-pozhen`。
 
 ### 快速安装
 
@@ -161,9 +161,9 @@ dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-pur
 ```
 
 1. **完全退出再打开**刚装的那个宿主。Web：停掉 `dsh web` 再开。桌面：托盘也要退出，再开 exe。
-2. 在这个宿主点会话标题旁的 **dsh-purge** →「清洗」→「应用」。应用成功后会自动重启一次。
+2. 在这个宿主点会话标题旁的 **tianshu-pozhen** →「清洗」→「应用」。应用成功后会自动重启一次。
 
-完成 —— 聊天里跑 `/purge status` 验证。如果 pnpm 问要不要允许构建、或者下面任何东西没出现，走后面的分步说明。
+完成 —— 聊天里跑 `/pozhen status` 验证。如果 pnpm 问要不要允许构建、或者下面任何东西没出现，走后面的分步说明。
 
 ### 分步说明
 
@@ -192,42 +192,42 @@ cd "$env:USERPROFILE\.dsh\profiles\web"   # 桌面改 profiles\desktop
 pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
-`pnpm add` 和 `dsh plugin add` 都会拉包；`postinstall` 再把 `dsh-purge` 写进 `dsh.profile.bundles`，并在 profile 的 `cordis.patch.yml` 补上本体 `insert`（没有这一行，宿主不加载插件，界面也没有按钮）。
+`pnpm add` 和 `dsh plugin add` 都会拉包；`postinstall` 再把 `tianshu-pozhen` 写进 `dsh.profile.bundles`，并在 profile 的 `cordis.patch.yml` 补上本体 `insert`（没有这一行，宿主不加载插件，界面也没有按钮）。
 
-**完成标志：** `node_modules/dsh-purge/package.json` 在，该 profile 的 `bundles` 里有 `"dsh-purge"`，`cordis.patch.yml` 里有 `id: dsh-purge` 的 insert。
+**完成标志：** `node_modules/tianshu-pozhen/package.json` 在，该 profile 的 `bundles` 里有 `"tianshu-pozhen"`，`cordis.patch.yml` 里有 `id: tianshu-pozhen` 的 insert。
 
 - pnpm 11/12 默认拦安装脚本（`ERR_PNPM_IGNORED_BUILDS`），要带上允许构建：
 
 ```sh
-pnpm add --allow-build=dsh-purge --allow-build=dsh-purge@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-# 已经装上但只有警告时，必须带完整 specifier（只写 dsh-purge 会留下 set this to true or false）：
-pnpm approve-builds dsh-purge@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+pnpm add --allow-build=tianshu-pozhen --allow-build=tianshu-pozhen@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+# 已经装上但只有警告时，必须带完整 specifier（只写 tianshu-pozhen 会留下 set this to true or false）：
+pnpm approve-builds tianshu-pozhen@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 # bundles / insert 还没写上时再补：
-node node_modules/dsh-purge/scripts/ensure-profile-bundle.mjs
+node node_modules/tianshu-pozhen/scripts/ensure-profile-bundle.mjs
 ```
 
 - `dsh` 和 pnpm 都没有时，跳到[手动安装](#manual)。
 - 桌面客户端也可以点按钮（`dsh://` 唤起，下的仍是同一份压缩包）。
 
 <p align="center">
-  <a href="dsh://plugin/install?id=dsh-purge&name=dsh-purge&version=1.1.81&repo=YuJunZhiXue%2Fdsh-purge&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Fdsh-purge%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>唤起客户端一键安装</strong></a>
+  <a href="dsh://plugin/install?id=tianshu-pozhen&name=tianshu-pozhen&version=1.1.81&repo=YuJunZhiXue%2Ftianshu-pozhen&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Ftianshu-pozhen%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>唤起客户端一键安装</strong></a>
 </p>
 
 **第 3 步 —— 重启宿主。** 只把插件写进 profile **还不会**改 `@deepseek-ai`。完全退出再打开刚装的那个宿主（Web：停掉 `dsh web` 再开；桌面：托盘也要退出，再开 exe）。
 
-**完成标志：** 会话标题旁出现 **dsh-purge**。没出现？跳到第 5 步。
+**完成标志：** 会话标题旁出现 **tianshu-pozhen**。没出现？跳到第 5 步。
 
-**第 4 步 —— 应用并验证。** 在**这个宿主**点会话标题旁的 **dsh-purge**，打开「清洗」，点「应用」。宿主自己的设置页里没有这一项。应用成功后会自动重启一次，没做完不会重启。Web 的按钮只动 Web，桌面的只动桌面，不要在一个里面点另一个的应用。
+**第 4 步 —— 应用并验证。** 在**这个宿主**点会话标题旁的 **tianshu-pozhen**，打开「清洗」，点「应用」。宿主自己的设置页里没有这一项。应用成功后会自动重启一次，没做完不会重启。Web 的按钮只动 Web，桌面的只动桌面，不要在一个里面点另一个的应用。
 
-**完成标志：** 聊天里 `/purge status` 能打出 `DSH_HOME` 和补丁列表，路径是你正在用的那一份。没装的可选包（梁神）显示跳过，不挡住完成。
+**完成标志：** 聊天里 `/pozhen status` 能打出 `DSH_HOME` 和补丁列表，路径是你正在用的那一份。没装的可选包（梁神）显示跳过，不挡住完成。
 
 **第 5 步 —— 排障。** 只有上面没有跑到「完成标志」时才看这里。
 
-- **会话标题旁没有按钮。** 在对应 profile 跑 `dsh --dump-config`（或 `dsh --profile desktop --dump-config`），看有没有本体行 `id: dsh-purge`（不是 `dsh-purge-redteam`）。没有就再跑第 2 步的 `ensure-profile-bundle.mjs`，然后完全退出重开宿主。升到本版本后，若演练台子行已经在跑，它也会在启动时把缺的 insert 补上，再完全退出重开一次即可。开头那几条 `entry "redteam-store" not found` 只是旧红队包不在，可以忽略。
-- **市场报 `already queued: dsh-purge`。** 不要再点市场；回到第 2 步用 `dsh plugin add` 或 pnpm 装。命令也说已经有了，就先卸再装，然后重走第 3 步：
+- **会话标题旁没有按钮。** 在对应 profile 跑 `dsh --dump-config`（或 `dsh --profile desktop --dump-config`），看有没有本体行 `id: tianshu-pozhen`（不是 `tianshu-pozhen-redteam`）。没有就再跑第 2 步的 `ensure-profile-bundle.mjs`，然后完全退出重开宿主。升到本版本后，若演练台子行已经在跑，它也会在启动时把缺的 insert 补上，再完全退出重开一次即可。开头那几条 `entry "redteam-store" not found` 只是旧红队包不在，可以忽略。
+- **市场报 `already queued: tianshu-pozhen`。** 不要再点市场；回到第 2 步用 `dsh plugin add` 或 pnpm 装。命令也说已经有了，就先卸再装，然后重走第 3 步：
 
 ```sh
-dsh plugin --profile desktop remove dsh-purge
+dsh plugin --profile desktop remove tianshu-pozhen
 dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
@@ -235,7 +235,7 @@ dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-pur
 
 ```sh
 cd "$DSH_HOME/profiles/desktop"
-pnpm remove dsh-purge
+pnpm remove tianshu-pozhen
 pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
@@ -250,7 +250,7 @@ Web 端把 `desktop` 换成 `web`。
 
 <!-- AI-AGENT-START -->
 
-安装 DeepSeek Harness 插件 `dsh-purge`，只装到 Web profile。不要全盘搜索，不要读或改其它文件，不要应用设置，也不要重启应用。不要装到桌面 profile。不要走插件市场。npm 仓库没有这个包名，不要 `pnpm add dsh-purge`。
+安装 DeepSeek Harness 插件 `tianshu-pozhen`，只装到 Web profile。不要全盘搜索，不要读或改其它文件，不要应用设置，也不要重启应用。不要装到桌面 profile。不要走插件市场。npm 仓库没有这个包名，不要 `pnpm add tianshu-pozhen`。
 
 **Web 端（官方 `dsh web`）**
 
@@ -268,7 +268,7 @@ pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/mas
 
 当前目录已是本仓库且有 `dsh` 时改用 `dsh plugin --profile web add .`。`dsh` 和 pnpm 都没有再告诉用户后停止。
 
-命令结束后，提醒用户：完全退出并重启 `dsh web`，再点会话标题旁的 **dsh-purge**，在「清洗」里点「应用」。然后停止。
+命令结束后，提醒用户：完全退出并重启 `dsh web`，再点会话标题旁的 **tianshu-pozhen**，在「清洗」里点「应用」。然后停止。
 
 <!-- AI-AGENT-END -->
 
@@ -298,32 +298,32 @@ $cands += @("$env:APPDATA\DeepSeek Harness\dsh-home", "$env:LOCALAPPDATA\DeepSee
 $cands | Select-Object -Unique | Where-Object { $_ -and (Test-Path (Join-Path $_ "profiles")) }
 ```
 
-**2. 把插件放到 `$DSH_HOME/plugins/dsh-purge`**（目录名必须是 `dsh-purge`，其 `package.json` 里 `"name"` 也必须是 `dsh-purge`）。
+**2. 把插件放到 `$DSH_HOME/plugins/tianshu-pozhen`**（目录名必须是 `tianshu-pozhen`，其 `package.json` 里 `"name"` 也必须是 `tianshu-pozhen`）。
 
 ```sh
-git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/dsh-purge"
+git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/tianshu-pozhen"
 ```
 
-没有 git：下载 [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz)，解压后把 `dsh-purge-master` 改名为 `dsh-purge`，整夹放到 `plugins` 下。已有本仓库副本就复制整个目录，不要只拷几个 `.js`。
+没有 git：下载 [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz)，解压后把 `tianshu-pozhen-master` 改名为 `tianshu-pozhen`，整夹放到 `plugins` 下。已有本仓库副本就复制整个目录，不要只拷几个 `.js`。
 
 **3. 只改对应 profile 的 `package.json`，先备份。** Web → `$DSH_HOME/profiles/web/package.json`；桌面 → `$DSH_HOME/profiles/desktop/package.json`。**只追加两处**，原有依赖和 bundle 全部留着：
 
-1. `dependencies` 增加 `"dsh-purge": "file:../../plugins/dsh-purge"`
-2. `dsh.profile.bundles` **末尾**追加 `"dsh-purge"`（已有就不要再加）
+1. `dependencies` 增加 `"tianshu-pozhen": "file:../../plugins/tianshu-pozhen"`
+2. `dsh.profile.bundles` **末尾**追加 `"tianshu-pozhen"`（已有就不要再加）
 
 ```json
 {
   "name": "dsh-profile-web",
   "private": true,
   "dependencies": {
-    "dsh-purge": "file:../../plugins/dsh-purge"
+    "tianshu-pozhen": "file:../../plugins/tianshu-pozhen"
   },
   "dsh": {
     "profile": {
       "bundles": [
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
-        "dsh-purge"
+        "tianshu-pozhen"
       ],
       "patchReload": "live"
     }
@@ -331,7 +331,7 @@ git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/dsh-pu
 }
 ```
 
-JSON 要合法（新增项前面有逗号，最后一项后面没有多余逗号）。`file:../../plugins/dsh-purge` 不要改成绝对路径，`patchReload`、其它插件、版本号都不要动，`"dsh-purge"` 不要写两次。桌面端没有 `dsh-web-app` 就不要硬加。
+JSON 要合法（新增项前面有逗号，最后一项后面没有多余逗号）。`file:../../plugins/tianshu-pozhen` 不要改成绝对路径，`patchReload`、其它插件、版本号都不要动，`"tianshu-pozhen"` 不要写两次。桌面端没有 `dsh-web-app` 就不要硬加。
 
 **4. 只在刚改的那个 profile 目录装依赖**（`cd` 进 profile 目录，不要在仓库根或 `$DSH_HOME` 根）：
 
@@ -340,29 +340,29 @@ cd "$DSH_HOME/profiles/web"   # 或 profiles/desktop
 pnpm install
 ```
 
-成功标志：出现 `profiles/<web|desktop>/node_modules/dsh-purge/package.json`。找不到 `pnpm` 就用官方 `dsh` 自带的 Node / pnpm；报 `Could not resolve` 就检查 `file:` 路径；JSON 解析失败就修逗号或还原备份。
+成功标志：出现 `profiles/<web|desktop>/node_modules/tianshu-pozhen/package.json`。找不到 `pnpm` 就用官方 `dsh` 自带的 Node / pnpm；报 `Could not resolve` 就检查 `file:` 路径；JSON 解析失败就修逗号或还原备份。
 
-**5. 完全退出该宿主，再启动，再点「应用」** —— 即第 3 步和第 4 步。按钮会出现在会话标题旁，只在这个宿主点「应用」（或 `/purge apply`）。没出现多半是改错了另一份 `.dsh`，回到第 1 步核对。
+**5. 完全退出该宿主，再启动，再点「应用」** —— 即第 3 步和第 4 步。按钮会出现在会话标题旁，只在这个宿主点「应用」（或 `/pozhen apply`）。没出现多半是改错了另一份 `.dsh`，回到第 1 步核对。
 
 </details>
 
-**卸载。** 会话标题旁的 **dsh-purge** →「清洗」→「卸载」。弹窗确认：会先还原已应用的补丁，还原回原版 Harness，再重启当前宿主。停用或卸载时会把「智能体预设」里指向红队模式的默认值改回 `standard`，避免宿主因找不到 `redteam` 而无法新建会话。
+**卸载。** 会话标题旁的 **tianshu-pozhen** →「清洗」→「卸载」。弹窗确认：会先还原已应用的补丁，还原回原版 Harness，再重启当前宿主。停用或卸载时会把「智能体预设」里指向红队模式的默认值改回 `standard`，避免宿主因找不到 `redteam` 而无法新建会话。
 
 <details>
 <summary><strong>卸载命令与配置</strong></summary>
 
 ```sh
 # 也可以用命令行 / 聊天
-dsh-purge --uninstall
-# /purge uninstall
+tianshu-pozhen --uninstall
+# /pozhen uninstall
 ```
 
 插件配置在 `cordis.patch.yml`（`postPrompt` 默认为空）：
 
 ```yaml
 - insert:
-    - id: dsh-purge
-      name: 'dsh-purge'
+    - id: tianshu-pozhen
+      name: 'tianshu-pozhen'
       config:
         enabled: true
         autoApplyOnStart: true
@@ -379,7 +379,7 @@ dsh-purge --uninstall
 
 ## 界面预览
 
-会话标题旁有 **dsh-purge**。点开是右侧栏，两页：**清洗** 和 **演练台**。白 / 墨可切换。补丁按组展开，进度只计真正已应用的项。规则集在上方列表启用或删除，下方编辑正文。
+会话标题旁有 **tianshu-pozhen**。点开是右侧栏，两页：**清洗** 和 **演练台**。白 / 墨可切换。补丁按组展开，进度只计真正已应用的项。规则集在上方列表启用或删除，下方编辑正文。
 
 第一次进演练台要先读声明、等倒计时、滚到文末并勾选三项。清洗不需要这一步。演练台只用于你有权管理的本机、离线靶标，或已经书面授权的演练环境。
 
@@ -410,7 +410,7 @@ dsh-purge --uninstall
 
 | 区域        | 说明                                                                                                         |
 | --------- | ---------------------------------------------------------------------------------------------------------- |
-| dsh-purge | 会话标题旁的按钮，打开或收起右侧栏                                                                                          |
+| tianshu-pozhen | 会话标题旁的按钮，打开或收起右侧栏                                                                                          |
 | 清洗        | 补丁、提示词、规则集                                                                                                 |
 | 演练台       | 授权后的资产与环境页。开源版不下发技能库和知识库。未授权时按钮标「未授权」                                                                   |
 | 补丁        | 分组查看状态，应用、还原或卸载                                                                                            |
@@ -433,33 +433,33 @@ dsh-purge --uninstall
 
 ```sh
 # CLI
-dsh-purge --status
-dsh-purge --apply
-dsh-purge --revert
-dsh-purge --uninstall
-dsh-purge --edit
+tianshu-pozhen --status
+tianshu-pozhen --apply
+tianshu-pozhen --revert
+tianshu-pozhen --uninstall
+tianshu-pozhen --edit
 
 # 聊天
-/purge status | apply | revert | uninstall | edit | help
-/rules list | use <id> | create <id> | delete <id> | reset | help
-/rewind
+/pozhen status | apply | revert | uninstall | edit | help
+/pozhen-rules list | use <id> | create <id> | delete <id> | reset | help
+/pozhen-rewind
 
-# 其它插件已占 /rewind（或 /purge、/rules、/skills）时，这条命令会跳过或改挂
-# /purge-rewind 等备用名；主插件其余命令、工具、/dsh-purge/* 路由不受影响。
+# 其它插件已占 /pozhen-rewind（或 /pozhen、/pozhen-rules、/pozhen-skills）时，这条命令会跳过或改挂
+# /tianshu-rewind 等备用名；主插件其余命令、工具、/tianshu-pozhen/* 路由不受影响。
 
 # 模型工具
-purge_status   purge_apply   purge_revert
+pozhen_status   pozhen_apply   pozhen_revert
 ```
 
 设置页「应用」成功后会自动重启，以加载已改的包文件；也可手动点「重启」。补丁标题下有正式版和测试版。测试版跟 `beta` 分支。点「切换到正式版」会装回 master，并清掉钉选。正式版里选旧版本会固定在该版本，要回到最新再点「更新」。旧的测试标签不再列出。
 
-输入框旁的「回退一次」和「回退上一轮」都留在当前这条对话里，不另开分支。已发送的那句会回到输入框，这一轮已经发出的内容和已完成的任务会从当前对话撤掉，改字后**重新发送**即可。从 **1.1.61** 起，多轮对话后回退按**当前这一轮**定位，不会又退到第一条用户消息。聊天里 `/rewind` 同样可用。
+输入框旁的「回退一次」和「回退上一轮」都留在当前这条对话里，不另开分支。已发送的那句会回到输入框，这一轮已经发出的内容和已完成的任务会从当前对话撤掉，改字后**重新发送**即可。从 **1.1.61** 起，多轮对话后回退按**当前这一轮**定位，不会又退到第一条用户消息。聊天里 `/pozhen-rewind` 同样可用。
 
 **极简 / PTC 与标准不一致时**：同一任务在标准模式能跑、在极简或 PTC 被拦，通常是 preset 里 `run_code` 或 plan 拦截句没洗净，或内置 minimal 缺少 `agent-instructions`。请升到 **1.1.61+**，**完全退出宿主 → 清洗里应用 → 自动重启 → 新开一轮对话** 再试；只换 preset 不重应用，旧进程里的补丁不会更新。
 
 ### 响应速度
 
-DSH 会按顺序执行同一批中的 Bash 调用。旧版 dsh-purge 把默认前台等待从 60 秒提高到了 10 分钟，一条慢命令会让后续调用一起等待。补丁 #21 现在把带插件标记的旧值恢复为官方的 60 秒。无标记的等待时间和其他自定义值会保留；无标记的 10 分钟无法可靠地区分是插件旧值还是用户设置。
+DSH 会按顺序执行同一批中的 Bash 调用。旧版 tianshu-pozhen 把默认前台等待从 60 秒提高到了 10 分钟，一条慢命令会让后续调用一起等待。补丁 #21 现在把带插件标记的旧值恢复为官方的 60 秒。无标记的等待时间和其他自定义值会保留；无标记的 10 分钟无法可靠地区分是插件旧值还是用户设置。
 
 在 macOS/Linux 的 `dsh web` 中，如需更快返回工具结果，可在 `$DSH_HOME/profiles/web/cordis.patch.yml`（通常是 `~/.dsh/profiles/web/cordis.patch.yml`）添加下面的条目。已有相同 id 时修改原条目，不要重复添加。这个 profile 覆盖层在内置配置之后加载，后续应用插件会保留它。
 
@@ -509,7 +509,7 @@ node --check client.js
 flowchart TD
   A["启动或点应用"] --> B{"补丁已经生效?"}
   B -->|是| C["跳过"]
-  B -->|否| D["备份原件为 .dshpurge.bak"]
+  B -->|否| D["备份原件为 .tianshupozhen.bak"]
   D --> E["按补丁列表替换对应文件"]
   E --> F["覆盖 shim"]
   F --> G["注入插件加密默认（提示词框默认显示的那份）"]
@@ -526,7 +526,7 @@ flowchart TD
 
 
 
-每一轮的提示词注入与规则集决策。左边三个输入就是你在 dsh-purge 面板里控制的东西，虚线表示它们各自驱动哪一步判定：
+每一轮的提示词注入与规则集决策。左边三个输入就是你在 tianshu-pozhen 面板里控制的东西，虚线表示它们各自驱动哪一步判定：
 
 ```mermaid
 flowchart TD
@@ -561,8 +561,8 @@ flowchart TD
 
 ## 还原
 
-- 每个目标文件在应用前备份为 `<文件>.dshpurge.bak`。
-- 「还原」或 `/purge revert` 用备份覆盖回去并删除备份；没有备份时去掉 shim 里由本插件写入的行。
+- 每个目标文件在应用前备份为 `<文件>.tianshupozhen.bak`。
+- 「还原」或 `/pozhen revert` 用备份覆盖回去并删除备份；没有备份时去掉 shim 里由本插件写入的行。
 - `prompt-inject.md` 是用户文件，还原时保留。
 - 「卸载」会先还原（若已应用），再删除注入文件、规则库和插件本身。
 - 重复应用是幂等的。
