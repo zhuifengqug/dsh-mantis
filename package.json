@@ -20,6 +20,7 @@
   },
   "files": [
     "lib",
+    "!lib/*.bak",
     "!lib/default-prompt-inject.md",
     "bin",
     "docs",
