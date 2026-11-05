@@ -11,7 +11,7 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-tianshu-pozhen", factory: (
 		const inject = ["slots", "locale", "uiConversation"];
 		const NS = "settings.tianshu-pozhen";
 		const UI_PREFS_KEY = "dshp.ui.prefs.v1";
-		const UI_PREFS_DEFAULT = { showDock: true, showSidebar: true, showInline: false };
+		const UI_PREFS_DEFAULT = { showDock: false, showTopTab: true, showSidebar: true, showInline: false };
 		let uiPrefsCache = null;
 		const uiPrefsSubs = new Set();
 		function readUiPrefs() {
@@ -9391,8 +9391,9 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				},
 			},
 				h("h3", { style: { margin: "4px 0 2px", fontSize: 14, fontWeight: 700 } }, "界面显示"),
-				row("showDock", "顶栏（悬浮窗）", "右上角可拖动、可缩放的破阵面板"),
+				row("showTopTab", "顶栏页签", "对话 / 轨迹 / 采风 那一条里的「破阵」页签"),
 				row("showSidebar", "侧栏入口", "左侧栏里的破阵图标"),
+				row("showDock", "悬浮窗", "右上角可拖动、可缩放的破阵面板"),
 				row("showInline", "对话栏入口", "对话页与标签行上的破阵快捷入口"),
 			);
 		}
@@ -9430,6 +9431,13 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			);
 		}
 
+		function PozhenConversationPanel() {
+			return h("div", {
+				className: "dshp-page", "data-pozhen-page": "conversation",
+				style: { minHeight: "100%", overflow: "auto", padding: "12px 20px" },
+			}, h(PozhenTabsPanel));
+		}
+
 		function PozhenMainPanel() {
 			const t = useT();
 			return h("div", {
@@ -9464,23 +9472,38 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 					try { console.warn("[tianshu-pozhen] slot " + slotName + " skipped:", e); } catch { /* ignore */ }
 				}
 			};
-			let sidebarDispose = null;
-			const syncSidebarEntry = () => {
-				const want = !!readUiPrefs().showSidebar;
-				if (want && !sidebarDispose) {
-					trySlot("sidebar.panellist", () => {
-						const d = ctx.slots.register({
-							name: "sidebar.panellist", id: "tianshu-pozhen", order: 110, label: "破阵",
-						}, PozhenSidebarEntry);
-						sidebarDispose = typeof d === "function" ? d : () => {};
-					});
-				} else if (!want && sidebarDispose) {
-					try { sidebarDispose(); } catch { /* ignore */ }
-					sidebarDispose = null;
+			const slotMounters = {
+				"sidebar.panellist": () => ctx.slots.register({ name: "sidebar.panellist", id: "tianshu-pozhen", order: 110, label: "破阵" }, PozhenSidebarEntry),
+				"conversation.view": () => ctx.slots.register({ name: "conversation.view", id: "tianshu-pozhen", order: 30, scope: "session", label: "破阵" }, PozhenConversationPanel),
+			};
+			const slotWant = {
+				"sidebar.panellist": () => !!readUiPrefs().showSidebar,
+				"conversation.view": () => !!readUiPrefs().showTopTab,
+			};
+			const slotState = { ready: {}, dispose: {} };
+			const mountSlot = (name) => {
+				if (!slotState.ready[name] || slotState.dispose[name]) return;
+				try { slotState.dispose[name] = slotMounters[name]() || null; } catch { slotState.dispose[name] = null; }
+			};
+			const unmountSlot = (name) => {
+				const d = slotState.dispose[name];
+				slotState.dispose[name] = null;
+				try { if (d) d(); } catch { /* ignore */ }
+			};
+			const syncOptionalSlots = () => {
+				for (const name of Object.keys(slotMounters)) {
+					if (slotWant[name]()) mountSlot(name); else unmountSlot(name);
 				}
 			};
-			syncSidebarEntry();
-			uiPrefsSubs.add(syncSidebarEntry);
+			for (const name of Object.keys(slotMounters)) {
+				trySlot(name, () => {
+					slotState.ready[name] = true;
+					if (slotWant[name]()) mountSlot(name);
+					return () => { slotState.ready[name] = false; unmountSlot(name); };
+				});
+			}
+			syncOptionalSlots();
+			uiPrefsSubs.add(syncOptionalSlots);
 			trySlot("main", () => ctx.slots.register({
 				name: "main", key: "tianshu-pozhen", label: "破阵",
 			}, PozhenMainPanel));
@@ -9493,9 +9516,8 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				order: 50,
 			}, () => h(react.Fragment, null, h(WelcomeNotice), h(UiGate, { flag: "showInline" }, h(PurgeLauncher)), h(UiGate, { flag: "showDock" }, h(PurgeDock)), h(UiGate, { flag: "showInline" }, h(HeroNewSessionMount)), h(UiGate, { flag: "showInline" }, h(TabRowPurgeMount)), h(EnvAdaptSendGate), h(RewindDockMount))));
 			ctx.effect(() => () => {
-				uiPrefsSubs.delete(syncSidebarEntry);
-				try { if (sidebarDispose) sidebarDispose(); } catch { /* ignore */ }
-				sidebarDispose = null;
+				uiPrefsSubs.delete(syncOptionalSlots);
+				for (const name of Object.keys(slotMounters)) unmountSlot(name);
 			}, "tianshu-pozhen: ui prefs");
 			try {
 				if (typeof ctx.inject === "function") {
