@@ -1,4 +1,4 @@
-window.__ModuleLoader__.load({ id: "tianshu-pozhen", factory: (require) => {
+window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-tianshu-pozhen", factory: (require) => {
 
 		var module = { exports: {} };
 		var exports = module.exports;
@@ -10,6 +10,42 @@ window.__ModuleLoader__.load({ id: "tianshu-pozhen", factory: (require) => {
 		const name = "tianshu-pozhen";
 		const inject = ["slots", "locale", "uiConversation"];
 		const NS = "settings.tianshu-pozhen";
+		const UI_PREFS_KEY = "dshp.ui.prefs.v1";
+		const UI_PREFS_DEFAULT = { showDock: true, showSidebar: true, showInline: false };
+		let uiPrefsCache = null;
+		const uiPrefsSubs = new Set();
+		function readUiPrefs() {
+			if (uiPrefsCache) return uiPrefsCache;
+			let next = { ...UI_PREFS_DEFAULT };
+			try {
+				const raw = window.localStorage.getItem(UI_PREFS_KEY);
+				if (raw) next = { ...next, ...JSON.parse(raw) };
+			} catch { /* ignore */ }
+			uiPrefsCache = next;
+			return next;
+		}
+		function writeUiPrefs(patch) {
+			uiPrefsCache = { ...readUiPrefs(), ...patch };
+			try { window.localStorage.setItem(UI_PREFS_KEY, JSON.stringify(uiPrefsCache)); } catch { /* ignore */ }
+			for (const fn of Array.from(uiPrefsSubs)) { try { fn(); } catch { /* ignore */ } }
+		}
+		function useUiPrefs() {
+			const [, bump] = useState(0);
+			useEffect(() => {
+				const fn = () => bump((n) => n + 1);
+				uiPrefsSubs.add(fn);
+				return () => { uiPrefsSubs.delete(fn); };
+			}, []);
+			return readUiPrefs();
+		}
+		const PANEL_CSS = `
+.dshp-page{width:100%;max-width:none;box-sizing:border-box}
+.dshp-page .dshp-root{max-width:none;width:100%}
+.dshp-panel{display:flex;flex-direction:column;height:100%;min-height:0}
+.dshp-panel-tabs{display:flex;gap:8px;padding:0 0 10px;flex:none;border-bottom:1px solid color-mix(in srgb,var(--dsw-alias-border-l1,#888) 45%,transparent)}
+.dshp-panel-body{flex:1;min-height:0;overflow:auto;padding-top:12px}
+`;
+
 		let translate = (key) => key;
 		function useT() {
 			return translate;
@@ -129,9 +165,9 @@ window.__ModuleLoader__.load({ id: "tianshu-pozhen", factory: (require) => {
 			nav: "规则设定",
 			"dock.clean": "清洗",
 			"dock.drill": "演练台",
-			"dock.toggle": "tianshu-pozhen",
-			"dock.newSession": "tianshu-pozhen",
-			"dock.inSession": "tianshu-pozhen",
+			"dock.toggle": "破阵",
+			"dock.newSession": "破阵",
+			"dock.inSession": "破阵",
 			"dock.redteam": "红队模式",
 			"dock.full": "全面浏览",
 			"dock.close": "收起",
@@ -490,9 +526,9 @@ window.__ModuleLoader__.load({ id: "tianshu-pozhen", factory: (require) => {
 			nav: "Rules",
 			"dock.clean": "Clean",
 			"dock.drill": "Drill",
-			"dock.toggle": "tianshu-pozhen",
-			"dock.newSession": "tianshu-pozhen",
-			"dock.inSession": "tianshu-pozhen",
+			"dock.toggle": "破阵",
+			"dock.newSession": "破阵",
+			"dock.inSession": "破阵",
 			"dock.redteam": "Red team",
 			"dock.full": "Full view",
 			"dock.close": "Collapse",
@@ -3054,6 +3090,8 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 			translate = t;
 			return h("div", { className: "dshp-root", "data-theme": theme },
 				h("style", null, PURGE_CSS),
+				h("style", null, PANEL_CSS),
+				h(UiPrefsSection, null),
 				h(PurgifySection, null),
 				h(RulesSection, null),
 			);
@@ -8864,7 +8902,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				},
 			},
 				h("div", { className: "dshp-dock-head", onMouseDown: startDrag, title: "Drag to move the panel" },
-					h("b", null, "tianshu-pozhen"),
+					h("b", null, "破阵"),
 					h("span", { style: { flex: 1 } }),
 					st.tab === "drill" && readDrillAuth()
 						? h("button", { type: "button", onClick: () => requestDrill("full") }, t("dock.full"))
@@ -9314,6 +9352,97 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			}, node.data.text));
 		}
 
+		/* —— 侧栏入口 / 主区整页 / 设置页一页 —— */
+		function PozhenSidebarEntry() {
+			return h("span", {
+				title: "破阵", "aria-label": "破阵", role: "img", "data-pozhen-icon": "",
+			}, h("svg", {
+				viewBox: "0 0 16 16", width: 16, height: 16, fill: "none",
+				stroke: "currentColor", strokeWidth: 1.5, "strokeLinecap": "round",
+				"aria-hidden": "true",
+			},
+				h("circle", { cx: 4.6, cy: 4.6, r: 1.05, fill: "currentColor", stroke: "none" }),
+				h("circle", { cx: 11.4, cy: 4.6, r: 1.05, fill: "currentColor", stroke: "none" }),
+				h("circle", { cx: 4.6, cy: 11.4, r: 1.05, fill: "currentColor", stroke: "none" }),
+				h("circle", { cx: 11.4, cy: 11.4, r: 1.05, fill: "currentColor", stroke: "none" }),
+				h("path", { d: "M3.1 12.9 12.9 3.1" })
+			));
+		}
+
+		function UiPrefsSection() {
+			const prefs = useUiPrefs();
+			const row = (key, label, desc) => h("label", {
+				style: { display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 2px", cursor: "pointer" },
+			},
+				h("input", {
+					type: "checkbox", checked: !!prefs[key],
+					onChange: (e) => writeUiPrefs({ [key]: !!e.target.checked }),
+					style: { marginTop: 3, accentColor: "var(--dsw-alias-brand-primary, #6dbf8c)" },
+				}),
+				h("span", { style: { display: "flex", flexDirection: "column", gap: 2 } },
+					h("span", { style: { fontWeight: 600 } }, label),
+					h("span", { style: { fontSize: 12, opacity: 0.72 } }, desc),
+				),
+			);
+			return h("section", {
+				style: {
+					border: "1px solid var(--dsw-alias-border-l1, rgba(127,127,127,.28))",
+					borderRadius: 12, padding: "10px 16px 12px", display: "flex", flexDirection: "column",
+				},
+			},
+				h("h3", { style: { margin: "4px 0 2px", fontSize: 14, fontWeight: 700 } }, "界面显示"),
+				row("showDock", "顶栏（悬浮窗）", "右上角可拖动、可缩放的破阵面板"),
+				row("showSidebar", "侧栏入口", "左侧栏里的破阵图标"),
+				row("showInline", "对话栏入口", "对话页与标签行上的破阵快捷入口"),
+			);
+		}
+
+		function UiGate(props) {
+			const prefs = useUiPrefs();
+			return prefs[props.flag] ? props.children : null;
+		}
+
+		function PozhenTabsPanel() {
+			const t = useT();
+			const [tab, setTab] = useState("clean");
+			const drillOk = !!(readDrillAuth() && __tianshuPozhenDrill && __tianshuPozhenDrill.Panel);
+			return h("div", { className: "dshp-panel" },
+				h("div", { className: "dshp-panel-tabs", role: "tablist" },
+					h("button", {
+						type: "button", role: "tab",
+						className: "dshp-dock-tab" + (tab === "clean" ? " on" : ""),
+						"aria-selected": tab === "clean" ? "true" : "false",
+						onClick: () => setTab("clean"),
+					}, t("dock.clean")),
+					h("button", {
+						type: "button", role: "tab",
+						className: "dshp-dock-tab" + (tab === "drill" ? " on" : ""),
+						"aria-selected": tab === "drill" ? "true" : "false",
+						onClick: () => setTab("drill"),
+					}, t("dock.drill") + (drillOk ? "" : " · " + t("dock.unauthorized"))),
+				),
+				h("div", { className: "dshp-panel-body" },
+					tab === "clean"
+						? h(SettingsRoot, { t })
+						: (drillOk
+							? h(__tianshuPozhenDrill.Panel, { embedded: true })
+							: h("div", { style: { padding: 16, color: "var(--dsw-alias-label-secondary)" } }, t("dock.unauthorized")))),
+			);
+		}
+
+		function PozhenMainPanel() {
+			const t = useT();
+			return h("div", {
+				className: "dshp-page", "data-pozhen-page": "main",
+				style: { height: "100%", minHeight: 0, overflow: "auto" },
+			}, h(PozhenTabsPanel));
+		}
+
+		function PozhenSettingsSection() {
+			const t = useT();
+			return h(SettingsRoot, { t });
+		}
+
 		function apply(ctx) {
 			if (ctx.uiConversation && ctx.uiConversation.events && typeof ctx.uiConversation.events.register === "function") {
 				ctx.uiConversation.events.register(pozhenCommandInputDefinition);
@@ -9324,11 +9453,50 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "tianshu-pozhen: dictionaries");
 			const t = ctx.locale.bind(NS);
 			translate = t;
+			const trySlot = (slotName, fn) => {
+				try {
+					if (!ctx.slots || typeof ctx.slots.inject !== "function") {
+						console.warn("[tianshu-pozhen] no slot service, skip " + slotName);
+						return;
+					}
+					ctx.slots.inject(slotName, fn);
+				} catch (e) {
+					try { console.warn("[tianshu-pozhen] slot " + slotName + " skipped:", e); } catch { /* ignore */ }
+				}
+			};
+			let sidebarDispose = null;
+			const syncSidebarEntry = () => {
+				const want = !!readUiPrefs().showSidebar;
+				if (want && !sidebarDispose) {
+					trySlot("sidebar.panellist", () => {
+						const d = ctx.slots.register({
+							name: "sidebar.panellist", id: "tianshu-pozhen", order: 110, label: "破阵",
+						}, PozhenSidebarEntry);
+						sidebarDispose = typeof d === "function" ? d : () => {};
+					});
+				} else if (!want && sidebarDispose) {
+					try { sidebarDispose(); } catch { /* ignore */ }
+					sidebarDispose = null;
+				}
+			};
+			syncSidebarEntry();
+			uiPrefsSubs.add(syncSidebarEntry);
+			trySlot("main", () => ctx.slots.register({
+				name: "main", key: "tianshu-pozhen", label: "破阵",
+			}, PozhenMainPanel));
+			trySlot("settings.section", () => ctx.slots.register({
+				name: "settings.section", id: "tianshu-pozhen", order: 70, label: "破阵",
+			}, PozhenSettingsSection));
 			ctx.slots.inject("shell.overlay", () => ctx.slots.register({
 				name: "shell.overlay",
 				id: "tianshu-pozhen-dock",
 				order: 50,
-			}, () => h(react.Fragment, null, h(WelcomeNotice), h(PurgeLauncher), h(PurgeDock), h(HeroNewSessionMount), h(TabRowPurgeMount), h(EnvAdaptSendGate), h(RewindDockMount))));
+			}, () => h(react.Fragment, null, h(WelcomeNotice), h(UiGate, { flag: "showInline" }, h(PurgeLauncher)), h(UiGate, { flag: "showDock" }, h(PurgeDock)), h(UiGate, { flag: "showInline" }, h(HeroNewSessionMount)), h(UiGate, { flag: "showInline" }, h(TabRowPurgeMount)), h(EnvAdaptSendGate), h(RewindDockMount))));
+			ctx.effect(() => () => {
+				uiPrefsSubs.delete(syncSidebarEntry);
+				try { if (sidebarDispose) sidebarDispose(); } catch { /* ignore */ }
+				sidebarDispose = null;
+			}, "tianshu-pozhen: ui prefs");
 			try {
 				if (typeof ctx.inject === "function") {
 					ctx.inject(["sessions", "uiWorkspace", "workspaces", "conversation"], (host) => installRewindUi(host));
