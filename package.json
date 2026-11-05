@@ -1,6 +1,6 @@
 {
   "name": "@zhuifengqug/dsh-tianshu-pozhen",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "天枢 · 破阵：DeepSeek Harness 本机红队评测与宿主清洗插件（本地自建版）。基于 YuJunZhiXue/dsh-purge 1.1.90 全树，去掉区域门禁，吸收 dsh-purge-community 1.6.69 的独有能力。Jailbreak + host patch suite for local lab use.",
   "type": "module",
   "main": "lib/index.js",

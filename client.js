@@ -9406,6 +9406,17 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			const t = useT();
 			const [tab, setTab] = useState("clean");
 			const drillOk = !!(readDrillAuth() && __tianshuPozhenDrill && __tianshuPozhenDrill.Panel);
+			useEffect(() => {
+				if (!__tianshuPozhenDrill || !__tianshuPozhenDrill.CSS) return undefined;
+				const sel = 'style[data-tianshu-pozhen-drill="1"]';
+				if (!document.querySelector(sel)) {
+					const tag = document.createElement("style");
+					tag.setAttribute("data-tianshu-pozhen-drill", "1");
+					tag.textContent = __tianshuPozhenDrill.CSS;
+					document.head.append(tag);
+				}
+				return undefined;
+			}, []);
 			return h("div", { className: "dshp-panel" },
 				h("div", { className: "dshp-panel-tabs", role: "tablist" },
 					h("button", {
