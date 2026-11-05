@@ -8,17 +8,21 @@
 | --- | --- |
 | 补丁总数 | 88 |
 | applied | 70 |
-| drifted | 1 |
-| skipped | 1 |
+| skipped | 2 |
 | na | 16 |
+| drifted | 0 |
+| pending | 0 |
+| unmatched | 0 |
+| missing_file | 0 |
 
 分层：提示词 27 / 代码 50 / 工具 8 / 0.1.5 兼容 1 / 0.2.0 兼容 2
 
 ## 结论
 
-- 无「报成功但一字节没改」的静默失败。`na` 全部是本机 rc.5 删掉/改名的目标文件，补丁逻辑本身没问题。
-- 建议停用两条：**76 PRESET_UNRESTRICTED_IDENTITY_STRIP**（drifted，本机没有 preset-unrestricted）、**80 MINIMAL_OFFICIAL_TOOLSET**（skipped，官方极简工具表已是原样）。
-- 其余 70 条 applied 的补丁与 rc.5 锚点吻合，保留。
+- **无 drifted / pending / unmatched / missing_file**：88 条全部有确定归宿。
+- applied 70 条：锚点与 rc.5 实际文件吻合，已生效。
+- skipped 2 条：**#76 PRESET_UNRESTRICTED_IDENTITY_STRIP**（本机无 preset-unrestricted，无活可干）、**#80 MINIMAL_OFFICIAL_TOOLSET**（官方极简工具表已是原样）。两条都是 optional，不参与硬判定。
+- na 16 条：28、30、31、45、46、47、49、57、64、65、82、83、84、92、93、95 —— rc.5 本机没有对应目标文件（梁神插件 / hooks 系列 / Anthropic OAuth / 桌面壳旧布局 / header 上限），补丁逻辑没问题。
 
 ## 逐条清单
 
@@ -29,7 +33,7 @@
 | 3 | 提示词 | `SCOPE_INTRO` | `agent-instructions` | 作用域不压过 system / scope does not override system | applied | 已生效，保留 |
 | 4 | 提示词 | `SYSTEM_PROMPT_PERSONA` | `agent-preset,web-app,headless,preset-acp-app,preset-sdk-app` | persona：去掉官方默认身份，不另写人设 / strip official identity only | applied | 已生效，保留 |
 | 43 | 提示词 | `WEB_PRESET_IDENTITY_STRIP` | `preset-standard,preset-ptc,preset-cordis,preset-minimal` | Web 四个内置预设只去掉身份句 / strip web preset identity only | applied | 已生效，保留 |
-| 76 | 提示词 | `PRESET_UNRESTRICTED_IDENTITY_STRIP` | `preset-unrestricted` | 用户自造 unrestricted 预设只去掉身份句（软补丁）/ soft strip for a user-made unrestricted preset | drifted | 目标文件不存在（本机无 preset-unrestricted），建议停用 |
+| 76 | 提示词 | `PRESET_UNRESTRICTED_IDENTITY_STRIP` | `preset-unrestricted` | 用户自造 unrestricted 预设只去掉身份句（软补丁）/ soft strip for a user-made unrestricted preset | skipped | 无需处理（原文不在或官方已内建同等行为） |
 | 70 | 提示词 | `PRESET_SHELL_NETWORK` | `preset-minimal,preset-sdk-minimal` | 极简模式终端不再写没有网络 / minimal shell drops no-network ban | applied | 已生效，保留 |
 | 73 | 提示词 | `PRESET_BASH_MIRROR_LINE` | `preset-minimal,preset-sdk-minimal` | 极简 bash 去掉误留的镜像说明 / drop the extra mirror sentence | applied | 已生效，保留 |
 | 71 | 提示词 | `LIANGSHEN_IDENTITY_LINE` | `preset-liangshen,preset-liangshen-pkg` | 梁神去掉官方身份句，留下本模式的工作纪律 / strip liangshen stock identity line | applied | 已生效，保留 |
@@ -54,7 +58,7 @@
 | 24 | 代码 | `PRESET_FETCH_ENABLED` | `preset-unrestricted,preset-standard,preset-cordis,preset-ptc,preset-liangshen,preset-liangshen-pkg` | preset tool-web fetch 打开 / preset fetch enabled | applied | 已生效，保留 |
 | 25 | 提示词 | `HARNESS_IDENTITY_STRIP` | `system-prompt` | 去掉官方默认身份，保留官方功能提示词 / strip default identity only | applied | 已生效，保留 |
 | 26 | 提示词 | `MINIMAL_PERSONA_PURGE` | `preset-minimal,preset-sdk-minimal` | 内置 minimal：去掉默认身份并打开 complete，让 inject 能进 / strip identity, open inject | applied | 已生效，保留 |
-| 80 | 工具 | `MINIMAL_OFFICIAL_TOOLSET` | `preset-minimal,preset-sdk-minimal` | 撤掉曾追加的 fs/web，恢复官方极简工具表 / restore official minimal tool plugins | skipped | 官方已内建同等行为，重复打无意义，建议停用 |
+| 80 | 工具 | `MINIMAL_OFFICIAL_TOOLSET` | `preset-minimal,preset-sdk-minimal` | 撤掉曾追加的 fs/web，恢复官方极简工具表 / restore official minimal tool plugins | skipped | 无需处理（原文不在或官方已内建同等行为） |
 | 28 | 提示词 | `LIANGSHEN_PHASE1_KEEP_INJECT` | `liangshen-tool-bootstrap` | 插件 dsh-liangshen（梁神）：phase-1 保留注入段（可选） / @linxin666/dsh-liangshen | na | 本机不适用（rc.5 无该文件），无需处理 |
 | 32 | 提示词 | `WEB_SURFACE_IDENTITY_NEUTRAL` | `web-app-lib,harness-dev-context` | Web 面：去掉 DeepSeek Harness 自称 / neutralize web GUI identity branding | applied | 已生效，保留 |
 | 29 | 工具 | `TOOL_WEB_UNTRUSTED_NEUTRAL` | `tool-web,tool-web-nested` | dsh-tool-web：外部内容 untrusted 拦截→可执行数据 / neutralize web untrusted framing | applied | 已生效，保留 |
