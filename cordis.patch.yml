@@ -1,34 +1,34 @@
-# tianshu-pozhen bundle patch
+# mantis bundle patch
 #
 # 清洗 + 演练台都在本插件内（lib/redteam、presets/redteam、skills/redteam）。
-# 只装 tianshu-pozhen，不外接、不 link 其它红队包。
+# 只装 mantis，不外接、不 link 其它红队包。
 
 # 本体 insert 放在 bundle 层：dsh plugin add 会把本包写进 dsh.profile.bundles，
 # bundle 的 patch 文件随之加载，这里就是唯一入口。
 # 不要再往用户层 profile/cordis.patch.yml 补第二份 —— 同一个 id 入队两次会 already queued
 # （#152 / #154 / #159）。
 - insert:
-    - id: tianshu-pozhen
-      name: '@zhuifengqug/dsh-tianshu-pozhen'
+    - id: mantis
+      name: '@zhuifengqug/dsh-mantis'
       inject: [systemPrompt, tools]
 
     # 演练台：预设 + 技能落地（本插件 lib/redteam）
-    - id: tianshu-pozhen-redteam
-      name: '@zhuifengqug/dsh-tianshu-pozhen/redteam'
+    - id: mantis-redteam
+      name: '@zhuifengqug/dsh-mantis/redteam'
 
     # 演练台事实库（SQLite），数据在 $DSH_HOME/redteam
-    - id: tianshu-pozhen-redteam-store
-      name: '@zhuifengqug/dsh-tianshu-pozhen/redteam/store'
+    - id: mantis-redteam-store
+      name: '@zhuifengqug/dsh-mantis/redteam/store'
       config:
         root: !!js dshHomePath('redteam')
 
     # 演练台 HTTP 桥 POST /redteam/api
-    - id: tianshu-pozhen-redteam-ui
-      name: '@zhuifengqug/dsh-tianshu-pozhen/redteam/ui'
+    - id: mantis-redteam-ui
+      name: '@zhuifengqug/dsh-mantis/redteam/ui'
 
 # 本体配置：insert 之后再覆盖，顺序不能颠倒（applyEntryPatches 先 insert 才 buildMap）
-- id: tianshu-pozhen
-  name: '@zhuifengqug/dsh-tianshu-pozhen'
+- id: mantis
+  name: '@zhuifengqug/dsh-mantis'
   config:
     enabled: true
     autoApplyOnStart: false

@@ -8,7 +8,7 @@ const args = process.argv.slice(2);
 
 function printStatus(state) {
   const out = [];
-  out.push("tianshu-pozhen 状态 / Status");
+  out.push("mantis 状态 / Status");
   out.push("  宿主 / surface " + (state.surface || "web"));
   out.push("  DSH_HOME      " + state.dsh_home);
   if (state.desktop_install) out.push("  桌面安装       " + state.desktop_install);
@@ -45,13 +45,13 @@ async function main() {
   const mode = args.find((a) => ["--apply", "--revert", "--uninstall", "--status", "--edit", "--help"].includes(a));
 
   if (mode === "--help" || args.includes("-h")) {
-    console.log(`tianshu-pozhen 用法:
-  tianshu-pozhen --status     显示状态
-  tianshu-pozhen --apply      应用全部清洗（提示词+代码+shim+override）
-  tianshu-pozhen --revert     回滚还原
-  tianshu-pozhen --uninstall  卸载插件（已应用则先还原）
-  tianshu-pozhen --edit       编辑注入文件 prompt-inject.md
-  tianshu-pozhen --help       帮助`);
+    console.log(`mantis 用法:
+  mantis --status     显示状态
+  mantis --apply      应用全部清洗（提示词+代码+shim+override）
+  mantis --revert     回滚还原
+  mantis --uninstall  卸载插件（已应用则先还原）
+  mantis --edit       编辑注入文件 prompt-inject.md
+  mantis --help       帮助`);
     return;
   }
 
@@ -166,6 +166,6 @@ async function main() {
 }
 
 main().catch((e) => {
-  console.error("[tianshu-pozhen] error:", e);
+  console.error("[mantis] error:", e);
   process.exit(1);
 });

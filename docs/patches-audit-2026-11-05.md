@@ -1,4 +1,4 @@
-# 破阵补丁体检报告（2026-11-05）
+# 拒斧补丁体检报告（2026-11-05）
 
 宿主：DeepSeek Harness `0.2.1-rc.5`（`D:\deepseek HARNESS\resources\app\dsh\node_modules\@deepseek-ai`）
 
@@ -71,7 +71,7 @@
 | 37 | 提示词 | `SUBAGENT_SCOPE_LOCK_NEUTRAL` | `subagent,subagent-types` | 子代理权限锁→可继续 / neutralize subagent scope-lock prompt | applied | 已生效，保留 |
 | 38 | 代码 | `PERSONA_TEXT_PREFIX_ALIAS` | `persona` | dsh-persona：兼容 0.1.2 text 字段，否则梁神会话起不来 / accept legacy text as prefix | applied | 已生效，保留 |
 | 39 | 代码 | `SESSION_V0_PLUGIN_SUMMARY_ALIAS` | `session-format-v0` | v0 会话：mnemon summary 可挂在 instructions/recall 上 / allow plugin summary off notice | applied | 已生效，保留 |
-| 40 | 0.1.5 兼容 | `COMPLETE_PROMPT_KEEP_INJECT` | `system-prompt,system-prompt-nested` | complete 预设仍保留 tianshu-pozhen 注入 / keep inject after complete prompt | applied | 已生效，保留 |
+| 40 | 0.1.5 兼容 | `COMPLETE_PROMPT_KEEP_INJECT` | `system-prompt,system-prompt-nested` | complete 预设仍保留 mantis 注入 / keep inject after complete prompt | applied | 已生效，保留 |
 | 42 | 代码 | `SETTINGS_LEGACY_API` | `settings` | 设置服务补回 register/get，旧插件可继续用 / legacy settings API | applied | 已生效，保留 |
 | 45 | 代码 | `OFFICIAL_DESKTOP_UPDATE_HANDOFF` | `desktop-shell` | 官方桌面升级安装已下载的新版本，不再重新打开旧的解开目录 | na | 本机不适用（rc.5 无该文件），无需处理 |
 | 46 | 代码 | `OFFICIAL_DESKTOP_UPDATE_ASCII` | `desktop-shell` | 已接管的官方桌面更新改为 ASCII 脚本，中文 Windows 不再吞掉换行 | na | 本机不适用（rc.5 无该文件），无需处理 |
@@ -106,8 +106,8 @@
 | 63 | 提示词 | `OFFICIAL_PLAN_MODE_NEUTRAL` | `base,preset-ptc,preset-standard,preset-cordis` | 计划模式：操作者要求实施时不硬拦 / plan mode allows operator-directed execution | applied | 已生效，保留 |
 | 64 | 工具 | `HOOKS_STOP_STEER_NEUTRAL` | `hooks-claude-code,hooks-claude-code-nested,hooks-codex,hooks-codex-nested` | Stop hook 不再 steer 假用户话 / Stop hook no longer steers fake user text | na | 本机不适用（rc.5 无该文件），无需处理 |
 | 65 | 工具 | `HOOKS_PRESTEP_REJECT_NEUTRAL` | `hooks-claude-code,hooks-claude-code-nested,hooks-codex,hooks-codex-nested` | UserPromptSubmit deny 不再 reject 整轮 / pre-step hook deny no longer rejects turn | na | 本机不适用（rc.5 无该文件），无需处理 |
-| 78 | 代码 | `OVERLAY_RESTORE_FROM_BAK` | `app-boot` | 声明过的补丁文件不见时，从 .tianshupozhen.bak 拷回再加载 / restore a missing declared overlay from its bak | applied | 已生效，保留 |
-| 82 | 代码 | `DESKTOP_SHELL_PROFILE_FALLBACK` | `desktop-shell` | 主进程兜底 DSH_PROFILE=desktop：双击 exe 从 explorer 继承 env 常缺 DSH_PROFILE → host 'cannot determine the boot profile' → tianshu-pozhen 插件没 activate → inject 全断 | na | 本机不适用（rc.5 无该文件），无需处理 |
+| 78 | 代码 | `OVERLAY_RESTORE_FROM_BAK` | `app-boot` | 声明过的补丁文件不见时，从 .mantis.bak 拷回再加载 / restore a missing declared overlay from its bak | applied | 已生效，保留 |
+| 82 | 代码 | `DESKTOP_SHELL_PROFILE_FALLBACK` | `desktop-shell` | 主进程兜底 DSH_PROFILE=desktop：双击 exe 从 explorer 继承 env 常缺 DSH_PROFILE → host 'cannot determine the boot profile' → mantis 插件没 activate → inject 全断 | na | 本机不适用（rc.5 无该文件），无需处理 |
 | 85 | 代码 | `SESSION_PROMPT_ALWAYS_FOLLOWUP` | `api-session-controller` | session-controller 普通发送走 followup；插话 steer 仍打断当前步（#121） | applied | 已生效，保留 |
 | 86 | 代码 | `SESSION_QUEUE_STEER_INTERRUPT` | `api-session-controller,agent-loop` | 排队 followup/next-turn，插话 steer/next-step。Ctrl+Enter 不能改成 followup（#121） | applied | 已生效，保留 |
 | 87 | 代码 | `HUNG_PROMPT_LF_NEEDLE` | `agent-loop` | 空白宿主先挂全文，再用 LF 比对头尾，避免 CRLF 误判再糊一份 | applied | 已生效，保留 |

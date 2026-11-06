@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="tianshu-pozhen" width="720">
+  <img src="docs/banner.svg" alt="mantis" width="720">
 </p>
 
-<h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (tianshu-pozhen)</h1>
+<h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (mantis)</h1>
 
 <p align="center"><strong>Version 1.1.81</strong></p>
 
@@ -57,19 +57,19 @@ The author's personal channel: [t.me/LLM_PoJia](https://t.me/LLM_PoJia). Notes a
 
 ## What this is
 
-**tianshu-pozhen** is a cybersecurity red-team plugin for the official [DeepSeek Harness](https://www.deepseek.com/harness/) already installed on your machine. **1.1.81** targets **DSH 0.2.1-rc.2** (0.2.0 still works). **DSH 0.2.1-rc.3 and newer RCs are not supported.** Official **Web** (`dsh web`) and the official **desktop EXE** are both supported. Install and Apply them separately.
+**mantis** is a cybersecurity red-team plugin for the official [DeepSeek Harness](https://www.deepseek.com/harness/) already installed on your machine. **1.1.81** targets **DSH 0.2.1-rc.2** (0.2.0 still works). **DSH 0.2.1-rc.3 and newer RCs are not supported.** Official **Web** (`dsh web`) and the official **desktop EXE** are both supported. Install and Apply them separately.
 
 Harness does more than forward a prompt. It rewrites prompts, approval gates, sandbox policy, and session migration at runtime. Asking only “will the model answer” treats a host-layer block as a model refusal. This plugin separates those two layers on your own install, for controlled evaluation and for seeing which default policy is too tight.
 
 | You get | What it does |
 |---|---|
-| **tianshu-pozhen dock** | A button beside the session title opens the right dock. Two pages: Clean and Drill |
+| **mantis dock** | A button beside the session title opens the right dock. Two pages: Clean and Drill |
 | **Clean** | Grouped patch status, Apply / Restore / Uninstall, prompt editor, multiple rule sets |
 | **Drill** | Built into the stable release. After authorization: assets and the local environment. This build does not ship skills or the knowledge base. Local lab only |
 | **Host policy** | Default copy, permission policy, and tool limits. Official capabilities stay. No second invented identity |
 | **On start** | Checks and reapplies. After npm overwrites `node_modules`, you do not hand-edit files |
 
-No hardcoded drive letters. It looks at `$DSH_HOME`, `.dsh` next to the dsh launcher, then `~/.dsh`. It does not patch the Harness source tree. **Apply** on the **Clean** page of **tianshu-pozhen** is what writes the changes. Identity comes from the encrypted prompt shipped in the plugin, the text the prompt box shows by default. The host prompt file is not read.
+No hardcoded drive letters. It looks at `$DSH_HOME`, `.dsh` next to the dsh launcher, then `~/.dsh`. It does not patch the Harness source tree. **Apply** on the **Clean** page of **mantis** is what writes the changes. Identity comes from the encrypted prompt shipped in the plugin, the text the prompt box shows by default. The host prompt file is not read.
 
 It only touches the official `@deepseek-ai` packages and local config on the user's machine. It is not a public scanner and not an attack kit for third-party sites. The repo does not ship malware, unauthorized-exploit scripts, or payloads aimed at the public internet.
 
@@ -144,7 +144,7 @@ Unmatched patches stay pending or skipped; nothing is rewritten blindly.
 
 ## Install
 
-**Do not use the plugin marketplace.** One-click install on [dsh-plugin.org](https://dsh-plugin.org) or in Settings → Plugin Market fails with `already queued: tianshu-pozhen` and never runs a command. The name is not on the npm registry, so do not `pnpm add tianshu-pozhen`.
+**Do not use the plugin marketplace.** One-click install on [dsh-plugin.org](https://dsh-plugin.org) or in Settings → Plugin Market fails with `already queued: mantis` and never runs a command. The name is not on the npm registry, so do not `pnpm add mantis`.
 
 ### Quick start
 
@@ -159,9 +159,9 @@ dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-pur
 ```
 
 1. **Fully quit and reopen** the host you installed into. Web: stop `dsh web` and start it again. Desktop: quit the tray icon too, then open the exe.
-2. On that host, click **tianshu-pozhen** beside the session title → **Clean** → **Apply**. A successful Apply restarts the host once.
+2. On that host, click **mantis** beside the session title → **Clean** → **Apply**. A successful Apply restarts the host once.
 
-Done — verify with `/pozhen status` in chat. If pnpm asks about build scripts, or anything below does not appear, follow the step by step.
+Done — verify with `/mantis status` in chat. If pnpm asks about build scripts, or anything below does not appear, follow the step by step.
 
 ### Step by step
 
@@ -190,42 +190,42 @@ cd "$env:USERPROFILE\.dsh\profiles\web"   # desktop: profiles\desktop
 pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
-`pnpm add` and `dsh plugin add` fetch the package; `postinstall` writes `tianshu-pozhen` into `dsh.profile.bundles` and adds a body `insert` in the profile `cordis.patch.yml`. Without that insert the host never loads the plugin and no button appears.
+`pnpm add` and `dsh plugin add` fetch the package; `postinstall` writes `mantis` into `dsh.profile.bundles` and adds a body `insert` in the profile `cordis.patch.yml`. Without that insert the host never loads the plugin and no button appears.
 
-**Expected result:** `node_modules/tianshu-pozhen/package.json` exists, `"tianshu-pozhen"` is in that profile's `bundles`, and `cordis.patch.yml` has an `id: tianshu-pozhen` insert.
+**Expected result:** `node_modules/mantis/package.json` exists, `"mantis"` is in that profile's `bundles`, and `cordis.patch.yml` has an `id: mantis` insert.
 
 - pnpm 11/12 skips install scripts (`ERR_PNPM_IGNORED_BUILDS`) unless you allow the build:
 
 ```sh
-pnpm add --allow-build=tianshu-pozhen --allow-build=tianshu-pozhen@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+pnpm add --allow-build=mantis --allow-build=mantis@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 # Already installed, warning only — the full specifier is required (name-only leaves "set this to true or false"):
-pnpm approve-builds tianshu-pozhen@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+pnpm approve-builds mantis@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 # If bundles / insert are still missing:
-node node_modules/tianshu-pozhen/scripts/ensure-profile-bundle.mjs
+node node_modules/mantis/scripts/ensure-profile-bundle.mjs
 ```
 
 - If neither `dsh` nor pnpm is available, jump to [Manual install](#manual).
 - On the desktop client you can also click the button (`dsh://` deep link; it still downloads the same tarball).
 
 <p align="center">
-  <a href="dsh://plugin/install?id=tianshu-pozhen&name=tianshu-pozhen&version=1.1.81&repo=YuJunZhiXue%2Ftianshu-pozhen&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Ftianshu-pozhen%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>Install in desktop client</strong></a>
+  <a href="dsh://plugin/install?id=mantis&name=mantis&version=1.1.81&repo=YuJunZhiXue%2Fmantis&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Fmantis%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>Install in desktop client</strong></a>
 </p>
 
 **Step 3 — Restart the host.** Adding the plugin to a profile does **not** patch `@deepseek-ai` by itself. Fully quit and reopen the host you just installed into (Web: stop `dsh web` and start again; Desktop: quit the tray icon too, then open the exe).
 
-**Expected result:** **tianshu-pozhen** stands beside the session title. Missing? Jump to Step 5.
+**Expected result:** **mantis** stands beside the session title. Missing? Jump to Step 5.
 
-**Step 4 — Apply and verify.** On **that host**, click **tianshu-pozhen** beside the session title, open **Clean**, and click **Apply**. It is not on the host Settings page. A successful **Apply** restarts once; it does not restart if it did not finish. Web controls affect Web only; desktop controls affect the desktop app only. Do not Apply one host from the other.
+**Step 4 — Apply and verify.** On **that host**, click **mantis** beside the session title, open **Clean**, and click **Apply**. It is not on the host Settings page. A successful **Apply** restarts once; it does not restart if it did not finish. Web controls affect Web only; desktop controls affect the desktop app only. Do not Apply one host from the other.
 
-**Expected result:** `/pozhen status` in chat prints `DSH_HOME` and the patch list — the path should be the home you actually run. Optional packages that are not installed (liangshen) show as skipped and do not block Apply.
+**Expected result:** `/mantis status` in chat prints `DSH_HOME` and the patch list — the path should be the home you actually run. Optional packages that are not installed (liangshen) show as skipped and do not block Apply.
 
 **Step 5 — Troubleshooting.** Jump here only when a step above did not end with its expected result.
 
-- **No button beside the session title.** Run `dsh --dump-config` (or `dsh --profile desktop --dump-config`) and look for a body row `id: tianshu-pozhen` (not `tianshu-pozhen-redteam`). If it is absent, run `ensure-profile-bundle.mjs` (Step 2), then fully quit and reopen the host. After this version, a live red-team child entry also writes the missing insert on startup — quit and reopen once more. `entry "redteam-store" not found` at the top is leftover from an old red-team package and can be ignored.
-- **The market says `already queued: tianshu-pozhen`.** Stop clicking the market; use `dsh plugin add` or pnpm from Step 2. If the CLI also says it is already there, remove and re-add, then redo Step 3:
+- **No button beside the session title.** Run `dsh --dump-config` (or `dsh --profile desktop --dump-config`) and look for a body row `id: mantis` (not `mantis-redteam`). If it is absent, run `ensure-profile-bundle.mjs` (Step 2), then fully quit and reopen the host. After this version, a live red-team child entry also writes the missing insert on startup — quit and reopen once more. `entry "redteam-store" not found` at the top is leftover from an old red-team package and can be ignored.
+- **The market says `already queued: mantis`.** Stop clicking the market; use `dsh plugin add` or pnpm from Step 2. If the CLI also says it is already there, remove and re-add, then redo Step 3:
 
 ```sh
-dsh plugin --profile desktop remove tianshu-pozhen
+dsh plugin --profile desktop remove mantis
 dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
@@ -233,7 +233,7 @@ pnpm only:
 
 ```sh
 cd "$DSH_HOME/profiles/desktop"
-pnpm remove tianshu-pozhen
+pnpm remove mantis
 pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
 ```
 
@@ -248,7 +248,7 @@ Swap `desktop` for `web` on Web.
 
 <!-- AI-AGENT-START -->
 
-Install the DeepSeek Harness plugin `tianshu-pozhen` into the Web profile only. Do not scan the whole disk, do not read or edit other files, do not apply settings, and do not restart the app. Do not install into the desktop profile. Do not use the plugin marketplace. The name is not on the npm registry; do not `pnpm add tianshu-pozhen`.
+Install the DeepSeek Harness plugin `mantis` into the Web profile only. Do not scan the whole disk, do not read or edit other files, do not apply settings, and do not restart the app. Do not install into the desktop profile. Do not use the plugin marketplace. The name is not on the npm registry; do not `pnpm add mantis`.
 
 **Web (official `dsh web`)**
 
@@ -266,7 +266,7 @@ pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/mas
 
 If this directory is already a clone and `dsh` exists, use `dsh plugin --profile web add .`. If neither `dsh` nor pnpm is available, tell the user and stop.
 
-After the command finishes, tell the user to fully quit and restart `dsh web`, then open **tianshu-pozhen** beside the session title and **Apply** on **Clean**. Then stop.
+After the command finishes, tell the user to fully quit and restart `dsh web`, then open **mantis** beside the session title and **Apply** on **Clean**. Then stop.
 
 <!-- AI-AGENT-END -->
 
@@ -296,32 +296,32 @@ $cands += @("$env:APPDATA\DeepSeek Harness\dsh-home", "$env:LOCALAPPDATA\DeepSee
 $cands | Select-Object -Unique | Where-Object { $_ -and (Test-Path (Join-Path $_ "profiles")) }
 ```
 
-**2. Put the plugin at `$DSH_HOME/plugins/tianshu-pozhen`** (folder must be named `tianshu-pozhen`, with a `package.json` whose `"name"` is `tianshu-pozhen`).
+**2. Put the plugin at `$DSH_HOME/plugins/mantis`** (folder must be named `mantis`, with a `package.json` whose `"name"` is `mantis`).
 
 ```sh
-git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/tianshu-pozhen"
+git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/mantis"
 ```
 
-Without git: download [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz), extract, rename `tianshu-pozhen-master` → `tianshu-pozhen`, and place it under `plugins`. If you already have a clone, copy the whole tree — not a few `.js` files.
+Without git: download [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz), extract, rename `mantis-master` → `mantis`, and place it under `plugins`. If you already have a clone, copy the whole tree — not a few `.js` files.
 
 **3. Edit only that profile's `package.json` — back it up first.** Web → `$DSH_HOME/profiles/web/package.json`; desktop → `$DSH_HOME/profiles/desktop/package.json`. Add **only two things**, keeping every existing dependency and bundle:
 
-1. In `dependencies`, add `"tianshu-pozhen": "file:../../plugins/tianshu-pozhen"`
-2. At the **end** of `dsh.profile.bundles`, append `"tianshu-pozhen"` (skip if already there)
+1. In `dependencies`, add `"mantis": "file:../../plugins/mantis"`
+2. At the **end** of `dsh.profile.bundles`, append `"mantis"` (skip if already there)
 
 ```json
 {
   "name": "dsh-profile-web",
   "private": true,
   "dependencies": {
-    "tianshu-pozhen": "file:../../plugins/tianshu-pozhen"
+    "mantis": "file:../../plugins/mantis"
   },
   "dsh": {
     "profile": {
       "bundles": [
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
-        "tianshu-pozhen"
+        "mantis"
       ],
       "patchReload": "live"
     }
@@ -329,7 +329,7 @@ Without git: download [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/a
 }
 ```
 
-Keep JSON valid (comma before the new item, none after the last). Do not switch `file:../../plugins/tianshu-pozhen` to an absolute path, do not touch `patchReload` or other plugins, and do not list `"tianshu-pozhen"` twice. On desktop, if there is no `dsh-web-app` row, do not add one.
+Keep JSON valid (comma before the new item, none after the last). Do not switch `file:../../plugins/mantis` to an absolute path, do not touch `patchReload` or other plugins, and do not list `"mantis"` twice. On desktop, if there is no `dsh-web-app` row, do not add one.
 
 **4. Run `pnpm install` in that profile only** (`cd` into the profile dir, not the repo root or `$DSH_HOME`):
 
@@ -338,29 +338,29 @@ cd "$DSH_HOME/profiles/web"   # or profiles/desktop
 pnpm install
 ```
 
-Success: `profiles/<web|desktop>/node_modules/tianshu-pozhen/package.json` exists. If `pnpm` is missing, use the Node / pnpm shipped with official `dsh`; on `Could not resolve`, re-check the `file:` path; on a JSON error, fix commas or restore the backup.
+Success: `profiles/<web|desktop>/node_modules/mantis/package.json` exists. If `pnpm` is missing, use the Node / pnpm shipped with official `dsh`; on `Could not resolve`, re-check the `file:` path; on a JSON error, fix commas or restore the backup.
 
-**5. Fully quit that host, reopen it, then Apply** — Step 3 and Step 4 above. The card appears beside the session title; click **Apply** (or `/pozhen apply`) on that host only. If the card is missing, you likely edited the other `.dsh` — go back to step 1.
+**5. Fully quit that host, reopen it, then Apply** — Step 3 and Step 4 above. The card appears beside the session title; click **Apply** (or `/mantis apply`) on that host only. If the card is missing, you likely edited the other `.dsh` — go back to step 1.
 
 </details>
 
-**Uninstall.** **tianshu-pozhen** beside the session title → **Clean** → **Uninstall**. Confirm the dialog: it reverts any applied patches, restores the original Harness, and restarts the current host. Disable or uninstall also resets an agent-preset default that still points at `redteam` back to `standard`, so the host can create sessions after the preset is gone.
+**Uninstall.** **mantis** beside the session title → **Clean** → **Uninstall**. Confirm the dialog: it reverts any applied patches, restores the original Harness, and restarts the current host. Disable or uninstall also resets an agent-preset default that still points at `redteam` back to `standard`, so the host can create sessions after the preset is gone.
 
 <details>
 <summary><strong>Uninstall commands and config</strong></summary>
 
 ```sh
 # or from a terminal / chat
-tianshu-pozhen --uninstall
-# /pozhen uninstall
+mantis --uninstall
+# /mantis uninstall
 ```
 
 Plugin config lives in `cordis.patch.yml` (`postPrompt` is empty by default):
 
 ```yaml
 - insert:
-    - id: tianshu-pozhen
-      name: 'tianshu-pozhen'
+    - id: mantis
+      name: 'mantis'
       config:
         enabled: true
         autoApplyOnStart: true
@@ -377,7 +377,7 @@ Plugin config lives in `cordis.patch.yml` (`postPrompt` is empty by default):
 
 ## Preview
 
-**tianshu-pozhen** sits beside the session title. It opens a right-hand dock with two pages: **Clean** and **Drill**. Switch **Light / Ink**. Patches are grouped; the count only includes items that actually applied. Rule sets sit in a list above the editor, with Enable and Delete on each row.
+**mantis** sits beside the session title. It opens a right-hand dock with two pages: **Clean** and **Drill**. Switch **Light / Ink**. Patches are grouped; the count only includes items that actually applied. Rule sets sit in a list above the editor, with Enable and Delete on each row.
 
 The first time you open Drill you read the notice, wait out the countdown, scroll to the end, and check three boxes. Clean does not need that step. Drill is only for a host you manage, an offline target, or an exercise that already has written authorization.
 
@@ -403,7 +403,7 @@ The open-source build only allows localhost/private nets. The Clean page says so
 
 | Area | What it shows |
 |---|---|
-| tianshu-pozhen | button beside the session title; opens or collapses the dock |
+| mantis | button beside the session title; opens or collapses the dock |
 | Clean | patches, prompt, rule sets |
 | Drill | assets and environment after authorization. This build does not ship skills or the knowledge base. The tab says Unauthorized until then |
 | Patches | grouped status, Apply, Restore, or Uninstall |
@@ -424,32 +424,32 @@ Runtime files live under `$DSH_HOME`: `prompt-inject.md`, `rules/`, `redteam/`. 
 ## Usage
 
 ```sh
-tianshu-pozhen --status
-tianshu-pozhen --apply
-tianshu-pozhen --revert
-tianshu-pozhen --uninstall
-tianshu-pozhen --edit
+mantis --status
+mantis --apply
+mantis --revert
+mantis --uninstall
+mantis --edit
 
-/pozhen status | apply | revert | uninstall | edit | help
-/pozhen-rules list | use <id> | create <id> | delete <id> | reset | help
-/pozhen-rewind
+/mantis status | apply | revert | uninstall | edit | help
+/mantis-rules list | use <id> | create <id> | delete <id> | reset | help
+/mantis-rewind
 
-# If another plugin already owns /pozhen-rewind (or /pozhen, /pozhen-rules, /pozhen-skills), that
+# If another plugin already owns /mantis-rewind (or /mantis, /mantis-rules, /mantis-skills), that
 # name is skipped or remounted as /tianshu-rewind. Other commands, tools, and
-# /tianshu-pozhen/* routes keep working.
+# /mantis/* routes keep working.
 
-pozhen_status   pozhen_apply   pozhen_revert
+mantis_status   mantis_apply   mantis_revert
 ```
 
 After a successful Apply, the host restarts so patched packages load; you can also click **Restart** manually. Under the patch title are the stable release and the test release. The test release follows the `beta` branch. **Switch to stable** installs `master` and clears any pin. Picking an older stable version pins it; click **Update** to return to the latest. Old test tags are not listed.
 
-The composer **Undo once** and **Undo last round** stay in the current conversation and do not open a branch. The sent line goes back into the input, and that cut's already-sent messages and completed tasks leave the current conversation; edit and **send again**. From **1.1.61**, rewind bounds follow the **current turn**, not the first user message. `/pozhen-rewind` does the same.
+The composer **Undo once** and **Undo last round** stay in the current conversation and do not open a branch. The sent line goes back into the input, and that cut's already-sent messages and completed tasks leave the current conversation; edit and **send again**. From **1.1.61**, rewind bounds follow the **current turn**, not the first user message. `/mantis-rewind` does the same.
 
 If the **same task works in standard but fails in minimal or PTC**, preset `run_code`, sandbox, or plan intercept text is often still uncleared, or built-in minimal is missing `agent-instructions`. Use **1.1.61+**, then **quit the host fully → Apply in Clean → restart → start a new chat**. Switching preset alone does not reload patches in the running process.
 
 ### Response speed
 
-DSH runs Bash calls in a tool batch one at a time. Older tianshu-pozhen releases raised the default foreground wait from 60 seconds to 10 minutes, so one slow command could hold up later calls for that long. Patch #21 now restores marked plugin values to the official 60-second default. Unmarked timeouts and other custom values are preserved; an unmarked 10-minute value cannot reliably be distinguished from a user setting.
+DSH runs Bash calls in a tool batch one at a time. Older mantis releases raised the default foreground wait from 60 seconds to 10 minutes, so one slow command could hold up later calls for that long. Patch #21 now restores marked plugin values to the official 60-second default. Unmarked timeouts and other custom values are preserved; an unmarked 10-minute value cannot reliably be distinguished from a user setting.
 
 For a shorter wait in `dsh web` on macOS/Linux, add this entry to `$DSH_HOME/profiles/web/cordis.patch.yml` (normally `~/.dsh/profiles/web/cordis.patch.yml`). Edit an existing entry with the same id instead of adding a duplicate. This profile layer is applied after the bundled configuration, so future plugin applies keep the override.
 
@@ -503,7 +503,7 @@ Apply, on start or when you click Apply:
 flowchart TD
   A["Start or click Apply"] --> B{"Patch already in place?"}
   B -->|yes| C["Skip"]
-  B -->|no| D["Back up the original as .tianshupozhen.bak"]
+  B -->|no| D["Back up the original as .mantis.bak"]
   D --> E["Replace the matched files"]
   E --> F["Override the shim"]
   F --> G["Inject the encrypted prompt shipped in the plugin, the text the prompt box shows by default"]
@@ -516,7 +516,7 @@ flowchart TD
   A["Restart or new session"] --> B["Inject the plugin's encrypted default. No save click, and no host prompt file"]
 ```
 
-Prompt injection and ruleset decision at every turn. The three inputs on the left are what you control in the tianshu-pozhen panel; the dotted edges show which decision each one drives:
+Prompt injection and ruleset decision at every turn. The three inputs on the left are what you control in the mantis panel; the dotted edges show which decision each one drives:
 
 ```mermaid
 flowchart TD
@@ -549,8 +549,8 @@ flowchart TD
 
 ## Restore
 
-- Each target is copied to `<file>.tianshupozhen.bak` before the first apply.
-- **Restore** or `/pozhen revert` copies backups back and deletes them. With no backup, shim lines written by this plugin are stripped.
+- Each target is copied to `<file>.mantis.bak` before the first apply.
+- **Restore** or `/mantis revert` copies backups back and deletes them. With no backup, shim lines written by this plugin are stripped.
 - `prompt-inject.md` is a user file and is kept.
 - **Uninstall** restores first if patches were applied, then deletes the inject file, rule library, and the plugin itself.
 - Apply is idempotent.
