@@ -9364,11 +9364,15 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				stroke: "currentColor", strokeWidth: 1.5, "strokeLinecap": "round",
 				"aria-hidden": "true",
 			},
-				h("circle", { cx: 4.6, cy: 4.6, r: 1.05, fill: "currentColor", stroke: "none" }),
-				h("circle", { cx: 11.4, cy: 4.6, r: 1.05, fill: "currentColor", stroke: "none" }),
-				h("circle", { cx: 4.6, cy: 11.4, r: 1.05, fill: "currentColor", stroke: "none" }),
-				h("circle", { cx: 11.4, cy: 11.4, r: 1.05, fill: "currentColor", stroke: "none" }),
-				h("path", { d: "M3.1 12.9 12.9 3.1" })
+												h("path", { d: "M6.6 2.1 9.4 2.1 8 4Z", fill: "currentColor", stroke: "none" }),
+				h("path", { d: "M8 4V8" }),
+				h("ellipse", { cx: 8, cy: 11.6, rx: 1.5, ry: 2.4 }),
+				h("path", { d: "M7.3 2 6.1 0.9" }),
+				h("path", { d: "M8.7 2 9.9 0.9" }),
+				h("path", { d: "M8 5.2 5.1 3.6 4.5 5.6" }),
+				h("path", { d: "M8 5.2 10.9 3.6 11.5 5.6" }),
+				h("path", { d: "M8 8.8 5.7 11.8" }),
+				h("path", { d: "M8 8.8 10.3 11.8" })
 			));
 		}
 
