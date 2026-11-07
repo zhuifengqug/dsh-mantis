@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "虫珀 · 拒斧",
+    "description": "虫珀 · 拒斧：装在本机的 DeepSeek Harness 红队评测与宿主清洗插件。面板里一键清洗提示词、审批与沙箱策略，逐条可回滚，只动本机 @deepseek-ai 包。"
+  }
+}

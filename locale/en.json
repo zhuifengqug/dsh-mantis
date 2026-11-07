@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Mantis · Jufu",
+    "description": "Jufu (mantis): a local red-team review and host-cleaning plugin for DeepSeek Harness. One click in the panel cleans the system prompt, approval and sandbox policy — every patch revertible, and it only touches the local @deepseek-ai packages."
+  }
+}

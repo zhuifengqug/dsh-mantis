@@ -14,7 +14,8 @@
     "./redteam/ui": "./lib/redteam/ui.js",
     "./redteam/tools": "./lib/redteam/tools.js",
     "./package.json": "./package.json",
-    "./icon": "./icon.svg"
+    "./icon": "./icon.svg",
+    "./locale/*.json": "./locale/*.json"
   },
   "bin": {
     "mantis": "bin/mantis.js"
@@ -26,6 +27,7 @@
     "bin",
     "docs",
     "presets",
+    "locale",
     "scripts",
     "skills",
     "client.js",
