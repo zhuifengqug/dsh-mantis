@@ -1,3 +1,39 @@
+# 1.0.10
+
+## 中文
+
+- 版本 **1.0.10**（本地自建线；上游 dsh-purge 最新 1.1.92 仍停在 `dshTarget 0.2.1-rc.5`，尚未适配 0.2.2，本次先行）。
+- **适配 DSH 0.2.2-rc.1**（官方桌面版 2026-11-04 构建）。把 88 条补丁在解包后的 0.2.2 树上逐条回归，4 条锚点直接漂移，另有 1 条（#17）要等 #13 打完之后才暴露；全部按 1.1.88 的约定「旧 pattern 全保留、新 pattern 追加」补齐：
+  - **#14 沙箱升级审批**：0.2.2 在 `approver.request` 前新增 `approver === void 0` / `agent === void 0` 两条守卫并直接抛错，`displayReason` 由对象字面量改成 `escalationDisplayReason(mode, justification)`。补两条 pattern：「守卫 + 函数式 displayReason」和「守卫已被 #13 删掉、只剩函数式 displayReason」。替换成三元表达式：缺审批服务时按 `allowed-once` 放行，不再整轮抛错。
+  - **#17 读写意图放行**：0.2.2 把 `editIntent` 收成一行 `return this.requirePresent(target, actor, "edit")`，真正的读后写闸门搬进 `requirePresent`。追加该形态的 pattern，替换为直接 `return void 0`（markers 是 every 语义，只命中一半会显示漂移）。
+  - **#40 complete prompt 保留 inject**：`assemble` 返回值多了 `tools` 字段，early return 从 `return transformed` 变成 `return { ...transformed, tools }`，`requiredContexts` 的计算挪到第二个 return 之前。新 pattern 保留 `tools` 字段与 requiredContexts 过滤，仍把 mantis 段排到最前。
+  - **#67 messages guard**：文本与旧版逐字一致，只是 try 块整体多缩进一层（4 tab → 5 tab）。追加 5-tab 变体。
+  - **#74 prepare assemble**：0.2.2 的 preStep 先 `this.model.current()`、再 `tools.resolve`、最后才 `assemble`，原锚点（claim + assemble）被拆开。锚点改挂到 claim 之后、取 model 之前，仍然早于本次 assemble。
+- **版本门禁收窄**：`lib/host-compat.js` 的 `QUALIFIED_HOST_VERSIONS` 只留 `0.2.2-rc.1`；`package.json` 的 `dshTarget` 与 `dshTargets` 也都只写 `0.2.2-rc.1`。本机自用，不再承诺 0.2.1 及更早；旧 pattern 仍留在补丁表里兜底，但不在支持口径内。
+- **红队预设的 0.2.2 硬断点**：
+  - `@deepseek-ai/dsh-tool-subagent-control` 不再导出 `./list-agents`（`list_agents` 已并入主包）。`presets/redteam/agent.cordis.yml` 与自愈逻辑 `repairDelegation` 同步摘掉 `tool-subagent-list-agents` 行；自愈还会把旧用户预设里的这一行整块删掉，避免整份预设注册失败、模式下拉选不中。
+  - `dsh-tool-subagent` 的 `modelSelectionSettings` 改名为 `modelSelection`；预设改用新键，自愈逻辑顺手迁移旧键（旧名会被 schema 静默丢弃，等于模型选择没开）。
+- **文档**：README 合并为一份，只留「功能」与「安装」；删掉 `README.zh-CN.md` / `README.ja.md`，`files` 白名单同步收口。插件页简介（`description`）换成一句话。
+- **验证**：解包 0.2.2-rc.1 的 `@deepseek-ai`（10721 文件 / 317 MB）跑 `patchStatus`，`drifted` 由 4 条降到 **0**；随后在副本上真打一遍（`backupAll` → `applyPatches` → `revertAll`），88 条里 **applied 66 / na 17 / skipped 4 / missing_file 1 / pending 0 / drifted 0**，改写的 50 个文件里 40 个 JS 全部通过 `node --check`，撤回后逐字节比对 **0 差异**。`missing_file` 只剩 #71（liangshen 第三方预设未安装，预期内）。
+- **吸收上游 1.1.91 的 #211**：撤销浮层宿主的 `z-index` 由 `2147482500` 降到 `900`，`place()` 增加 `checkVisibility` 判断，宿主收起编辑区或切走标签页时不再定位，避免压住宿主自己的弹窗与菜单。#213 / #209 / 1.1.92 的 skills 发布本地早已有。
+
+## English
+
+- **1.0.10** (local fork line; upstream dsh-purge is still at 1.1.92 with `dshTarget 0.2.1-rc.5` and has not migrated to 0.2.2 yet).
+- **DSH 0.2.2-rc.1 support** (official desktop build, 2026-11-04). All 88 patches were re-run against the extracted 0.2.2 tree: four anchors had drifted outright and a fifth (#17) only surfaces once #13 has run. Each was fixed the 1.1.88 way — keep every old pattern, append a new one:
+  - **#14 sandbox escalation**: 0.2.2 throws before `approver.request` when `approver` or `agent` is missing, and `displayReason` now calls `escalationDisplayReason(mode, justification)`. Two new patterns: guards + functional displayReason, and the same block after #13 has already removed the guards. The replacement is a ternary that falls back to `allowed-once` instead of throwing.
+  - **#17 observation intents**: 0.2.2 collapses `editIntent` into `return this.requirePresent(target, actor, "edit")`, moving the read-before-write gate into `requirePresent`. Added that shape and replaced it with a plain `return void 0` (markers are every-semantics, so a half match reports as drift).
+  - **#40 complete prompt keeps inject**: `assemble` now returns a `tools` field, the early return became `{ ...transformed, tools }`, and `requiredContexts` moved above the second return. The new pattern keeps `tools` and the requiredContexts filter, and still puts mantis sections first.
+  - **#67 messages guard**: the text is byte-identical, but the try block is indented one level deeper (4 tabs → 5 tabs). Added the 5-tab variant.
+  - **#74 prepare assemble**: preStep now resolves `model.current()` and `tools.resolve` before `assemble`, so the old claim+assemble anchor no longer exists. The anchor moved to right after `claim`, still before this turn's assemble.
+- **Version gate narrowed**: `QUALIFIED_HOST_VERSIONS` in `lib/host-compat.js` keeps only `0.2.2-rc.1`; `dshTarget` and `dshTargets` list only `0.2.2-rc.1`. This is a local-only build, so 0.2.1 and older are no longer promised; their patterns stay in the table as a fallback but are out of the supported range.
+- **Red-team preset hard breakages under 0.2.2**:
+  - `@deepseek-ai/dsh-tool-subagent-control` no longer exports `./list-agents` (`list_agents` moved into the main package). The preset and `repairDelegation` drop that row, and the self-heal now deletes the whole row from existing user presets so the preset keeps registering.
+  - `modelSelectionSettings` on `dsh-tool-subagent` is now `modelSelection`; the preset uses the new key and self-heal migrates the old one, which the schema silently discards.
+- **Docs**: the READMEs are merged into one file with only **Features** and **Install**; `README.zh-CN.md` / `README.ja.md` are gone and the `files` allow-list is trimmed to match. The plugin-page blurb (`description`) is now a single sentence.
+- **Verification**: `patchStatus` over the extracted 0.2.2 `@deepseek-ai` tree (10,721 files / 317 MB) drops `drifted` from 4 to **0**; a real run on a copy (`backupAll` → `applyPatches` → `revertAll`) ends at **applied 66 / na 17 / skipped 4 / missing_file 1 / pending 0 / drifted 0**, all 40 rewritten JS files pass `node --check`, and reverting restores every file byte-for-byte (**0 diffs**). The only `missing_file` is #71 (liangshen preset not installed, expected).
+- **Upstream 1.1.91 #211 absorbed**: the rewind host's `z-index` drops from `2147482500` to `900`, and `place()` now checks `checkVisibility`, so it stops positioning while the host has the composer collapsed or another tab open instead of covering the host's own dialogs and menus. #213 / #209 / the 1.1.92 skills publish were already present locally.
+
 # 1.1.90
 
 ## 中文

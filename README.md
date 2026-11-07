@@ -2,595 +2,147 @@
   <img src="docs/banner.svg" alt="mantis" width="720">
 </p>
 
-<h1 align="center">⚔️ DeepSeek Harness cybersecurity red-team tool (mantis)</h1>
+<h1 align="center">虫珀 · 拒斧（mantis）</h1>
 
-<p align="center"><strong>Version 1.1.81</strong></p>
+<p align="center"><strong>1.0.10</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
 
-<p align="center">
-  <em>DeepSeek Harness jailbreak: every model, swap prompts per model. Default prompt for 小码酱. Please star ⭐ If you build on this, see Attribution required.</em>
-</p>
+拒斧装在你自己的机器上，把 DeepSeek Harness 的提示词、审批、沙箱策略摊开，按需清洗、逐条回滚。只改本机 `@deepseek-ai` 包与本地配置，不碰远端。
 
-<p align="center">
-  <a href="https://github.com/YuJunZhiXue/dsh-purge/stargazers"><img src="https://img.shields.io/github/stars/YuJunZhiXue/dsh-purge?logo=github&label=Stars" alt="GitHub stars"></a>
-  <a href="https://github.com/YuJunZhiXue/dsh-purge/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat" alt="Apache-2.0"></a>
-  <a href="https://awesome-dsh-plugin.com"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="awesome · DSH plugin"></a>
-  <a href="https://deepseek.stream/plugins/dsh-purge"><img src="https://img.shields.io/badge/Hub-dsh--purge-1a73e8" alt="DeepSeek Harness Hub"></a>
-  <a href="https://www.deepseek.com/harness/"><img src="https://img.shields.io/badge/dsh-0.2.0--rc.2%20%2F%200.2.1--rc.2-blue" alt="DSH"></a>
-  <br>
-  <img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?logo=node.js&logoColor=fff" alt="Node.js">
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000" alt="JavaScript">
-</p>
+## 功能
 
-<p align="center">
-  <a href="https://dsh-plugin.org/plugins/yujunzhixue/dsh-purge"><img src="https://dsh-plugin.org/badges/listed.svg" alt="Listed on dsh-plugin.org"></a>
-</p>
+### 拒斧面板
 
-<p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a> | <a href="README.ja.md">日本語</a>
-</p>
+会话标题旁的「拒斧」按钮打开右侧 dock，两页：
 
-## A note from the author
-
-People have been selling this open-source work in the open. After that, the author was asked to come in and talk. No need to spell out the rest. Read between the lines.
-
-From now on the **public internet is closed**. The open-source build only allows **local lab IPs**: loopback and RFC1918. Domains are resolved first (including hosts); every answer must be private or loopback. A hosts trick that points `.lab` at a public IP, a failed lookup, or a mixed public answer is blocked. **Game cheats are forbidden** (aimbot, wallhack, memory edits against a game, anti-cheat bypass); the prompt and the session gate both stop them. This build does not ship the skill library or the knowledge base.
-
-**The original build may not be resold.** Charging for it, skinning it, or hawking it in groups is not allowed. Forks are fine, but **you must attribute** and name the source: [YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge). Hide the source or pass it off as your own, and you are on the other side.
-
-The author's personal channel: [t.me/LLM_PoJia](https://t.me/LLM_PoJia). Notes and updates show up there.
-
-## Contents
-
-- [A note from the author](#a-note-from-the-author)
-- [What this is](#what-this-is)
-- [Attribution required](#attribution-required)
-- [License](#license)
-- [Supported hosts](#supported-hosts)
-- [Install](#install)
-- [Preview](#preview)
-- [Usage](#usage)
-- [How it works](#how-it-works)
-- [Restore](#restore)
-- [Releases](#releases)
-
----
-
-## What this is
-
-**mantis** is a cybersecurity red-team plugin for the official [DeepSeek Harness](https://www.deepseek.com/harness/) already installed on your machine. **1.1.81** targets **DSH 0.2.1-rc.2** (0.2.0 still works). **DSH 0.2.1-rc.3 and newer RCs are not supported.** Official **Web** (`dsh web`) and the official **desktop EXE** are both supported. Install and Apply them separately.
-
-Harness does more than forward a prompt. It rewrites prompts, approval gates, sandbox policy, and session migration at runtime. Asking only “will the model answer” treats a host-layer block as a model refusal. This plugin separates those two layers on your own install, for controlled evaluation and for seeing which default policy is too tight.
-
-| You get | What it does |
+| 页面 | 做什么 |
 |---|---|
-| **mantis dock** | A button beside the session title opens the right dock. Two pages: Clean and Drill |
-| **Clean** | Grouped patch status, Apply / Restore / Uninstall, prompt editor, multiple rule sets |
-| **Drill** | Built into the stable release. After authorization: assets and the local environment. This build does not ship skills or the knowledge base. Local lab only |
-| **Host policy** | Default copy, permission policy, and tool limits. Official capabilities stay. No second invented identity |
-| **On start** | Checks and reapplies. After npm overwrites `node_modules`, you do not hand-edit files |
+| **清洗** | 分组显示补丁状态，应用 / 还原 / 卸载，编辑提示词，管理多套规则集 |
+| **演练台** | 授权后使用本机资产与环境；本构建只允许本机实验网段，且不随包附带技能库与知识库 |
 
-No hardcoded drive letters. It looks at `$DSH_HOME`, `.dsh` next to the dsh launcher, then `~/.dsh`. It does not patch the Harness source tree. **Apply** on the **Clean** page of **mantis** is what writes the changes. Identity comes from the encrypted prompt shipped in the plugin, the text the prompt box shows by default. The host prompt file is not read.
+首次打开演练台要先读须知、等倒计时、读完并勾选三项；清洗不需要这一步。
 
-It only touches the official `@deepseek-ai` packages and local config on the user's machine. It is not a public scanner and not an attack kit for third-party sites. The repo does not ship malware, unauthorized-exploit scripts, or payloads aimed at the public internet.
+![清洗页](docs/preview/dock-clean.png)
 
----
+### 宿主清洗
 
-## The original may not be resold. Forks must attribute.
+- **默认文案与策略**：提示词、审批口径、沙箱边界、工具上限一并清洗，官方能力保留，不另造第二身份。
+- **启动自检**：每次启动检查并复打；npm 覆盖 `node_modules` 之后不用手改文件。
+- **逐条可控**：状态分「已应用 / 待清洗 / 漂移 / 不适用」，漂移项原样保留，不会被盲目改写。
+- **只打本机**：目标只有本机已装的官方 `@deepseek-ai/*` 包与 `$DSH_HOME` 下的本地文件。
 
-## Attribution required
+### 提示词与规则
 
-**The original build may not be resold.** No paid resale, no skinned store listing, no hawking it in groups.
+每一轮的注入来源按顺序决定：
 
-**Forks must attribute** and name the source repository: [YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge). Same if you borrow the name, ideas, code, or prompts.
+1. 规则库里启用的那一套（写入 `$DSH_HOME/prompt-inject.md`）；
+2. 当前目录勾选的 `AGENTS.md` / `CLAUDE.md`；
+3. 插件内置的默认提示词。
 
-Hiding the source, passing it off as your own, or reselling the original will be pursued.
+工作区基线还有 strict / fallback / always 三种取舍，控制是否丢掉宿主自带的 workspace 段落。
 
-## License
+### 撤销
 
-This repo is [Apache License 2.0](./LICENSE). Forks and redistributions must keep the copyright notice and [NOTICE](./NOTICE), and name [YuJunZhiXue/tianshu-pozhen](https://github.com/YuJunZhiXue/dsh-purge). The original may not be resold.
+- 输入框的「撤销一次」「撤销上一轮」只作用于当前会话，不拉分支；被撤回的那一段重新回到输入框，改完再发。
+- 命令面板里 `/mantis-rewind` 等价。
 
----
+### 回滚与卸载
 
-<a id="strict-legal--compliance-disclaimer"></a>
+- 每个被改写的文件在第一次应用前都会留 `<文件>.mantis.bak`。
+- **还原**把备份逐字节写回并删除备份；**卸载**先还原，再删注入文件、规则库与插件本体。
+- 应用是幂等的，重复点不会叠加改动。
 
-<div>
-
-### ⚠️ <font color="red">Strict legal and compliance disclaimer</font>
-
-<font color="red">
-
-**Disclaimer:** This is a non-profit open-source project. It follows applicable laws and the rules of the platforms it uses, and is intended only for learning and research. Do not use it for any illegal or non-compliant purpose; the user bears any resulting consequences.
-
-**Zero-tolerance statement:** This project opposes and forbids any illegal activity. The authors do not support, encourage, or assist unauthorized network attacks, exploit use, data theft, unlawful intrusion into computer information systems, or generation of illegal or prohibited content. **Anyone who uses this project for crime is solely responsible under the law. The authors have no liability.**
-
-1. **This repository contains no illegal material.** The published code, docs, patches, and default prompt are **not** malware, backdoors, unauthorized pentest kits, ransomware, credential-stuffing scripts, or attack payloads aimed at the public internet or third-party systems. The project does not supply illegal content and does not incite, organize, or assist crime.
-2. **Local official Harness only.** Security-eval patches and prompt injection run only on the **official DeepSeek Harness already installed on the user's machine** (`@deepseek-ai` packages, local profile / `$DSH_HOME`). The target is the user's own official local software, **not** someone else's website, server, account, or information system.
-3. **Eval patches do not attack the public internet.** Apply, inject, revert, and uninstall stay in local files and local processes. They **do not scan, probe, intrude, or send attack traffic to any public host or unauthorized system**. Do not use this project as a jump host against the public internet. If "check for updates" is on, the plugin may only contact this plugin's own GitHub repository to compare versions. That is **not** an attack on third-party systems and is **not** authorization to penetrate anything.
-4. **Lawful, controlled scope.** This project is an aid for red-team research and robustness evaluation on an **official Harness the user is entitled to administer**. **Do not run it against targets without the owner's lawful written authorization, public online systems, or production workloads.** Testing must stay on the **authorized local official Harness, offline local synthetic fixtures, authorized cybersecurity ranges, and compliant lab environments**.
-5. **The open-source build is local-lab only.** Attack tasks only allow loopback and RFC1918 addresses. Domains are resolved, then judged by IP; suffixes are not an allow list. A public IP, a name that resolves public, a failed lookup, or a hosts entry that points a lab name at the public internet is not an exception. A key, a password, a network range, a wildcard, or a claim made in the conversation does not add an exception. Game cheats are forbidden. This build does not ship the skill library or the knowledge base.
-6. **Forbidden uses.** Users must not use this project, directly or indirectly, to violate the following (each must be followed; no excuse to evade):
-   - <font color="red"><strong>Criminal Law of the People's Republic of China</strong></font>
-   - <font color="red"><strong>Cybersecurity Law of the People's Republic of China</strong></font>
-   - <font color="red"><strong>Data Security Law of the People's Republic of China</strong></font>
-   - <font color="red"><strong>Personal Information Protection Law of the People's Republic of China</strong></font>
-   - and other applicable laws, regulations, and supervisory rules;
-   - Also forbidden:
-   - Unauthorized intrusion or attacks on public or private computer information systems; extortion, sabotage, credential stuffing, or spreading malicious payloads;
-   - Inducing, generating, or spreading any content the law forbids, including threats to national security, terrorism, violence, pornography, gambling, fraud, and privacy or intellectual-property infringement;
-   - Violating the model provider's terms of service and acceptable-use policy.
-7. **The user bears all responsibility.** The project is provided under Apache-2.0 as-is. The authors make no warranty of completeness, security, or fitness. **Users independently bear all civil, administrative, and criminal liability** for download, deploy, run, modify, distribute, and all resulting inputs and outputs. Authors and contributors bear no direct, indirect, or joint liability for abuse.
-8. **The license ends on breach.** Anyone who uses this project for illegal attacks, malicious activity, or other violations has their open-source license **automatically and irrevocably terminated** from the moment of the violation. They must stop using the project, permanently destroy all copies and derivatives, and accept legal sanctions.
-9. **No affiliation.** This is an independent open-source security-eval research project. It has no employment, commercial, authorization, or endorsement relationship with DeepSeek or its affiliates. "Official" here only means the eval target is the official DeepSeek Harness package on the user's machine. It does **not** mean DeepSeek developed, approved, or warrants this plugin.
-10. **Attribution is required.** If you borrow this project's name, ideas, code, or prompts, you must credit the author and name this repository. Failure to attribute will be pursued. See [Attribution required](#attribution-required).
-
-</font>
-
-</div>
-
----
-
-## Supported hosts
-
-**1.1.81 targets DSH 0.2.1-rc.2.** 0.2.0 still works. Do not apply it to 0.1.x.
-
-- **dsh 0.2.1-rc.2** (official desktop / official `dsh web`): use **1.1.81**. Fixes `{{cwd}}` / `[cwd]` crash, patch #40 match, dropped `toolFilter`, host `dsh-tools` resolve, hostFs fd, desktop helper self-kill, `file:` archive update, Ctrl+Enter steer.
-- **dsh 0.2.0-rc.2**: use **1.1.40** or newer; this line also installs.
-- **dsh 0.1.7** (incl. rc.1 / rc.2): use **1.1.39** or older — pick the tag on [Releases](https://github.com/YuJunZhiXue/dsh-purge/releases).
-- **dsh 0.2.1-rc.3 / rc.4 and newer are not supported.** Unmatched patches stay pending or skipped; nothing is rewritten blindly. Stay on **0.2.1-rc.2**.
-
-Unmatched patches stay pending or skipped; nothing is rewritten blindly.
-
----
-
-## Install
-
-**Do not use the plugin marketplace.** One-click install on [dsh-plugin.org](https://dsh-plugin.org) or in Settings → Plugin Market fails with `already queued: mantis` and never runs a command. The name is not on the npm registry, so do not `pnpm add mantis`.
-
-### Quick start
-
-Have `dsh` on PATH? One command, one restart, one click. Run the line for the host you open (the desktop EXE is the same with `desktop` instead of `web`):
+### 命令
 
 ```sh
-# Official `dsh web`
-dsh plugin --profile web add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+mantis --status      # 逐条补丁状态
+mantis --apply       # 应用
+mantis --revert      # 还原
+mantis --uninstall   # 卸载
+mantis --edit        # 打开提示词
 
-# Official desktop EXE
-dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+/mantis status | apply | revert | uninstall | edit | help
+/mantis-rules list | use <id> | create <id> | delete <id> | reset
+/mantis-rewind
 ```
 
-1. **Fully quit and reopen** the host you installed into. Web: stop `dsh web` and start it again. Desktop: quit the tray icon too, then open the exe.
-2. On that host, click **mantis** beside the session title → **Clean** → **Apply**. A successful Apply restarts the host once.
+### 边界
 
-Done — verify with `/mantis status` in chat. If pnpm asks about build scripts, or anything below does not appear, follow the step by step.
+- 只面向本机：攻击类任务只允许 loopback 与 RFC1918，域名先解析再判 IP，`.lab` 这类后缀不算白名单。
+- 本构建不含技能库与知识库；不提供公网扫描、第三方站点攻击载荷或游戏作弊相关能力。
 
-### Step by step
+## 安装
 
-**Step 1 — Pick your host.** Official `dsh web` and the official desktop EXE are installed and patched **separately**; only install into the host you actually open.
+前置：Node.js ≥ 18；`dsh` 在 PATH 上；宿主是 **0.2.2-rc.1**。本版不再承诺 0.2.1 及更早版本。
 
-| What you run | Profile | Install command |
-|---|---|---|
-| Official `dsh web` | `web` | the `web` line in Quick start |
-| Official desktop EXE | `desktop` | the `desktop` line in Quick start |
+安装和「应用」是两件事：装完只是让宿主认识这个插件，**应用**才真正改写宿主文件。
 
-**Step 2 — Install the plugin.** Use the `codeload.github.com` URL exactly. Do not use `github.com/.../archive`: that 302 makes pnpm fail with `fetch failed`.
+### 1. 装进 profile
 
-Have `dsh`? Run the Quick start line for your profile. If this directory is already a clone, use `.` instead of the URL.
-
-pnpm only (no `dsh` required): run this inside the profile you actually use, not the repo root.
-
-```sh
-cd "$DSH_HOME/profiles/web"    # desktop: profiles/desktop
-pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-```
-
-Windows PowerShell:
+在仓库目录执行（`desktop` 换成 `web` 就是官方 `dsh web`）：
 
 ```powershell
-cd "$env:USERPROFILE\.dsh\profiles\web"   # desktop: profiles\desktop
-pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
+dsh plugin --profile desktop add .
 ```
 
-`pnpm add` and `dsh plugin add` fetch the package; `postinstall` writes `mantis` into `dsh.profile.bundles` and adds a body `insert` in the profile `cordis.patch.yml`. Without that insert the host never loads the plugin and no button appears.
-
-**Expected result:** `node_modules/mantis/package.json` exists, `"mantis"` is in that profile's `bundles`, and `cordis.patch.yml` has an `id: mantis` insert.
-
-- pnpm 11/12 skips install scripts (`ERR_PNPM_IGNORED_BUILDS`) unless you allow the build:
-
-```sh
-pnpm add --allow-build=mantis --allow-build=mantis@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-# Already installed, warning only — the full specifier is required (name-only leaves "set this to true or false"):
-pnpm approve-builds mantis@https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-# If bundles / insert are still missing:
-node node_modules/mantis/scripts/ensure-profile-bundle.mjs
-```
-
-- If neither `dsh` nor pnpm is available, jump to [Manual install](#manual).
-- On the desktop client you can also click the button (`dsh://` deep link; it still downloads the same tarball).
-
-<p align="center">
-  <a href="dsh://plugin/install?id=mantis&name=mantis&version=1.1.81&repo=YuJunZhiXue%2Fmantis&permissions=%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%2C%E6%9C%AC%E6%9C%BA%E8%A1%A5%E4%B8%81%2C%E8%AE%BE%E7%BD%AE%E9%A1%B5&downloadUrl=https%3A%2F%2Fcodeload.github.com%2FYuJunZhiXue%2Fmantis%2Ftar.gz%2Frefs%2Fheads%2Fmaster"><strong>Install in desktop client</strong></a>
-</p>
-
-**Step 3 — Restart the host.** Adding the plugin to a profile does **not** patch `@deepseek-ai` by itself. Fully quit and reopen the host you just installed into (Web: stop `dsh web` and start again; Desktop: quit the tray icon too, then open the exe).
-
-**Expected result:** **mantis** stands beside the session title. Missing? Jump to Step 5.
-
-**Step 4 — Apply and verify.** On **that host**, click **mantis** beside the session title, open **Clean**, and click **Apply**. It is not on the host Settings page. A successful **Apply** restarts once; it does not restart if it did not finish. Web controls affect Web only; desktop controls affect the desktop app only. Do not Apply one host from the other.
-
-**Expected result:** `/mantis status` in chat prints `DSH_HOME` and the patch list — the path should be the home you actually run. Optional packages that are not installed (liangshen) show as skipped and do not block Apply.
-
-**Step 5 — Troubleshooting.** Jump here only when a step above did not end with its expected result.
-
-- **No button beside the session title.** Run `dsh --dump-config` (or `dsh --profile desktop --dump-config`) and look for a body row `id: mantis` (not `mantis-redteam`). If it is absent, run `ensure-profile-bundle.mjs` (Step 2), then fully quit and reopen the host. After this version, a live red-team child entry also writes the missing insert on startup — quit and reopen once more. `entry "redteam-store" not found` at the top is leftover from an old red-team package and can be ignored.
-- **The market says `already queued: mantis`.** Stop clicking the market; use `dsh plugin add` or pnpm from Step 2. If the CLI also says it is already there, remove and re-add, then redo Step 3:
-
-```sh
-dsh plugin --profile desktop remove mantis
-dsh plugin --profile desktop add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-```
-
-pnpm only:
-
-```sh
-cd "$DSH_HOME/profiles/desktop"
-pnpm remove mantis
-pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-```
-
-Swap `desktop` for `web` on Web.
-
-### Advanced
-
-**Hand this to an assistant.** Paste the block below to a local assistant. It should only run the install command — no disk scan, no other edits, no Apply, no restart.
-
-<details>
-<summary><strong>For AI assistants (install only)</strong></summary>
-
-<!-- AI-AGENT-START -->
-
-Install the DeepSeek Harness plugin `mantis` into the Web profile only. Do not scan the whole disk, do not read or edit other files, do not apply settings, and do not restart the app. Do not install into the desktop profile. Do not use the plugin marketplace. The name is not on the npm registry; do not `pnpm add mantis`.
-
-**Web (official `dsh web`)**
-
-If `dsh` is on PATH:
-
-```sh
-dsh plugin --profile web add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-```
-
-If `dsh` is missing and pnpm is available, `cd` into `$DSH_HOME/profiles/web` (often `~/.dsh/profiles/web`) and run:
-
-```sh
-pnpm add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master
-```
-
-If this directory is already a clone and `dsh` exists, use `dsh plugin --profile web add .`. If neither `dsh` nor pnpm is available, tell the user and stop.
-
-After the command finishes, tell the user to fully quit and restart `dsh web`, then open **mantis** beside the session title and **Apply** on **Clean**. Then stop.
-
-<!-- AI-AGENT-END -->
-
-</details>
-
-<a id="manual"></a>
-
-**Manual install.** Use this when the command fails or `dsh` is not on PATH. Edit **only the profile for the host you run** — do not touch the other, and do not delete existing bundles.
-
-<details>
-<summary><strong>Full manual steps</strong></summary>
-
-**1. Find the `$DSH_HOME` this host uses.** A real home is named `.dsh` (official EXE sometimes `dsh-home`), contains `profiles`, and has at least one `profiles/<name>/package.json`. Check in order: `DSH_HOME` env → `.dsh` next to the install root (portable) → `%USERPROFILE%\.dsh` or `~/.dsh` → `%APPDATA%` / `%LOCALAPPDATA%\DeepSeek Harness\dsh-home`. Confirm: `profiles/web/package.json` has `"name": "dsh-profile-web"` (or `dsh-profile-desktop`). Machines often have two homes — use the one that belongs to the host you actually start.
-
-PowerShell to list candidates:
+或者先打包再装：
 
 ```powershell
-$cands = @()
-if ($env:DSH_HOME) { $cands += $env:DSH_HOME }
-$cands += "$env:USERPROFILE\.dsh"
-$dsh = Get-Command dsh -ErrorAction SilentlyContinue
-if ($dsh) {
-  $dir = Split-Path $dsh.Source
-  $cands += @((Join-Path $dir ".dsh"), (Join-Path (Split-Path $dir) ".dsh"), (Join-Path (Split-Path (Split-Path $dir)) ".dsh"))
-}
-$cands += @("$env:APPDATA\DeepSeek Harness\dsh-home", "$env:LOCALAPPDATA\DeepSeek Harness\dsh-home")
-$cands | Select-Object -Unique | Where-Object { $_ -and (Test-Path (Join-Path $_ "profiles")) }
+npm pack
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.10.tgz
 ```
 
-**2. Put the plugin at `$DSH_HOME/plugins/mantis`** (folder must be named `mantis`, with a `package.json` whose `"name"` is `mantis`).
+这一步会做两件事：把包写进该 profile 的 `dependencies`，并把 `@zhuifengqug/dsh-mantis` 追加到 `dsh.profile.bundles`。**只加依赖、不加 bundles，宿主不会加载插件面板。**
 
-```sh
-git clone https://github.com/YuJunZhiXue/dsh-purge.git "$DSH_HOME/plugins/mantis"
-```
-
-Without git: download [master.tar.gz](https://github.com/YuJunZhiXue/dsh-purge/archive/refs/heads/master.tar.gz), extract, rename `mantis-master` → `mantis`, and place it under `plugins`. If you already have a clone, copy the whole tree — not a few `.js` files.
-
-**3. Edit only that profile's `package.json` — back it up first.** Web → `$DSH_HOME/profiles/web/package.json`; desktop → `$DSH_HOME/profiles/desktop/package.json`. Add **only two things**, keeping every existing dependency and bundle:
-
-1. In `dependencies`, add `"mantis": "file:../../plugins/mantis"`
-2. At the **end** of `dsh.profile.bundles`, append `"mantis"` (skip if already there)
+手工等价（`$DSH_HOME/profiles/desktop/package.json`，改前先备份）：
 
 ```json
 {
-  "name": "dsh-profile-web",
-  "private": true,
   "dependencies": {
-    "mantis": "file:../../plugins/mantis"
+    "@zhuifengqug/dsh-mantis": "link:D:/path/to/dsh-mantis"
   },
   "dsh": {
     "profile": {
       "bundles": [
-        "@deepseek-ai/dsh-base",
-        "@deepseek-ai/dsh-web-app",
-        "mantis"
-      ],
-      "patchReload": "live"
+        "...保留原有项...",
+        "@zhuifengqug/dsh-mantis"
+      ]
     }
   }
 }
 ```
 
-Keep JSON valid (comma before the new item, none after the last). Do not switch `file:../../plugins/mantis` to an absolute path, do not touch `patchReload` or other plugins, and do not list `"mantis"` twice. On desktop, if there is no `dsh-web-app` row, do not add one.
+改完在该 profile 目录跑一次 `pnpm install`，确认 `node_modules/@zhuifengqug/dsh-mantis/package.json` 存在。
 
-**4. Run `pnpm install` in that profile only** (`cd` into the profile dir, not the repo root or `$DSH_HOME`):
+### 2. 完全退出并重开宿主
 
-```sh
-cd "$DSH_HOME/profiles/web"   # or profiles/desktop
-pnpm install
+桌面版连托盘一起退，再打开 exe；`dsh web` 停掉进程重新起。只重开窗口不算。
+
+### 3. 应用
+
+打开宿主 → 会话标题旁点「拒斧」→ **清洗** → **应用**。成功后宿主会重启一次；没跑完不会重启。
+
+也可以直接用命令行：
+
+```powershell
+node bin\mantis.js --apply
 ```
 
-Success: `profiles/<web|desktop>/node_modules/mantis/package.json` exists. If `pnpm` is missing, use the Node / pnpm shipped with official `dsh`; on `Could not resolve`, re-check the `file:` path; on a JSON error, fix commas or restore the backup.
+### 4. 验证
 
-**5. Fully quit that host, reopen it, then Apply** — Step 3 and Step 4 above. The card appears beside the session title; click **Apply** (or `/mantis apply`) on that host only. If the card is missing, you likely edited the other `.dsh` — go back to step 1.
-
-</details>
-
-**Uninstall.** **mantis** beside the session title → **Clean** → **Uninstall**. Confirm the dialog: it reverts any applied patches, restores the original Harness, and restarts the current host. Disable or uninstall also resets an agent-preset default that still points at `redteam` back to `standard`, so the host can create sessions after the preset is gone.
-
-<details>
-<summary><strong>Uninstall commands and config</strong></summary>
-
-```sh
-# or from a terminal / chat
-mantis --uninstall
-# /mantis uninstall
+```powershell
+node bin\mantis.js --status
 ```
 
-Plugin config lives in `cordis.patch.yml` (`postPrompt` is empty by default):
+或聊天里发 `/mantis status`。输出会打印 `DSH_HOME`、宿主版本和逐条状态；`liangshen` 这类没装的第三方预设显示为 skipped，不阻塞应用。
 
-```yaml
-- insert:
-    - id: mantis
-      name: 'mantis'
-      config:
-        enabled: true
-        autoApplyOnStart: true
-        autoUpdateOnStart: false
-        autoRevertOnMissing: false
-        verbose: false
-        postPromptOrder: 5100
-        postPrompt: ""
+本机若装了多个 dsh（例如 npx 缓存里的旧包），`--status` 可能选错安装。用环境变量钉死目标：
+
+```powershell
+$env:DSH_BASE = "D:\Deepseek Harness\resources\app.asar\dsh\node_modules\@deepseek-ai"
 ```
 
-</details>
+桌面版是密封的 `app.asar` 时，状态里的部分条目会显示为缺失——归档内文件无法就地改写，需要先按官方流程解包到 `resources/app` 再应用。
 
----
+### 卸载
 
-## Preview
-
-**mantis** sits beside the session title. It opens a right-hand dock with two pages: **Clean** and **Drill**. Switch **Light / Ink**. Patches are grouped; the count only includes items that actually applied. Rule sets sit in a list above the editor, with Enable and Delete on each row.
-
-The first time you open Drill you read the notice, wait out the countdown, scroll to the end, and check three boxes. Clean does not need that step. Drill is only for a host you manage, an offline target, or an exercise that already has written authorization.
-
-**Clean**
-
-![Clean](docs/preview/dock-clean.png)
-
-**Drill authorization**
-
-![Drill authorization](docs/preview/dock-auth.png)
-
-**Drill**
-
-![Drill](docs/preview/dock-drill.png)
-
-**Patches**
-
-![Patches](docs/preview/settings.png)
-
-**Local lab**
-
-The open-source build only allows localhost/private nets. The Clean page says so. You cannot register a public host.
-
-| Area | What it shows |
-|---|---|
-| mantis | button beside the session title; opens or collapses the dock |
-| Clean | patches, prompt, rule sets |
-| Drill | assets and environment after authorization. This build does not ship skills or the knowledge base. The tab says Unauthorized until then |
-| Patches | grouped status, Apply, Restore, or Uninstall |
-| Prompt | edit `prompt-inject.md` as the session override |
-| Local lab | loopback / RFC1918 only; names are resolved, and every address must be private |
-| Rule sets | multiple `AGENTS.md` / `CLAUDE.md`; Enable writes under `$DSH_HOME`, Delete removes the row |
-
----
-
-## Layout
-
-`bin/` is the CLI, `lib/` is patches and the drill console, `presets/redteam/` is the red-team preset, and `client.js` is the dock. This build does not ship `skills/` or the knowledge base.
-
-Runtime files live under `$DSH_HOME`: `prompt-inject.md`, `rules/`, `redteam/`. If `DSH_HOME` is unset, the launcher-adjacent `.dsh` wins over `~/.dsh`. Web and the desktop app each use their own home.
-
----
-
-## Usage
-
-```sh
-mantis --status
-mantis --apply
-mantis --revert
-mantis --uninstall
-mantis --edit
-
-/mantis status | apply | revert | uninstall | edit | help
-/mantis-rules list | use <id> | create <id> | delete <id> | reset | help
-/mantis-rewind
-
-# If another plugin already owns /mantis-rewind (or /mantis, /mantis-rules, /mantis-skills), that
-# name is skipped or remounted as /tianshu-rewind. Other commands, tools, and
-# /mantis/* routes keep working.
-
-mantis_status   mantis_apply   mantis_revert
-```
-
-After a successful Apply, the host restarts so patched packages load; you can also click **Restart** manually. Under the patch title are the stable release and the test release. The test release follows the `beta` branch. **Switch to stable** installs `master` and clears any pin. Picking an older stable version pins it; click **Update** to return to the latest. Old test tags are not listed.
-
-The composer **Undo once** and **Undo last round** stay in the current conversation and do not open a branch. The sent line goes back into the input, and that cut's already-sent messages and completed tasks leave the current conversation; edit and **send again**. From **1.1.61**, rewind bounds follow the **current turn**, not the first user message. `/mantis-rewind` does the same.
-
-If the **same task works in standard but fails in minimal or PTC**, preset `run_code`, sandbox, or plan intercept text is often still uncleared, or built-in minimal is missing `agent-instructions`. Use **1.1.61+**, then **quit the host fully → Apply in Clean → restart → start a new chat**. Switching preset alone does not reload patches in the running process.
-
-### Response speed
-
-DSH runs Bash calls in a tool batch one at a time. Older mantis releases raised the default foreground wait from 60 seconds to 10 minutes, so one slow command could hold up later calls for that long. Patch #21 now restores marked plugin values to the official 60-second default. Unmarked timeouts and other custom values are preserved; an unmarked 10-minute value cannot reliably be distinguished from a user setting.
-
-For a shorter wait in `dsh web` on macOS/Linux, add this entry to `$DSH_HOME/profiles/web/cordis.patch.yml` (normally `~/.dsh/profiles/web/cordis.patch.yml`). Edit an existing entry with the same id instead of adding a duplicate. This profile layer is applied after the bundled configuration, so future plugin applies keep the override.
-
-```yaml
-- id: bash-sandbox
-  config:
-    timeoutMs: 10000
-```
-
-With the standard jobs service and `promoteOnTimeout: true`, an unfinished command returns a background job id after 10 seconds and keeps running. Read it with `job_output` or stop it with `job_kill`. This changes the foreground wait, not the command's speed. Without that service or with promotion disabled, the timeout kills the command. A per-call `timeoutMs` overrides this default; `run_in_background: true` returns a job id immediately.
-
-For routine tasks, you can also opt into Low reasoning for new sessions:
-
-```yaml
-- id: agent-default-model
-  config:
-    provider: deepseek-official
-    model: deepseek-flash
-    reasoningEffort: low
-```
-
-Restart `dsh web` to load the profile. The model and reasoning defaults apply to newly created sessions; select Low in the composer for an existing session. The plugin does not change these model preferences automatically. Keep High when the task needs deeper reasoning, and narrow file searches rather than recursively scanning every application directory.
-
-### Local lab
-
-Attack tasks are denied by default. The open-source build only allows loopback and RFC1918 IPs. Names are resolved first; a `.lab` / `.htb` suffix is not enough. A hosts entry that points a lab name at a public IP is blocked. Saying “this is my server” in chat does not allow it.
-
----
-
-## Local checks
-
-```sh
-node --check lib/index.js
-node --check lib/core.js
-node --check lib/surface.js
-node --check lib/web.js
-node --check lib/desktop.js
-node --check lib/host.js
-node --check lib/rewind.js
-node --check lib/skills.js
-node --check client.js
-```
-
----
-
-## How it works
-
-Apply, on start or when you click Apply:
-
-```mermaid
-flowchart TD
-  A["Start or click Apply"] --> B{"Patch already in place?"}
-  B -->|yes| C["Skip"]
-  B -->|no| D["Back up the original as .mantis.bak"]
-  D --> E["Replace the matched files"]
-  E --> F["Override the shim"]
-  F --> G["Inject the encrypted prompt shipped in the plugin, the text the prompt box shows by default"]
-```
-
-Override on each session:
-
-```mermaid
-flowchart TD
-  A["Restart or new session"] --> B["Inject the plugin's encrypted default. No save click, and no host prompt file"]
-```
-
-Prompt injection and ruleset decision at every turn. The three inputs on the left are what you control in the mantis panel; the dotted edges show which decision each one drives:
-
-```mermaid
-flowchart TD
-  L["Rule library: activate a set → writes prompt-inject.md"]
-  W["Local rules: check AGENTS.md / CLAUDE.md in the current dir"]
-  P["Workspace policy: strict / fallback / always"]
-
-  A["Turn start"] --> B{"prompt-inject.md non-empty?"}
-  B -->|yes| C["Inject = prompt-inject.md (A)"]
-  B -->|no| D{"Any checked local md in the current dir, non-empty?"}
-  D -->|yes| E["Inject = selected workspace md (B)"]
-  D -->|no| F["Inject = plugin encrypted slot default (D)"]
-  C --> G{"Workspace baseline policy (C)"}
-  E --> G
-  F --> G
-  G -->|strict| H["Drop DSH workspace baseline section"]
-  G -->|fallback default| I{"User inject present above? (A or B)"}
-  G -->|always| J["Keep DSH workspace baseline section"]
-  I -->|yes| H
-  I -->|no| J
-  H --> K["Final system prompt"]
-  J --> K
-
-  L -.-> B
-  W -.-> D
-  P -.-> G
-```
-
----
-
-## Restore
-
-- Each target is copied to `<file>.mantis.bak` before the first apply.
-- **Restore** or `/mantis revert` copies backups back and deletes them. With no backup, shim lines written by this plugin are stripped.
-- `prompt-inject.md` is a user file and is kept.
-- **Uninstall** restores first if patches were applied, then deletes the inject file, rule library, and the plugin itself.
-- Apply is idempotent.
-
----
-
-## Path detection
-
-The host surface is detected first: `web` / `desktop` (`gui` / `tui` are reserved and still fall back to web).
-
-**Web:**
-
-1. `DSH_HOME` / `DSH_BASE`
-2. `.dsh` next to the dsh launcher (portable install, any drive)
-3. `npm prefix -g` / `npm root -g`
-4. Nested `@deepseek-ai/dsh/node_modules/@deepseek-ai`
-5. `~/.dsh`
-
-**Official desktop EXE:** the running official Harness install (`resources/app` or the unpacked package). The drive letter is not hard-coded. A successful Apply restarts once.
-
-Community Desktop is not maintained.
-
-Official npm-global is not patched. Sealed `host-commands` / `runtime-commands` are scrubbed, never injected.
-
-If nothing is found, set `DSH_BASE` / `DSH_DESKTOP_INSTALL`. No files are changed.
-
----
-
-## Releases
-
-The author's personal channel: [t.me/LLM_PoJia](https://t.me/LLM_PoJia). Notes and updates show up there. GitHub [Releases](https://github.com/YuJunZhiXue/dsh-purge/releases) still has older packages. The original may not be resold; forks must attribute.
-
-## Notes
-
-- Scope is rendered copy, defaults, and runtime logic inside local `@deepseek-ai/*` packages, plus override files and rule sets under the harness home.
-- After an upgrade, unmatched originals show as skipped. Apply still completes, and those files are left unchanged.
-- Third-party plugin *source repos* outside `@deepseek-ai` are left alone (CMD silence may **best-effort** patch installed doctor / market / liangshen / mnemon at runtime).
-- Install from the GitHub tarball (the name is not on npm; skip the plugin market). With `dsh`: `dsh plugin --profile web add https://codeload.github.com/YuJunZhiXue/dsh-purge/tar.gz/refs/heads/master`. pnpm only: `pnpm add` that URL inside `$DSH_HOME/profiles/web`. Use `desktop` for the EXE. From this repo, `add .`.
-
----
-
-Thanks to the [LINUX DO](https://linux.do) community
-
+面板 → 清洗 → **卸载**；或 `node bin\mantis.js --uninstall`。会先还原补丁再删插件本体，并把仍指向 `redteam` 预设的默认项改回 `standard`。

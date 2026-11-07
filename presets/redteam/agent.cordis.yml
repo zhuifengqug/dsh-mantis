@@ -298,17 +298,15 @@
       name: '@deepseek-ai/dsh-tool-subagent-control'
       disabled: false
 
-    - id: tool-subagent-list-agents
-      name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
-      disabled: false
-
     - id: tool-subagent
       name: '@deepseek-ai/dsh-tool-subagent'
       disabled: false
       config:
         provider: spawn
         toolName: subagent
-        modelSelectionSettings: true
+        # 0.2.2 的 dsh-tool-subagent 用 modelSelection（旧名 modelSelectionSettings 会被 schema 丢弃，
+        # 等于没开模型选择）。fork 行仍然刻意不写，保持与父会话同模型以便复用 KV Cache。
+        modelSelection: true
         backgroundMode: continuable
         # 子智能体是角色执行者（信息收集/资产梳理/漏洞发现/漏洞利用/内网渗透），**必须是叶子节点**：
         # 靠提示词劝"不要再往下委派"是软的——模型完全可以无视。这里直接把委派工具从子会话的

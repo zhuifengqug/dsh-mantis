@@ -9218,7 +9218,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 					el.setAttribute(REWIND_HOST_ATTR, "");
 					document.body.appendChild(el);
 				}
-				el.style.cssText = "position:fixed;z-index:2147482500;display:none;left:0;top:0;";
+				el.style.cssText = "position:fixed;z-index:900;display:none;left:0;top:0;";
 				setHost(el);
 				let padded = null;
 				let warned = false;
@@ -9244,6 +9244,16 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 							warned = true;
 							try { console.warn("[mantis] rewind: composer standardControls anchor missing"); } catch { /* ignore */ }
 						}
+						return;
+					}
+					// 宿主把编辑区收起、切到别的标签页或整页隐藏时，锚点仍在 DOM 里但不可见：
+					// 这时不要再定位，否则浮层会以 z-index 压住宿主自己的弹窗与菜单。
+					const visible =
+						typeof anchor.checkVisibility === "function"
+							? anchor.checkVisibility({ checkVisibilityCSS: true })
+							: true;
+					if (!visible || document.hidden) {
+						el.style.display = "none";
 						return;
 					}
 					// 按钮标签会随失败提示变长，预留宽度跟着实测宽度走，避免压到模型选择器。
