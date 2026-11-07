@@ -31,7 +31,10 @@
 | 67 | AGENT_LOOP_MESSAGES_GUARD | 文本逐字一致，try 块多缩进一层（4 tab → 5 tab） | 追加 5-tab 变体 |
 | 74 | ASSEMBLE_BEFORE_PRESTEP | preStep 先 `model.current()`、再 `tools.resolve`、最后 `assemble`；claim+assemble 锚点被拆开 | 锚点改挂 claim 之后、取 model 之前 |
 
-全部沿用 1.1.88 的约定：**旧 pattern 全部保留，新 pattern 追加**。1.0.10 把支持口径收窄到 0.2.2-rc.1 之后，这些旧 pattern 只作兜底留在表里，不再列入支持版本。
+补 pattern 时沿用 1.1.88 的约定：**旧 pattern 全部保留，新 pattern 追加**，避免一边补一边把别的宿主版本弄坏。
+1.0.10 把支持口径收窄到 0.2.2-rc.1 之后，又做了一轮清理：按 0.2.2 上的真实执行顺序判定，删掉 28 条永不命中的旧版本文案变体，
+整条删除只服务旧版的 #2（0.2.2 已无 `REPLACEMENT_WORKSPACE_CONTEXT_INTRO`），带 `mantis` 痕迹的撤销/幂等变体保留，补丁表 88 → 87。
+清理前后各打一遍，10775 个文件逐字节一致，二次 apply 0 改动。
 
 注意 #13 / #14 的先后：#13 会先删掉两条 `approver`/`agent` 守卫，所以 #14 必须同时认识「守卫还在」和「守卫已被删」两种文本，
 否则打完 #13 之后 #14 会显示漂移（功能上不致命，但状态面板会一直挂一条红）。
