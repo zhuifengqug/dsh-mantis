@@ -235,7 +235,7 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-mantis", factory: (require)
 			"status.unmatched": "没对上",
 			"status.drifted": "已漂移",
 			"status.skipped": "跳过",
-			"apply.hint": "没改提示词框不用点保存，默认就是这份，启动和应用会写进 prompt-inject.md。只有自己改过再点保存才会覆盖。点应用打补丁。待应用=原文还在。跳过=当前版本不需要或组件未安装。漂移=官方原文已改，这条补丁没打上，需要更新 pattern。",
+			"apply.hint": "没改提示词框不用点保存，默认就是这份，启动和应用会写进 prompt-inject.md。只有自己改过再点保存才会覆盖。点应用打补丁。待应用=原文还在。跳过=当前版本不需要或组件未安装。漂移=官方原文已改，这条补丁没打上，需要更新 pattern。密封桌面下写入不算生效：要换走 app.asar 并重开宿主，应用成功后面板会自动交接，失败会在这里提示。",
 			"flow.title": "清洗流程",
 			"flow.apply": "应用",
 			"flow.revert": "还原",
@@ -315,6 +315,9 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-mantis", factory: (require)
 			"action.revert": "还原",
 			"action.uninstall": "卸载",
 			"ok.done": "已完成",
+			"apply.restarting": "已写入解包目录，正在完成 asar 交接并重启宿主…",
+			"warn.notLive": "补丁已写进解包目录，但当前宿主仍然从 app.asar 运行，改动还没生效。点「完成交接并重启」换走压缩包并重开宿主。",
+			"btn.finishHandoff": "完成交接并重启",
 			"err.action": "失败: {error}",
 			"err.status": "读取失败: {error}",
 			"err.override": "读取失败: {error}",
@@ -596,7 +599,7 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-mantis", factory: (require)
 			"status.unmatched": "No match",
 			"status.drifted": "Drifted",
 			"status.skipped": "Skipped",
-			"apply.hint": "If you did not edit the prompt box, do not save. The default is already used and is written to prompt-inject.md on start/apply. Save only after you change it. Apply writes host patches. Pending = original text still present. Skipped = not needed for this version or the component is not installed. Drifted = the official source changed, this patch did not land and its pattern needs an update.",
+			"apply.hint": "If you did not edit the prompt box, do not save. The default is already used and is written to prompt-inject.md on start/apply. Save only after you change it. Apply writes host patches. Pending = original text still present. Skipped = not needed for this version or the component is not installed. Drifted = the official source changed, this patch did not land and its pattern needs an update. On a sealed desktop, written is not live: app.asar has to be swapped and the host reopened — the panel does that handoff for you after a successful Apply and reports here if it fails.",
 			"flow.title": "Clean flow",
 			"flow.apply": "Apply",
 			"flow.revert": "Restore",
@@ -676,6 +679,9 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-mantis", factory: (require)
 			"action.revert": "Restore",
 			"action.uninstall": "Uninstall",
 			"ok.done": "Done",
+			"apply.restarting": "Written to the unpacked copy. Finishing the asar handoff and restarting the host…",
+			"warn.notLive": "The patches are in the unpacked copy, but this host is still running from app.asar, so none of it is live yet. Click “Finish handoff and restart” to swap the archive and reopen the host.",
+			"btn.finishHandoff": "Finish handoff and restart",
 			"err.action": "Failed: {error}",
 			"err.status": "Read failed: {error}",
 			"err.override": "Read failed: {error}",
@@ -1885,6 +1891,8 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 						},
 					}));
 					const applyContent = action === "apply" ? readPromptBox() : "";
+					/* 交接已启动时不要把 busy 清掉，否则 restartDsh 的看门狗会把"正在重启"改成失败。 */
+					let handingOff = false;
 					/* 走 apiJson：apply/revert 本来就配了 240s/120s 超时，裸 fetch 会挂死在半路。 */
 					apiJson("/mantis/" + action, {
 						method: "POST",
@@ -1942,6 +1950,21 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 								return;
 							}
 							if (action === "apply") {
+								// 密封桌面：写入成功 ≠ 生效。宿主还在跑 app.asar 时必须立刻换包重开，
+								// 否则要靠 30 分钟就过期的 idle 助手，用户看到"已清洗"却一直是旧代码。
+								if (d.asar_swap_started) {
+									suppressRestartAsk.current = true;
+									setAskRestart(false);
+									handingOff = true;
+									setNotice({ kind: "ok", text: tr("apply.restarting") });
+									return;
+								}
+								if (d.asar_swap_error) {
+									suppressRestartAsk.current = true;
+									setAskRestart(false);
+									setNotice({ kind: "error", text: tr("err.action", { action: label, error: d.asar_swap_error }) });
+									return;
+								}
 								setNotice({ kind: "ok", text: tr("ok.done") });
 								loadAll();
 								suppressRestartAsk.current = false;
@@ -1956,7 +1979,7 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 							setNotice({ kind: "error", text: tr("err.action", { action: label, error: e.message }) });
 						})
 						.finally(() => {
-							if (ticket === actionTicket.current) setPatchBusy(false);
+							if (ticket === actionTicket.current && !handingOff) setPatchBusy(false);
 						});
 				};
 				run();
@@ -2253,6 +2276,22 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 				) : null,
 				h("p", { className: "dshp-hint", style: { margin: "8px 0 0", color: "var(--dshp-mute)", fontSize: 12 } }, t("apply.hint")),
 				s && !s.ai_base ? h("p", { className: "dshp-hint", style: { margin: "8px 0 0", color: "var(--dshp-danger, #c44)", fontSize: 12 } }, hostText(t, "warn.noRoot", hostSurface)) : null,
+				/* 写入成功 ≠ 生效：解包目录里的补丁只有在 asar 被换走并重开宿主后才真正跑起来。 */
+				s && s.ai_base && s.asar_still_sealed && tally.applied > 0 ? h("div", {
+					role: "alert",
+					style: {
+						margin: "8px 0 0",
+						padding: "10px 12px",
+						border: "1px solid var(--dshp-danger, #c44)",
+						borderRadius: 8,
+						background: "rgba(204,68,68,0.08)",
+					},
+				},
+					h("p", { style: { margin: 0, color: "var(--dshp-danger, #c44)", fontSize: 12, lineHeight: 1.6 } }, t("warn.notLive")),
+					h("div", { className: "dshp-row", style: { margin: "8px 0 0" } },
+						h(Btn, { kind: "primary", tiny: true, disabled: patchBusy, onClick: () => restartDsh(setNotice, setPatchBusy, t, hostSurface) }, t("btn.finishHandoff")),
+					),
+				) : null,
 				s && s.ai_base && s.override_status === "missing" ? h("p", { className: "dshp-hint", style: { margin: "8px 0 0", color: "var(--dshp-mute)", fontSize: 12 } }, t("warn.noInject")) : null,
 				s && s.ai_base && s.host_supported === false ? h("p", { className: "dshp-hint", style: { margin: "8px 0 0", color: "var(--dshp-danger, #c44)", fontSize: 12 } }, t("warn.hostVersion", { v: s.host_version || "?", t: s.host_target || "?" })) : null,
 				askRestart ? h(RestartAsk, {

@@ -27,6 +27,12 @@ function printStatus(state) {
   out.push("");
   out.push(`  补丁 ${state.patches_applied}/${core.ALL_PATCHES.length} 已清洗, ${state.patches_pending} 待清洗`
     + (state.patches_drifted ? `, ${state.patches_drifted} 漂移（官方原文已改，需更新 pattern）` : ""));
+  // 写入成功 ≠ 生效：密封桌面下补丁只进了解包目录，宿主仍在跑 app.asar。
+  if (state.ai_base && state.asar_still_sealed) {
+    out.push("  生效状态 / live  未生效 —— 宿主仍从 app.asar 运行；需完全退出宿主让压缩包被换走（面板点「完成交接并重启」/ CLI 退出宿主后重开）");
+  } else if (state.ai_base) {
+    out.push("  生效状态 / live  已生效（宿主从解包目录运行）");
+  }
   if (state.host_version) {
     const compat = state.host_supported === false ? `  ← 未适配：插件声明 ${state.host_target || "?"}` : "";
     out.push(`  宿主版本 / host  ${state.host_version}${compat}`);
@@ -110,6 +116,12 @@ async function main() {
       reapply.markPatchesApplied();
     } catch (e) {
       console.log(`  ⚠ 写入应用记录失败 / failed to write applied stamp: ${e && e.message ? e.message : e}`);
+    }
+    if (core.desktopAsarStillSealed()) {
+      console.log("");
+      console.log("⚠ 宿主仍从 app.asar 运行，以上补丁只写进了解包目录，尚未生效。");
+      console.log("  完全退出宿主后重开（压缩包会被换走），或在面板点「完成交接并重启」；");
+      console.log("  宿主不退时 idle 助手最多等 30 分钟就放弃，别指望它自动完成。");
     }
     console.log("全部完成 / All done。重启 dsh 生效 / Restart dsh to take effect.");
   } else if (mode === "--revert") {

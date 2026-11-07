@@ -1,3 +1,22 @@
+# 1.0.11
+
+## 中文
+
+- **修掉「面板显示已清洗，实际一条没生效」**。根因是密封桌面下补丁只写进 `resources\app`，宿主还在从 `app.asar` 跑：`/mantis/apply` 只回一个 `needs_full_quit`，交接交给一个最多等 30 分钟就过期的 idle 助手，宿主不退就永远换不成包。
+  - **应用成功即自动交接**：`lib/index.js` 的 `/mantis/apply` 在 `shouldRestart && handoff && sealedNow` 时，先把响应发出去，400ms 后调用 `core.restartSealedDesktopIfNeeded({ ctx })`（挪走 `app.asar` + 重开宿主），结果写进 `audit.jsonl` 的 `asar_swap` 事件。
+  - **状态如实上报**：`asar_swap_started` / `needs_full_quit` 反映真实交接；`core.gatherState()` 的 `asar_still_sealed` 增加 `asarStillSealedFor(aiBase)` 兜底——CLI 里 `detectSurface()` 一直是 `web`，旧判定恒为 `false`。
+  - **面板与 CLI 都说清楚**：新增未生效横幅 +「完成交接并重启」按钮（`asar_still_sealed` 且已打补丁时出现）；`apply.hint` 补一句「写入 ≠ 生效」；`mantis --status` 增「生效状态 / live」行，`--apply` 在密封桌面下明确提示需完全退出宿主。
+- **修掉 `DSH_BASE` 指到桌面安装内部被丢弃**：`findAiBase()` 现在优先认 `MANTIS_AI_BASE` / `DSH_BASE`（允许指向 `resources\app\...`）。以前 CLI 会落到 npx 缓存里的旧宿主（0.1.5）上打补丁，报 13 条漂移，真正在跑的桌面版没人管。
+- **验证**：`node --check` 全绿（`lib/**/*.js`、`client.js`、`bin/mantis.js`）。`DSH_BASE=<桌面>\resources\app\dsh\node_modules\@deepseek-ai node bin/mantis.js --status` → 66/87 已清洗、0 待清洗、0 漂移、宿主 `0.2.2-rc.1`、生效状态「未生效（宿主仍从 app.asar 运行）」。未执行：真实 apply + 交接（会重启宿主，按约定由用户自己点）。
+
+## English
+
+- **Fixed "panel says cleaned but nothing is live"**. On a sealed desktop the patches only land in `resources\app` while the host keeps running from `app.asar`: `/mantis/apply` returned `needs_full_quit` and delegated the handoff to an idle helper that gives up after 30 minutes, so a host that never quits never gets the archive swapped.
+  - **Apply now performs the handoff**: in `lib/index.js`, when `shouldRestart && handoff && sealedNow`, the route flushes its response and then calls `core.restartSealedDesktopIfNeeded({ ctx })` 400 ms later (rename `app.asar` aside, reopen the host), recording an `asar_swap` event in `audit.jsonl`.
+  - **Honest state**: `asar_swap_started` / `needs_full_quit` mirror the real handoff, and `core.gatherState()`'s `asar_still_sealed` is now backed by `asarStillSealedFor(aiBase)` because `detectSurface()` is always `web` in the CLI (the old check was permanently `false`).
+  - **Panel and CLI both say it**: a not-live banner with a "Finish handoff and restart" button (shown when `asar_still_sealed` and patches are written), a "written is not live" note in `apply.hint`, a "生效状态 / live" line in `mantis --status`, and an explicit warning in `--apply` when the desktop is still sealed.
+- **Fixed `DSH_BASE` being dropped when it points inside a desktop install**: `findAiBase()` now honours `MANTIS_AI_BASE` / `DSH_BASE` first, including `resources\app\...` paths. Previously the CLI patched the stale npx copy (0.1.5), reported 13 drifted patches, and never touched the desktop build actually in use.
+- **Verification**: `node --check` clean across `lib/**/*.js`, `client.js`, `bin/mantis.js`. `DSH_BASE=<desktop>\resources\app\dsh\node_modules\@deepseek-ai node bin/mantis.js --status` → 66/87 applied, 0 pending, 0 drifted, host `0.2.2-rc.1`, live state "not live (host still runs app.asar)". Not executed: a real apply + handoff (it restarts the host; per policy the user runs that).
 # 1.0.10
 
 ## 中文
