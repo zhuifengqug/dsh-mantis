@@ -78,13 +78,30 @@ mantis --edit        # 打开提示词
 
 ### 1. 装进 profile
 
-在仓库目录执行（`desktop` 换成 `web` 就是官方 `dsh web`）：
+三种方式任选其一（`desktop` 换成 `web` 就是官方 `dsh web`）。
+
+**从 npm 装（推荐）**：
+
+```powershell
+dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.0.10
+```
+
+包页面：https://www.npmjs.com/package/@zhuifengqug/dsh-mantis
+
+**用 GitHub Release 的 tgz**：
+
+```powershell
+# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.0.10
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.10.tgz
+```
+
+**在仓库目录里直接装（本地改动、开发时用）**：
 
 ```powershell
 dsh plugin --profile desktop add .
 ```
 
-或者先打包再装：
+也可以先 `npm pack` 再装打出来的 tgz：
 
 ```powershell
 npm pack
