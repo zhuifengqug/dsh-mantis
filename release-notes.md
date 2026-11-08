@@ -1,3 +1,31 @@
+# 1.0.13
+
+## 中文
+
+- **面板改版：墨 + 琥珀**。原来的绿灰配色与「虫珀 · 拒斧」这个名字没关系，这版换成墨色纸面 + 琥珀强调色，并把版式重排：
+  - **牌头**：面板顶部加一条 masthead —— 白底圆角方块里放螳螂 glyph（与插件页 `icon.svg` 同一套路径）、名称「虫珀 · 拒斧」、以及等宽大写副题 `MANTIS · HOST PURGE & DRILL`。
+  - **分节序号**：补丁 / 规则集 / 技能 / 界面显示 四节分别标 `01`–`04`，琥珀色等宽数字。
+  - **指标卡**：改自适应栅格（`repeat(auto-fit,minmax(148px,1fr))`），每张卡左侧加一条 2px 状态竖条（正常墨绿 / 待处理琥珀 / 异常砖红），数字改等宽（`font-variant-numeric: tabular-nums`），扫描时不再跳动。
+  - **按钮**：主按钮琥珀实底，次级按钮透明底 + 细描边（原来次级按钮在深色主题下是一块灰底，对比度很差）；危险按钮保留红色描边。
+  - **表格**：行悬停加 7% 琥珀底，长列表更好跟行。
+  - **深色主题**：琥珀提亮到 `#d9a75c`、描边降到 24%，避免在深色纸面上糊成一团。
+- **新增第 4 张指标卡「已生效 / 未生效」**。它直接读 `asar_still_sealed`：宿主还在从 `app.asar` 跑就是「未生效」，从解包目录跑就是「已生效」。之前这个信息只在上面那条红色警告横幅里出现，正常状态反而看不到。
+- **删掉过时的「本地靶场」说明**。那段写「开源版攻击任务只放行本机/内网 IP……解析失败或混有公网地址一律拦截」，但区域门禁在导入 `dsh-purge` v1.1.90 时就已经整块剥掉了 —— `lib/net-scope.js` 开头自己写着「本插件不带区域门禁（不判断攻击任务、不拦公网目标）」，`ownServerNote()` 直接 `return ""`，白名单永远不会进提示词；面板里那张卡也没有输入框、没有按钮，纯粹是一段死文案。这次连同 `own.title`、`own.hint`、`own.save`、`saved.own`、`saved.own.dropped` 五个无人引用的 i18n 键一起删干净。
+- **验证**：`node --check client.js` 通过；抽出 `PURGE_CSS` 生成浅色 / 深色两份静态预览，用 headless Chrome 逐版核对布局与对比度（牌头、指标卡、按钮、表格、分节序号）。未执行：真实面板截图（需宿主刷新后由人确认）。
+
+## English
+
+- **Panel redesign: ink + amber.** The old green-grey palette had nothing to do with the name "虫珀 · 拒斧", so this build switches to an ink-paper base with an amber accent and reflows the layout:
+  - **Masthead**: a header strip at the top of the panel — the mantis glyph (same paths as the plugin's `icon.svg`) in a white rounded tile, the name, and a monospaced uppercase subtitle `MANTIS · HOST PURGE & DRILL`.
+  - **Section numbers**: the four sections (patches / rules / skills / display) are numbered `01`–`04` in amber monospace.
+  - **Metric cards**: switched to an auto-fit grid (`repeat(auto-fit,minmax(148px,1fr))`), each card gets a 2px status bar on the left (ok / warn / bad) and tabular figures so numbers stop jittering as they change.
+  - **Buttons**: primary is solid amber; secondary buttons are transparent with a hairline border (they used to render as a grey block on the dark theme, with poor contrast); destructive keeps a red outline.
+  - **Table**: 7% amber row highlight on hover.
+  - **Dark theme**: amber brightens to `#d9a75c` and hairlines drop to 24% so nothing smears on the dark paper.
+- **New fourth metric card, "Live / Not live".** It reads `asar_still_sealed` directly: if the host is still running from `app.asar` it says Not live, if it runs from the unpacked directory it says Live. Previously that only appeared in the red warning banner, so the healthy state was invisible.
+- **Removed the outdated "local range" note.** It claimed attack tasks were limited to loopback / LAN IPs, but the region gate was stripped wholesale when the `dsh-purge` v1.1.90 tree was imported — `lib/net-scope.js` literally says the plugin carries no region gate, `ownServerNote()` returns `""`, and the allow-list never reaches the prompt. The card had no input and no button either: pure dead copy. It is gone, together with the five unreferenced i18n keys `own.title`, `own.hint`, `own.save`, `saved.own`, `saved.own.dropped`.
+- **Verification**: `node --check client.js` passes; `PURGE_CSS` was extracted into light and dark static previews and checked in headless Chrome for layout and contrast. Not done: a screenshot of the real panel (needs a host refresh and a human eye).
+
 # 1.0.12
 
 ## 中文

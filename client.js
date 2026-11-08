@@ -210,12 +210,10 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-mantis", factory: (require)
 			"theme.ink": "墨",
 			"purge.title": "补丁",
 			"override.title": "提示词",
-			"own.title": "本地靶场",
-			"own.hint": "开源版攻击任务只放行本机/内网 IP。域名会先解析，解析到的每一个地址都必须是私网或回环；hosts 把 .lab 指到公网 IP 也会拦。解析失败或混有公网地址一律拦截。",
-			"own.save": "保存名单",
-			"saved.own": "已保存自己的服务器",
-			"saved.own.dropped": "已保存。有 {n} 行不是单个 IP 或主机名，已丢掉",
 			"metric.purged": "已写入",
+			"live.on": "已生效",
+			"live.sealed": "未生效",
+			"live.hint": "宿主运行位置",
 			"metric.purged.skip": "已写入。跳过 {n} 项，本机没有这些文件",
 			"metric.pendingShort": "待处理 {n}",
 			"metric.unmatchedShort": "没对上 {n}",
@@ -574,12 +572,10 @@ window.__ModuleLoader__.load({ id: "@zhuifengqug/dsh-mantis", factory: (require)
 			"theme.ink": "Ink",
 			"purge.title": "Patches",
 			"override.title": "Prompt",
-			"own.title": "Local lab only",
-			"own.hint": "The open-source build only allows localhost/private IPs. Domains are resolved first; every A/AAAA must be loopback or RFC1918. A hosts entry that points .lab at a public IP is blocked. Failed or mixed public answers are denied.",
-			"own.save": "Save list",
-			"saved.own": "Own servers saved",
-			"saved.own.dropped": "Saved. {n} lines were not a single IP or hostname and were dropped",
 			"metric.purged": "Written",
+			"live.on": "Live",
+			"live.sealed": "Not live",
+			"live.hint": "Where the host runs",
 			"metric.purged.skip": "Written. Skipped {n}; those files are not on this install",
 			"metric.pendingShort": "Pending {n}",
 			"metric.unmatchedShort": "No match {n}",
@@ -1204,6 +1200,38 @@ body[data-ds-dark-theme] .rt-btn-primary:hover:not(:disabled),
 body[data-ds-dark-theme] .dshp-dock-body .rt-btn-primary,
 .dshp-dock[data-theme="dusk"] .dshp-dock-body .rt-btn-primary{background:#3d8f68!important;border-color:#3d8f68!important;color:#fff!important;-webkit-text-fill-color:#fff!important;backdrop-filter:none}
 body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-step-no{background:#3d8f68;color:#fff}
+/* [mantis] 虫珀 · 拒斧：墨 + 琥珀主题覆盖（新增层，不改旧规则） */
+.dshp-root,.dshp-dock{--dshp-accent:#a9762a;--dshp-accent-soft:color-mix(in srgb,#a9762a 14%,transparent);--dshp-fill:color-mix(in srgb,#a9762a 12%,transparent);--dshp-line:color-mix(in srgb,#a9762a 26%,transparent);--dshp-ok:#3f6b52;--dshp-warn:#8a5a12;--dshp-bad:#9a3434}
+.dshp-root[data-theme="dusk"],.dshp-dock[data-theme="dusk"]{--dshp-accent:#d9a75c;--dshp-accent-soft:color-mix(in srgb,#d9a75c 18%,transparent);--dshp-line:color-mix(in srgb,#d9a75c 24%,transparent)}
+.dshp-root .dshp-btn-primary,.dshp-dock .dshp-btn-primary{background:#a9762a!important;border-color:#a9762a!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.dshp-root .dshp-btn-primary:hover:not(:disabled),.dshp-dock .dshp-btn-primary:hover:not(:disabled){background:#8f6323!important;border-color:#8f6323!important}
+.dshp-root[data-theme="dusk"] .dshp-btn-primary,.dshp-dock[data-theme="dusk"] .dshp-btn-primary{background:#b8843a!important;border-color:#b8843a!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+.dshp-root .dshp-bar>i,.dshp-dock .dshp-bar>i{background:#a9762a}
+/* 牌头 */
+.dshp-mast{display:flex;align-items:center;gap:12px;padding:0 2px 14px;border-bottom:1px solid var(--dshp-line)}
+.dshp-mast-mark{flex:0 0 auto;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:11px;background:#fff;border:1px solid color-mix(in srgb,#a9762a 32%,transparent);box-shadow:0 1px 2px rgba(22,20,15,.08);overflow:hidden}
+.dshp-mast-mark svg{width:100%;height:100%;display:block}
+.dshp-root[data-theme="dusk"] .dshp-mast-mark{background:#f6f1e6;border-color:#c79a55}
+.dshp-mast-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.dshp-mast-txt b{font-size:16px;font-weight:650;line-height:22px;letter-spacing:.01em;color:var(--dshp-ink)}
+.dshp-mast-txt span{font-family:var(--dshp-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dshp-mute)}
+/* 次级按钮统一描边（不改底色，跟随宿主变量） */
+.dshp-root .dshp-btn:not(.dshp-btn-primary):not(.dshp-btn-solid-danger),.dshp-dock .dshp-btn:not(.dshp-btn-primary):not(.dshp-btn-solid-danger){background:transparent;border-color:var(--dshp-line)}
+.dshp-root .dshp-btn:not(.dshp-btn-primary):not(.dshp-btn-solid-danger):hover:not(:disabled),.dshp-dock .dshp-btn:not(.dshp-btn-primary):not(.dshp-btn-solid-danger):hover:not(:disabled){background:var(--dshp-accent-soft)}
+.dshp-root .dshp-btn-danger,.dshp-dock .dshp-btn-danger{border-color:color-mix(in srgb,#9a3434 42%,var(--dshp-line))}
+/* 分节序号 */
+.dshp-num{display:inline-block;margin-right:8px;font-family:var(--dshp-mono);font-size:11px;font-weight:500;letter-spacing:.08em;color:#a9762a;vertical-align:2px}
+/* 指标卡 */
+.dshp-metrics{grid-template-columns:repeat(auto-fit,minmax(148px,1fr))!important}
+.dshp-metric{position:relative;padding-left:15px!important;border-radius:10px!important}
+.dshp-metric::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:2px;border-radius:2px;background:var(--dshp-line)}
+.dshp-metric[data-tone="ok"]::before{background:#3f6b52}
+.dshp-metric[data-tone="warn"]::before{background:#8a5a12}
+.dshp-metric[data-tone="bad"]::before{background:#9a3434}
+.dshp-metric b{font-variant-numeric:tabular-nums}
+/* 表格悬停 */
+.dshp-table tbody tr:hover td{background:color-mix(in srgb,#a9762a 7%,transparent)}
+
 `;
 
 		function formatSize(bytes) {
@@ -2209,7 +2237,7 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 			};
 			return h("section", { className: "dshp-panel", "aria-label": t("purge.title") },
 				h("div", { className: "dshp-head" },
-					h("h3", { className: "dshp-title" }, t("purge.title")),
+					h("h3", { className: "dshp-title" }, h("span", { className: "dshp-num" }, "01"), t("purge.title")),
 					h("span", { className: "dshp-pill" }, t("surface." + hostSurface)),
 				),
 				h("div", { className: "dshp-rel" },
@@ -2242,7 +2270,11 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 					h("div", { className: "dshp-metric" },
 						h("b", null, s.has_backup ? t("metric.bak.yes") : t("metric.bak.no")),
 						h("span", null, t("metric.bak.hint")),
-					),
+					),								
+						h("div", { className: "dshp-metric", "data-tone": s.asar_still_sealed ? "warn" : "ok" },
+							h("b", null, s.asar_still_sealed ? t("live.sealed") : t("live.on")),
+							h("span", null, t("live.hint")),
+						),
 				) : h("div", { className: "dshp-metrics" },
 					h("div", { className: "dshp-metric" }, h("div", { className: "dshp-skel" }), h("div", { className: "dshp-skel", style: { width: "40%" } })),
 					h("div", { className: "dshp-metric" }, h("div", { className: "dshp-skel" }), h("div", { className: "dshp-skel", style: { width: "40%" } })),
@@ -2331,10 +2363,6 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 					className: "dshp-hint",
 					style: { margin: "8px 0 0", color: "var(--dshp-danger, #c44)", fontSize: 12 },
 				}, t("need.prompt")) : null,
-				h("div", { className: "dshp-sub" },
-					h("h4", null, t("own.title")),
-				),
-				h("p", { className: "dshp-hint", style: { margin: "8px 0 0", color: "var(--dshp-mute)", fontSize: 12 } }, t("own.hint")),
 			);
 		}
 
@@ -2476,7 +2504,7 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 			const cwdValue = (st && typeof st.cwd === "string") ? st.cwd : "";
 			return h("section", { className: "dshp-panel", "aria-label": t("rules.title") },
 				h("div", { className: "dshp-head" },
-					h("h3", { className: "dshp-title" }, t("rules.title")),
+					h("h3", { className: "dshp-title" }, h("span", { className: "dshp-num" }, "02"), t("rules.title")),
 					h("div", { className: "dshp-row", style: { margin: 0 } },
 						noticeNode(notice),
 						h(Btn, {
@@ -2894,7 +2922,7 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 
 			return h("section", { className: "dshp-panel", "aria-label": t("skills.title") },
 				h("div", { className: "dshp-head" },
-					h("h3", { className: "dshp-title" }, t("skills.title")),
+					h("h3", { className: "dshp-title" }, h("span", { className: "dshp-num" }, "03"), t("skills.title")),
 					h("div", { className: "dshp-row", style: { margin: 0 } }, noticeNode(notice)),
 				),
 				h("p", { className: "dshp-hint", style: { margin: "0 0 10px", color: "var(--dshp-mute)", fontSize: 12 } }, hostText(t, "skills.hint", hostSurfaceOf())),
@@ -3130,6 +3158,7 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 			return h("div", { className: "dshp-root", "data-theme": theme },
 				h("style", null, PURGE_CSS),
 				h("style", null, PANEL_CSS),
+				h(Masthead, null),
 				h(UiPrefsSection, null),
 				h(PurgifySection, null),
 				h(RulesSection, null),
@@ -9425,6 +9454,27 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			));
 		}
 
+const MANTIS_MARK_INNER = '<g transform="translate(48 48) scale(0.94) translate(-48 -48)"><g fill="#10171a">'
+  + '<g stroke="#10171a" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M40.2 12.6 C38.2 9.4 35.6 7.4 32.2 6.6"/><path d="M55.8 12.6 C57.8 9.4 60.4 7.4 63.8 6.6"/></g>'
+  + '<g stroke="#10171a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M45 52 L28.8 57.6 L24.4 69.4"/><path d="M51 52 L67.2 57.6 L71.6 69.4"/><path d="M46 61.4 L31.6 68.6 L27.6 81.4"/><path d="M50 61.4 L64.4 68.6 L68.4 81.4"/></g>'
+  + '<g stroke="#10171a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M43.2 38.6 L30.2 33 L25 15"/><path d="M25 15 L37 28.6"/><path d="M52.8 38.6 L65.8 33 L71 15"/><path d="M71 15 L59 28.6"/></g>'
+  + '<path d="M36.2 16.8 C36.2 12 41.4 9.2 48 9.2 C54.6 9.2 59.8 12 59.8 16.8 C59.8 21.8 54 28.8 48 31.2 C42 28.8 36.2 21.8 36.2 16.8 Z"/>'
+  + '<path d="M44.2 28.6 L51.8 28.6 L53.4 53 L42.6 53 Z"/>'
+  + '<path d="M48 46.6 C61.6 46.6 65.4 58.6 63.8 69.4 C61.8 80.6 53.8 87.6 48 90.4 C42.2 87.6 34.2 80.6 32.2 69.4 C30.6 58.6 34.4 46.6 48 46.6 Z"/>'
+  + '</g><g fill="#ffffff"><circle cx="42" cy="17" r="2.3"/><circle cx="54" cy="17" r="2.3"/></g></g>';
+
+/** 牌头：虫珀 · 拒斧（螳螂 glyph 复用 icon.svg 的同一套路径） */
+function Masthead() {
+  return h("header", { className: "dshp-mast" },
+    h("div", { className: "dshp-mast-mark", "aria-hidden": "true" },
+      h("svg", { viewBox: "0 0 96 96", dangerouslySetInnerHTML: { __html: MANTIS_MARK_INNER } })),
+    h("div", { className: "dshp-mast-txt" },
+      h("b", null, "虫珀 · 拒斧"),
+      h("span", null, "MANTIS · HOST PURGE & DRILL"),
+    ),
+  );
+}
+
 		function UiPrefsSection() {
 			const prefs = useUiPrefs();
 			const row = (key, label, desc) => h("label", {
@@ -9446,7 +9496,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 					borderRadius: 12, padding: "10px 16px 12px", display: "flex", flexDirection: "column",
 				},
 			},
-				h("h3", { style: { margin: "4px 0 2px", fontSize: 14, fontWeight: 700 } }, "界面显示"),
+				h("h3", { style: { margin: "4px 0 2px", fontSize: 14, fontWeight: 700 } }, h("span", { className: "dshp-num" }, "04"), "界面显示"),
 				row("showTopTab", "顶栏页签", "对话 / 轨迹 / 采风 那一条里的「拒斧」页签"),
 				row("showSidebar", "侧栏入口", "左侧栏里的拒斧图标"),
 				row("showInline", "对话栏入口", "对话页与标签行上的拒斧快捷入口"),
