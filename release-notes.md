@@ -1,3 +1,21 @@
+# 1.0.12
+
+## 中文
+
+- **修掉「点了交接，什么都没发生」**。上一版会 spawn 一个 PowerShell 去杀 Electron、挪走 `app.asar`，但它一开始就被连坐杀掉：Chromium 把子进程放进 job object，宿主 `process.exit(0)` 时 job 里所有进程一起死，`detached: true` 在 Windows 只能换进程组、逃不出 job。现场证据是交接脚本 `%TEMP%\mantis-asar-swap-<pid>.ps1` 存在，但 `mantis-desktop.log` 里连一行 `[asar-swap]` 都没有、`app.asar.bak` 与 `rename-pending` 都不存在。
+  - **改用 WMI 创建进程**：新增 `launchEscapedPowerShell()`（`lib/desktop.js`），把 `powershell.exe ... -File <脚本> -WaitPid ... -AsarPath ... -ExePath ...` 整条命令行 base64 传进一个极短的 launcher，由它调 `Invoke-CimMethod -ClassName Win32_Process -MethodName Create` 创建真正的交接脚本。这样脚本的父进程是 `WmiPrvSE`，不在任何 job 里，宿主死了它照跑。launcher 把 `ReturnValue|ProcessId` 写进 `%TEMP%\mantis-asar-swap-launch-<pid>.txt`，`started=true` 才认。
+  - **确认起来了才退出**：`scheduleAsarSwapRestart()` / `restartOfficialHarness()` / `scheduleRestart()` / `core.restartSealedDesktopIfNeeded()` / `host.scheduleRestart()` 全部改成 async，`lib/index.js` 里 8 个调用点补 `await`（含 `/mantis/apply` 的 400ms 延迟交接、`/mantis/restart`、启动自愈、auto-update、`scheduleApplyRestart()`）。launcher 起不来就**不退出宿主**，原样返回 `error`，面板与 `audit.jsonl` 的 `asar_swap` 事件都会记成 `ok:false`，不再出现「显示已交接、其实没动」。
+  - **可诊断性**：`ASAR_SWAP_PS1` 开头加一行 `[asar-swap] begin pid=… waitPid=… asar=…`，下次若脚本没起来，日志里是空的；没 runtime 可用时的自杀兜底由 1500ms 放宽到 **8000ms**（正常情况下脚本会先杀掉本进程，这个定时器只是防万一）。
+- **验证**：`node --check` 全绿（`lib/**/*.js`、`client.js`、`bin/mantis.js`）。用 Electron 的 Node 模式实跑新函数：`launched = {"started":true,"pid":16868}`，父进程立刻 `exit(0)`，3 秒后无害测试脚本仍写出标记 `escaped-ok 16868` —— 即脚本确实脱离了宿主 job object。未执行：真实 apply + 交接（会重启宿主，按约定由用户自己点）。
+
+## English
+
+- **Fixed "I clicked hand off and nothing happened"**. The previous build spawned a PowerShell to kill Electron and rename `app.asar`, but it was killed before it ever ran: Chromium puts children in a job object, so the host's `process.exit(0)` takes every process in the job down with it, and `detached: true` on Windows only changes the process group — it does not escape the job. The evidence: `%TEMP%\mantis-asar-swap-<pid>.ps1` existed, yet `mantis-desktop.log` had not a single `[asar-swap]` line and neither `app.asar.bak` nor `app.asar.rename-pending` was ever created.
+  - **Create the process through WMI**: new `launchEscapedPowerShell()` in `lib/desktop.js` base64-encodes the full `powershell.exe ... -File <script> -WaitPid ... -AsarPath ... -ExePath ...` command line into a tiny launcher, which calls `Invoke-CimMethod -ClassName Win32_Process -MethodName Create`. The swap script's parent becomes `WmiPrvSE`, outside any job, so it keeps running after the host dies. The launcher writes `ReturnValue|ProcessId` to `%TEMP%\mantis-asar-swap-launch-<pid>.txt`, and only `started=true` counts.
+  - **Do not exit until it is really running**: `scheduleAsarSwapRestart()`, `restartOfficialHarness()`, `scheduleRestart()`, `core.restartSealedDesktopIfNeeded()` and `host.scheduleRestart()` are now async, with `await` added at all eight `lib/index.js` call sites (including the 400 ms deferred handoff in `/mantis/apply`, `/mantis/restart`, boot self-heal, auto-update and `scheduleApplyRestart()`). If the launcher cannot start, the host **stays alive** and the route returns `error`; the panel and the `asar_swap` audit event both record `ok:false` instead of claiming a handoff that never happened.
+  - **Diagnosability**: `ASAR_SWAP_PS1` now logs `[asar-swap] begin pid=… waitPid=… asar=…` first, so a future silent failure is immediately visible as a missing line; the no-runtime self-exit fallback was relaxed from 1500 ms to **8000 ms** (the script normally kills this process first; the timer only guards against the odd case).
+- **Verification**: `node --check` clean across `lib/**/*.js`, `client.js` and `bin/mantis.js`. Running the new function under Electron's Node mode gave `launched = {"started":true,"pid":16868}`; the parent exited immediately and the benign test script still wrote `escaped-ok 16868` three seconds later — proof it left the host's job object. Not executed: a real apply + handoff (it restarts the host; per policy the user runs that).
+
 # 1.0.11
 
 ## 中文
