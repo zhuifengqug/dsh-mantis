@@ -21,6 +21,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 加载 lib/index.js 时会解析运行期依赖（唯一的 dependencies 是 yaml），
+      # 仓库里没有 lockfile，所以用 npm install 而不是 npm ci。
+      - name: Install runtime deps
+        run: npm install --omit=dev --no-audit --no-fund
+
       - name: Syntax-check plugin entry
         run: |
           node --check lib/index.js
