@@ -130,7 +130,12 @@
     instructionHint: true
 
 - id: redteam-tools
-  name: @zhuifengqug/dsh-mantis/redteam/tools
+  name: "@zhuifengqug/dsh-mantis/redteam/tools"
+
+# 录制流量工具（P3b）：traffic_search / get / blob / bind 单独一个包，
+# 与资产/漏洞工具分开加载（见 lib/redteam/tools-traffic.js 头注释）。
+- id: redteam-tools-traffic
+  name: "@zhuifengqug/dsh-mantis/redteam/tools-traffic"
 
 - id: agent-instructions
   name: '@deepseek-ai/dsh-agent-instructions'
