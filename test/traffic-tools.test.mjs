@@ -19,7 +19,7 @@ import { join } from 'node:path'
 import { RedteamStore } from '../lib/redteam/store-core.js'
 import { writeFlowToSpool, searchFlows, getFlow } from '../lib/redteam/traffic.js'
 import { apply as applyTrafficTools, setDefineToolLoader } from '../lib/redteam/tools-traffic.js'
-import { apply as applyCoreTools, EXPLORE_TOOL_NAMES } from '../lib/redteam/tools.js'
+import { apply as applyCoreTools, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES } from '../lib/redteam/tools.js'
 
 function fresh(tag) {
   const root = mkdtempSync(join(tmpdir(), 'mantis-traffic-tools-' + tag + '-'))
@@ -236,7 +236,8 @@ test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数
     assert.equal(badGet.ok, false)
     assert.match(badGet.error, /流量不存在/)
 
-    /* tools.js 的工具数量回归：既有 64 个基线 + ARTEX P2 探索工具集（§1.4）。 */
+    /* tools.js 的工具数量回归：既有 64 个基线 + ARTEX P2 探索工具集（§1.4）
+       + ARTEX P4 报告/复测/通知/归档/任务模板/调度工具集（§3）。 */
     const coreTools = []
     applyCoreTools({
       redteam: store,
@@ -246,15 +247,18 @@ test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数
       logger: { warn() {} },
       get: () => undefined,
     })
-    assert.equal(coreTools.length, 64 + EXPLORE_TOOL_NAMES.length,
+    assert.equal(coreTools.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length,
       'tools.js 注册的工具数量变了：' + coreTools.length)
     const coreNames = new Set(coreTools.map((t) => t.name))
     for (const name of ['redteam_engagement_open', 'redteam_asset_query', 'redteam_score_list']) {
       assert.ok(coreNames.has(name), 'tools.js 缺少 ' + name)
     }
-    /* 探索工具集全部登记，且每个都有 execute/描述/参数 */
+    /* 探索工具集 / P4 工具集全部登记 */
     for (const name of EXPLORE_TOOL_NAMES) {
       assert.ok(coreNames.has(name), 'tools.js 缺少探索工具 ' + name)
+    }
+    for (const name of OPS_TOOL_NAMES) {
+      assert.ok(coreNames.has(name), 'tools.js 缺少 P4 工具 ' + name)
     }
     /* 两包工具名不重叠 */
     for (const name of names) assert.ok(!coreNames.has(name), '工具名重复：' + name)

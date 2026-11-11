@@ -17,7 +17,7 @@ import { join } from 'node:path'
 
 import { RedteamStore } from '../lib/redteam/store-core.js'
 import { setDefineToolLoader } from '../lib/redteam/host-tools.js'
-import { apply as applyCoreTools, EXPLORE_TOOL_NAMES } from '../lib/redteam/tools.js'
+import { apply as applyCoreTools, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES } from '../lib/redteam/tools.js'
 
 const L = { limit: -1 } // 通用非法入参（所有非 standalone 工具都会做 optLimit 校验）
 
@@ -297,15 +297,16 @@ for (const c of CASES) {
   })
 }
 
-test('工具清单数量自检：64 基线 + EXPLORE_TOOL_NAMES，全登记且无重名', () => {
+test('工具清单数量自检：64 基线 + 探索工具 + P4 工具，全登记且无重名', () => {
   const h = harness()
   try {
-    assert.equal(h.tools.length, 64 + EXPLORE_TOOL_NAMES.length,
+    assert.equal(h.tools.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length,
       'tools.js 注册总数变了：' + h.tools.length)
     const names = h.tools.map((t) => t.name)
     assert.equal(new Set(names).size, names.length, '存在重复注册的工具名')
     const set = new Set(names)
     for (const name of EXPLORE_TOOL_NAMES) assert.ok(set.has(name), '缺少探索工具 ' + name)
+    for (const name of OPS_TOOL_NAMES) assert.ok(set.has(name), '缺少 P4 工具 ' + name)
     for (const t of h.tools) {
       assert.equal(typeof t.execute, 'function', t.name + ' 缺 execute')
       assert.match(t.description, /[\u4e00-\u9fa5]/, t.name + ' 描述非中文')
@@ -336,9 +337,10 @@ test('探索工具集与既有工具、traffic 工具均不重名；wake 矩阵�
     for (const name of ['redteam_engagement_open', 'redteam_asset_query', 'redteam_unknown_list']) {
       assert.ok(!exploreSet.has(name), '探索工具名撞上既有工具：' + name)
     }
-    /* 既有 64 个工具一个不少 */
-    const nonExplore = h.tools.filter((t) => !exploreSet.has(t.name))
-    assert.equal(nonExplore.length, 64)
+    /* 既有 64 个工具一个不少（plus 新增的 P4 工具集） */
+    const newSets = new Set([...EXPLORE_TOOL_NAMES, ...OPS_TOOL_NAMES])
+    const baseline = h.tools.filter((t) => !newSets.has(t.name))
+    assert.equal(baseline.length, 64)
   } finally {
     h.close()
   }
