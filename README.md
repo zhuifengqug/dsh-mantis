@@ -60,7 +60,7 @@
 
 ### 流量录制与审批门（P3）
 
-- **录制**：MITM 代理只监听 `127.0.0.1`，端口从 `18081` 起、占用就 +1 到 `18099`，明文 absolute-form 与 `CONNECT` 解密都抓；默认不自启。代理只写 spool，宿主进程是唯一写库者并幂等 ingest，重复跑不重复入库；响应体按 sha256 去重，单方向上限 `recordBodyMax`（默认 2 MiB）。
+- **录制**：MITM 代理只监听 `127.0.0.1`，端口从 `18081` 起、占用就 +1 到 `18099`，明文 absolute-form 与 `CONNECT` 解密都抓；默认不自启。启动走包导出 `./redteam/proxy`：脚本或其它插件调 `startMitmProxy({ root })` 即开录（传入靶标库句柄 `db` 时同时记录制会话并挂审批门），插件卸载由 `stopAllProxies` 自动收尾；本版面板不带启停按钮。代理只写 spool，宿主进程是唯一写库者并幂等 ingest，重复跑不重复入库；响应体按 sha256 去重，单方向上限 `recordBodyMax`（默认 2 MiB）。
 - **检索与绑定**：`redteam_traffic_search|get|blob` 检索与查看，`redteam_traffic_bind` 可绑到 `finding_id|vuln_id|step_id|asset_id`，重复绑定幂等。
 - **审批门**：规则两源（`<root>/intercept.json` 与 `intercept_rule` 表），命中 `deny` 优先；`mode` 默认 `off` 直接放行；需批的进 `pending`，`redteam_intercept_decide` 记录谁批、何时、什么理由，放行可带 TTL（默认 3600 秒）。
 - **证书**：`CN=ChongPo MITM CA`，落 `$DSH_HOME/redteam/toolkit/ca`（openssl 优先，`node:crypto` + DER 兜底）；面板只展示、导出与给安装步骤，**信任库必须人手动装**，插件不写任何信任设置。

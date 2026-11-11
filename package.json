@@ -14,6 +14,7 @@
     "./redteam/ui": "./lib/redteam/ui.js",
     "./redteam/tools": "./lib/redteam/tools.js",
     "./redteam/tools-traffic": "./lib/redteam/tools-traffic.js",
+    "./redteam/proxy": "./lib/redteam/proxy.js",
     "./package.json": "./package.json",
     "./icon": "./icon.svg",
     "./locale/*.json": "./locale/*.json"
