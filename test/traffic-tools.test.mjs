@@ -163,7 +163,7 @@ test('traffic.bind 写入绑定表并回填 flow，可按 finding_id 检索；�
   }
 })
 
-test('工具清单：tools-traffic 注册 4 个工具且 execute 走通真实数据；tools.js 仍是 64 个', async () => {
+test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数据；tools.js 仍是 64 个', async () => {
   const { store, engagement, spool, root } = fresh('tools')
   const previousLoader = setDefineToolLoader((spec) => spec)
   try {
@@ -180,6 +180,9 @@ test('工具清单：tools-traffic 注册 4 个工具且 execute 走通真实数
     applyTrafficTools(fakeCtx)
     const names = trafficTools.map((t) => t.name).sort()
     assert.deepEqual(names, [
+      'redteam_intercept_check',
+      'redteam_intercept_decide',
+      'redteam_intercept_rule',
       'redteam_traffic_bind',
       'redteam_traffic_blob',
       'redteam_traffic_get',
