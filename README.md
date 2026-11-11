@@ -4,7 +4,9 @@
 
 <h1 align="center">虫珀 · 拒斧（mantis）</h1>
 
-<p align="center"><strong>1.0.10</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
+<p align="center"><strong>1.0.13</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
+
+> ⚠️ **仅限已获授权的攻防演练、渗透测试与本机自检使用。** 未授权扫描或入侵他人系统违法，责任由使用者自负。
 
 拒斧装在你自己的机器上，把 DeepSeek Harness 的提示词、审批、沙箱策略摊开，按需清洗、逐条回滚。只改本机 `@deepseek-ai` 包与本地配置，不碰远端。
 
@@ -70,9 +72,17 @@ mantis --edit        # 打开提示词
 - 只面向本机：攻击类任务只允许 loopback 与 RFC1918，域名先解析再判 IP，`.lab` 这类后缀不算白名单。
 - 本构建不含技能库与知识库；不提供公网扫描、第三方站点攻击载荷或游戏作弊相关能力。
 
+## 数据与隐私（硬约束）
+
+- **仓库公开**：不写入演练战绩、逐单位成果明细、内网段清单、凭据真值。文档、提交、Issue、PR 里的示例一律用 `<靶标单位>`、`<N> 家`、`<私网 C 段>` 占位。
+- **只在本机读写**：资产、漏洞、凭据、会话、WebShell 与隧道等事实，落在 `$DSH_HOME/redteam` 的本地 SQLite 与 `$DSH_HOME` 下的文件里；不上传、无遥测。
+- **卸载只删本机**：清除注入文件、规则库与插件本体，不触碰任何远端。
+
 ## 安装
 
-前置：Node.js ≥ 18；`dsh` 在 PATH 上；宿主是 **0.2.2-rc.1**。本版不再承诺 0.2.1 及更早版本。
+前置：Node.js ≥ **22.13**（事实库用 `node:sqlite`）；`dsh` 在 PATH 上；宿主是 **0.2.2-rc.1**。本版不再承诺 0.2.1 及更早版本。
+
+建议在一次性虚拟机（如 Kali）里跑，用完即弃；插件**不代装**任何扫描或渗透工具，环境里的工具由使用者自备。
 
 安装和「应用」是两件事：装完只是让宿主认识这个插件，**应用**才真正改写宿主文件。
 
@@ -83,7 +93,7 @@ mantis --edit        # 打开提示词
 **从 npm 装（推荐）**：
 
 ```powershell
-dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.0.10
+dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.0.13
 ```
 
 包页面：https://www.npmjs.com/package/@zhuifengqug/dsh-mantis
@@ -91,8 +101,8 @@ dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.0.10
 **用 GitHub Release 的 tgz**：
 
 ```powershell
-# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.0.10
-dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.10.tgz
+# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.0.13
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.13.tgz
 ```
 
 **在仓库目录里直接装（本地改动、开发时用）**：
@@ -105,7 +115,7 @@ dsh plugin --profile desktop add .
 
 ```powershell
 npm pack
-dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.10.tgz
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.13.tgz
 ```
 
 这一步会做两件事：把包写进该 profile 的 `dependencies`，并把 `@zhuifengqug/dsh-mantis` 追加到 `dsh.profile.bundles`。**只加依赖、不加 bundles，宿主不会加载插件面板。**
@@ -163,3 +173,10 @@ $env:DSH_BASE = "D:\Deepseek Harness\resources\app.asar\dsh\node_modules\@deepse
 ### 卸载
 
 面板 → 清洗 → **卸载**；或 `node bin\mantis.js --uninstall`。会先还原补丁再删插件本体，并把仍指向 `redteam` 预设的默认项改回 `standard`。
+
+## 合规
+
+- 仅限已获授权范围：红蓝演练、渗透测试、本机自检、教学。
+- 未授权扫描、入侵、留后门、横向移动均属违法；本插件不提供任何绕过授权的手段。
+- 使用者对目标范围、数据与操作后果负责；公开材料不得包含任何敏感信息（见上一节）。
+- 许可证：Apache-2.0。

@@ -9477,7 +9477,7 @@ function Masthead() {
 
 		function UiPrefsSection() {
 			const prefs = useUiPrefs();
-			const row = (key, label, desc) => h("label", {
+			const row = (key, label) => h("label", {
 				style: { display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 2px", cursor: "pointer" },
 			},
 				h("input", {
@@ -9485,10 +9485,7 @@ function Masthead() {
 					onChange: (e) => writeUiPrefs({ [key]: !!e.target.checked }),
 					style: { marginTop: 3, accentColor: "var(--dsw-alias-brand-primary, #6dbf8c)" },
 				}),
-				h("span", { style: { display: "flex", flexDirection: "column", gap: 2 } },
-					h("span", { style: { fontWeight: 600 } }, label),
-					h("span", { style: { fontSize: 12, opacity: 0.72 } }, desc),
-				),
+				h("span", { style: { fontWeight: 600 } }, label),
 			);
 			return h("section", {
 				style: {
@@ -9497,9 +9494,9 @@ function Masthead() {
 				},
 			},
 				h("h3", { style: { margin: "4px 0 2px", fontSize: 14, fontWeight: 700 } }, h("span", { className: "dshp-num" }, "04"), "界面显示"),
-				row("showTopTab", "顶栏页签", "对话 / 轨迹 / 采风 那一条里的「拒斧」页签"),
-				row("showSidebar", "侧栏入口", "左侧栏里的拒斧图标"),
-				row("showInline", "对话栏入口", "对话页与标签行上的拒斧快捷入口"),
+				row("showTopTab", "顶栏页签"),
+				row("showSidebar", "侧栏入口"),
+				row("showInline", "对话栏入口"),
 			);
 		}
 
