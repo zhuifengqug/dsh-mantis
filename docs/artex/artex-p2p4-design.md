@@ -571,10 +571,10 @@ redteam_traffic_bind({                    // 与 finding/vuln/步骤绑定（录
 **存放路径**（全部在 `root` 下，不碰系统目录）：
 
 ```
-<root>/mitm/ca/ca.key        私钥（文件权限 0600；绝不经工具返回原文）
-<root>/mitm/ca/ca.crt        自签 CA 证书
-<root>/mitm/ca/ca.srl        序列号
-<root>/mitm/ca/leafs/<host>.{crt,key}   叶证书缓存（可选，按需现签也行）
+<root>/toolkit/ca/ca.key        私钥（文件权限 0600；绝不经工具返回原文）
+<root>/toolkit/ca/ca.crt        自签 CA 证书
+<root>/toolkit/ca/ca.srl        序列号
+<root>/toolkit/ca/leafs/<host>.{crt,key}   叶证书缓存（可选，按需现签也行）
 ```
 
 **生成策略 `ensureCa(dir)`**（`ca.js`）：
