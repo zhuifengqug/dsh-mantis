@@ -1,6 +1,6 @@
 ---
 name: kimi-webbridge
-description: 用月之暗面 Kimi 浏览器扩展（WebBridge）驱动用户真实 Chrome/Chromium：导航、读取页面、点击、填表、执行 JS、截图
+description: 用月之暗面 Kimi 浏览器扩展（原 WebBridge，现名「Kimi 浏览器扩展」）驱动用户真实 Chrome/Chromium：导航、读取页面、点击、填表、执行 JS、截图
 whenToUse: 需要复用浏览器登录态访问后台/需要 JS 渲染的页面/需要真实浏览器指纹时
 role: recon
 enabled: true
@@ -10,12 +10,14 @@ enabled: true
 
 已安装并运行：守护进程 **v2.0.8**（systemd 服务 `kimi-webbridge`，开机自启），监听 `127.0.0.1:10086`，二进制 `~/.kimi-webbridge/bin/kimi-webbridge`。
 
+> **版本**：产品已改名，原「Kimi WebBridge」现名「**Kimi 浏览器扩展**」；扩展最新版 **2.0.32**（2026-11-03），由企业策略自动从 Chrome 应用商店更新，无需手动升。守护进程按本技能 v2.0.8 流程维护即可（`status` 的 `update_available` 非空时再按 systemd 停机→upgrade→启机 升级）。
+
 ## 当前状态（2026-09 实测）
 - 守护进程：**由 systemd 管理**（`/etc/systemd/system/kimi-webbridge.service`，`enabled` + `active`，`Restart=on-failure`）。
   查状态：`systemctl status kimi-webbridge`；重启用 `sudo systemctl restart kimi-webbridge`。
   **不要再手动跑 `kimi-webbridge start`/`upgrade`**，那会起一个游离进程、systemd 反而变 inactive；要升级用
   `sudo systemctl stop kimi-webbridge && ~/.kimi-webbridge/bin/kimi-webbridge upgrade && sudo systemctl start kimi-webbridge`。
-- 扩展：**Kimi WebBridge v2.0.8，由企业策略自动从 Chrome 应用商店安装**（扩展 ID `fldmhceldgbpfpkbgopacenieobmligc`）。
+- 扩展：**Kimi 浏览器扩展（原 WebBridge）v2.0.32，由企业策略自动从 Chrome 应用商店安装并自动更新**（扩展 ID `fldmhceldgbpfpkbgopacenieobmligc`）。
   策略文件 `/etc/opt/chrome/policies/managed/kimi-webbridge.json` 与 `/etc/chromium/policies/managed/kimi-webbridge.json`
   都设置了 `ExtensionSettings.force_installed` + `ExtensionInstallForcelist`，所以 **Chrome / Chromium 的任何 profile 打开即自带扩展、自动更新、常驻启用**。
 - Chrome 137+ 已忽略 `--load-extension`（`--disable-features=…` 的逃生口也失效），所以**不要再走解压加载路线**。

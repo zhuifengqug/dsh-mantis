@@ -97,3 +97,14 @@ mkdir -p "$DSH_HOME/redteam" && date -Is > "$DSH_HOME/redteam/.setup-complete"
 | 全部都没有 | 只做纯被动信息收集与资产梳理 | 明确告诉用户"这次只能做到信息收集阶段" |
 
 **降级决定要写进汇报**：用户需要知道这次是在什么条件下打的。
+
+## 六、本仓可选：一键取工具（需你自己执行）
+
+仓库随包提供 `scripts/install-redteam-tools.ps1`：把 `fscan / subfinder / naabu / nuclei` 的 Windows amd64 构建下载到
+`$DSH_HOME\redteam\toolkit\bin` 并加入用户 PATH（版本锁见脚本里的 `$Pins`，当前 fscan v2.2.2 / subfinder v2.17.0 /
+naabu v2.7.0 / nuclei v3.11.1）。插件运行时**不会**自动下载或执行任何安全工具，这一步始终由你手动触发：
+
+```powershell
+pwsh -File scripts/install-redteam-tools.ps1          # 全部
+pwsh -File scripts/install-redteam-tools.ps1 -Only subfinder,naabu,nuclei
+```

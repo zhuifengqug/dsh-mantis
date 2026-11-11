@@ -16,8 +16,8 @@ enabled: true
 | 项 | 值 |
 | --- | --- |
 | 二进制 | `/usr/bin/nuclei`（v3.11.1） |
-| 模板库 | `~/.local/nuclei-templates`（**13,742 个模板**） |
-| 模板版本 | v10.4.9（更新于 2026-09-18） |
+| 模板库 | `~/.local/nuclei-templates`（**13,700+ 个模板**，以 `-tl` 实际为准） |
+| 模板版本 | v10.5.1（更新于 2026-10-23） |
 | 配置 | `~/.config/nuclei/config.yaml`、`.templates-config.json` |
 
 模板分布（写报告时按类引用）：`http/` 11,364（其中 `http/cves` 4,320、`http/misconfiguration` 981、
@@ -25,6 +25,8 @@ enabled: true
 `network/` 282、`dast/` 251。
 
 **更新模板**：`nuclei -update-templates`（频率不超过每周一次；更新后先跑 `-tl` 确认没坏）。
+
+> **版本**：上游模板最新 **v10.5.1**（2026-10-23），本技能按 v10.4.9 编写；v10.5.1 新增 68 个模板 / 54 个 CVE。二进制 `v3.11.1` 已是当前最新。跑一次 `nuclei -update-templates` 拉到最新模板即可。
 
 ## 基本用法
 

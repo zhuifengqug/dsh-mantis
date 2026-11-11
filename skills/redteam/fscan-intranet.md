@@ -1,6 +1,6 @@
 ---
 name: fscan-intranet
-description: fscan v2.2.1 内网综合扫描：存活探测、端口/服务识别、28 类弱口令爆破、未授权访问与高危漏洞（MS17-010/SMBGhost）、Redis 利用与 SOCKS5 隧道
+description: fscan v2.2.2 内网综合扫描：存活探测、端口/服务识别、28 类弱口令爆破、未授权访问与高危漏洞（MS17-010/SMBGhost）、Redis 利用与 SOCKS5 隧道
 whenToUse: 进入内网（跳板机/WebShell/socks5 隧道）后快速铺开资产面、找弱口令与未授权、把可达性变成可打点
 role: internal
 enabled: true
@@ -24,13 +24,15 @@ enabled: true
 ## 二进制
 
 ```
-本机 : $DSH_HOME/redteam/toolkit/fscan/fscan          （v2.2.1，含本地插件）
+本机 : $DSH_HOME/redteam/toolkit/fscan/fscan          （v2.2.2，含本地插件；本机若仍为 v2.2.1 请升级）
        $DSH_HOME/redteam/toolkit/fscan/fscan_windows_x64.exe
        $DSH_HOME/redteam/toolkit/fscan/fscan_linux_arm64
 VPS  : http://<你的VPS_IP>:9100/fscan                     （技能 vps-reverse-shell 的载荷目录）
 ```
 
 安装脚本只下载 linux/amd64 的 `fscan`。Windows 与 ARM 文件需自行补上；当前平台只用上面的主文件。
+
+> **版本**：上游最新 **v2.2.2**（2026-10-01）。本技能参数按 v2.2.1 实测整理，向后兼容；v2.2.2 修复若干参数/端口/POC 解析坑，新增 `-list-plugins`。本机二进制请自行更新到最新（换 `toolkit/fscan/fscan` 即可）。
 
 **传到跳板机/目标**（内网扫描必须在能到达内网的位置执行）：
 
