@@ -4,7 +4,7 @@
 
 <h1 align="center">虫珀 · 拒斧（mantis）</h1>
 
-<p align="center"><strong>1.0.13</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
+<p align="center"><strong>1.1.0</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
 
 > ⚠️ **仅限已获授权的攻防演练、渗透测试与本机自检使用。** 未授权扫描或入侵他人系统违法，责任由使用者自负。
 
@@ -19,11 +19,56 @@
 | 页面 | 做什么 |
 |---|---|
 | **清洗** | 分组显示补丁状态，应用 / 还原 / 卸载，编辑提示词，管理多套规则集 |
-| **演练台** | 授权后使用本机资产与环境；本构建只允许本机实验网段，且不随包附带技能库与知识库 |
+| **演练台** | 授权后使用本机资产与环境；12 个页签覆盖资产、漏洞、探索图、流量与审批、报告等，事实全部落在本机 |
 
 首次打开演练台要先读须知、等倒计时、读完并勾选三项；清洗不需要这一步。
 
 ![清洗页](docs/preview/dock-clean.png)
+
+### 演练台（12 个页签）
+
+| 页签 | 做什么 |
+|---|---|
+| 资产测绘 / 环境适配 / 智能体 / 会话隧道 | 资产树、环境指纹、智能体与子会话、隧道会话 |
+| 漏洞战果 / 攻击链 / 得分目标 / 报告 | 漏洞台账、链路视图、计分与目标、报告生成与历史 |
+| **探索** | 探索图：目标、轮次、意图前沿、节点 / 边 / 约束、资产覆盖率（P2） |
+| **流量/审批** | 抓到的流量检索与绑定、待批请求放行 / 拒绝、MITM CA 信息与导出（P3） |
+| 知识库 / 技能库 | 本机知识条目与随包技能 |
+
+### 探索图（P2）
+
+引擎被动驱动，没有常驻进程、没有定时器：写类工具在返回值里带 `wake` 回声，指挥据此决定再派、等、收官还是重规划。一次完整探索：
+
+1. `redteam_explore_open` 开探索图，`redteam_explore_goal_add` 定目标与量化判据（`min_findings` 默认 1、`min_facts`、`min_coverage_pct`、`require_no_open_intents`）。
+2. `redteam_explore_plan {action:'begin'}` 起一轮，返回 briefing 与服务端算出的 `decision`（`dispatch|wait|prove|replan`）。
+3. `redteam_explore_intent_brief` 把一条意图生成任务书（可整段粘进子会话）；执行者 `redteam_explore_intent_claim` 用 CAS 领取（`changes===0` 表示已被领或不存在，换下一条）。
+4. 干完用 `redteam_explore_node_add` 写 fact / finding，`payload.provenance` 标 `observed`（有工具回显）或 `inferred`（由已有事实推断）；`redteam_explore_intent_update` 收尾并派生后续意图或资产锚。
+5. `redteam_explore_prove` 收官：还有 `open` / `running` 意图会被拒（除非 `force:true` 加 `reason`），四条判据全过才写审计节点。
+
+子会话异常退出后 `requeueOrphans` 把它挂着的 `running` 意图放回 `open`，`blocked_reason` 记为 `worker-exit-unexpected`；`running` 超 30 分钟列为 `stale_running` 进 briefing。开关：`settings.redteam_engine` 取 `commander`（默认）或 `frontier`，环境变量 `REDTEAM_ENGINE` 次之。工具共 29 个：23 个标准名（含 `redteam_engine`）+ 6 个 `redteam_explore_*` 别名（`create` / `add_node` / `add_edge` / `list_frontier` / `overview` / `constraint`）。
+
+### 报告 / 复测 / 归档 / 模板 / 调度（P4）
+
+全部按需调用，没有后台作业：
+
+- `redteam_report_build`：`kind` 取 `score|finding|coverage|final`，写 `<靶标目录>/reports/<kind>-<时间戳>-<n>.md`，`manifest` 同时存全文。
+- `redteam_retest_request|list|conclude`：复测三态 `pending|running|done`，结论 `reproduced|fixed|inconclusive`；`fixed` 把漏洞状态推成 `fixed`。
+- `redteam_notify_send|test`：占位通道，只校验、脱敏（`Authorization` / `Cookie` / 密码字段打 `[REDACTED]`）、正文截断 4096 字符，恒返回 `requests_made:0`；默认 `enabled:false`，URL 只能由面板配置。
+- 归档：靶标归档后写类工具返回 `error_kind='archived'`，读取与报告照常；解除归档只在面板。
+- `redteam_template_list|apply|save`：随包 `default` / `web`，`<root>/templates/*.json` 同名优先；`apply` 不覆盖已有目标与约束。
+- `redteam_schedule_add|list`：只记 `due|done|skipped|cancelled` 状态，到期条数由 `wake.scheduled_due` 与面板列出，执行仍要显式调工具。
+
+### 流量录制与审批门（P3）
+
+- **录制**：MITM 代理只监听 `127.0.0.1`，端口从 `18081` 起、占用就 +1 到 `18099`，明文 absolute-form 与 `CONNECT` 解密都抓；默认不自启。代理只写 spool，宿主进程是唯一写库者并幂等 ingest，重复跑不重复入库；响应体按 sha256 去重，单方向上限 `recordBodyMax`（默认 2 MiB）。
+- **检索与绑定**：`redteam_traffic_search|get|blob` 检索与查看，`redteam_traffic_bind` 可绑到 `finding_id|vuln_id|step_id|asset_id`，重复绑定幂等。
+- **审批门**：规则两源（`<root>/intercept.json` 与 `intercept_rule` 表），命中 `deny` 优先；`mode` 默认 `off` 直接放行；需批的进 `pending`，`redteam_intercept_decide` 记录谁批、何时、什么理由，放行可带 TTL（默认 3600 秒）。
+- **证书**：`CN=ChongPo MITM CA`，落 `$DSH_HOME/redteam/toolkit/ca`（openssl 优先，`node:crypto` + DER 兜底）；面板只展示、导出与给安装步骤，**信任库必须人手动装**，插件不写任何信任设置。
+- 面板「流量/审批」三子页：流量检索与预览 / 绑定、审批处理、证书信息与导出。
+
+### 红队工具集
+
+红队工具共 **111 个**：既有 64 个（资产、漏洞、链路、得分、报告、知识库等）+ 29 个 `redteam_explore_*` + 11 个 P4 `redteam_*` + 7 个 `redteam_traffic_*` / `redteam_intercept_*`。既有工具签名未改，关闭与回滚路径未动。
 
 ### 宿主清洗
 
@@ -69,14 +114,16 @@ mantis --edit        # 打开提示词
 
 ### 边界
 
-- 只面向本机：攻击类任务只允许 loopback 与 RFC1918，域名先解析再判 IP，`.lab` 这类后缀不算白名单。
-- 本构建不含技能库与知识库；不提供公网扫描、第三方站点攻击载荷或游戏作弊相关能力。
+- **只动本机**：补丁只写本机 `@deepseek-ai` 包与 `$DSH_HOME` 下的文件；面板与工具只经宿主本机接口与本地 SQLite，不向远端发数据。
+- **区域门禁不在插件里**：`lib/net-scope.js` 明确不带门禁，本构建不判断公网 / 内网、也不拦目标；范围由使用者按自己的授权界定，插件不替人兜底。
+- 演练台首次打开须读须知、等倒计时并勾选三项；随包提供 43 个红队技能，知识库由使用者自行积累。
 
 ## 数据与隐私（硬约束）
 
 - **仓库公开**：不写入演练战绩、逐单位成果明细、内网段清单、凭据真值。文档、提交、Issue、PR 里的示例一律用 `<靶标单位>`、`<N> 家`、`<私网 C 段>` 占位。
 - **只在本机读写**：资产、漏洞、凭据、会话、WebShell 与隧道等事实，落在 `$DSH_HOME/redteam` 的本地 SQLite 与 `$DSH_HOME` 下的文件里；不上传、无遥测。
 - **卸载只删本机**：清除注入文件、规则库与插件本体，不触碰任何远端。
+- **演练台数据同为本机**：抓到的流量体按 sha256 存本机 blob，审批记录与报告在本机 SQLite，CA 私钥只在本机 `toolkit/ca` 生成与导出；通知通道默认关闭且不发请求。
 
 ## 安装
 
@@ -93,7 +140,7 @@ mantis --edit        # 打开提示词
 **从 npm 装（推荐）**：
 
 ```powershell
-dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.0.13
+dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.1.0
 ```
 
 包页面：https://www.npmjs.com/package/@zhuifengqug/dsh-mantis
@@ -101,8 +148,8 @@ dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.0.13
 **用 GitHub Release 的 tgz**：
 
 ```powershell
-# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.0.13
-dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.13.tgz
+# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.1.0
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.1.0.tgz
 ```
 
 **在仓库目录里直接装（本地改动、开发时用）**：
@@ -115,7 +162,7 @@ dsh plugin --profile desktop add .
 
 ```powershell
 npm pack
-dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.0.13.tgz
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.1.0.tgz
 ```
 
 这一步会做两件事：把包写进该 profile 的 `dependencies`，并把 `@zhuifengqug/dsh-mantis` 追加到 `dsh.profile.bundles`。**只加依赖、不加 bundles，宿主不会加载插件面板。**
