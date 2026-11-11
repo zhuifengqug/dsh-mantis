@@ -5,7 +5,7 @@
  *   1. 检索：traffic.search 自动 ingest 代理 spool，并按 host / q / status / limit 过滤；
  *   2. 绑定：traffic_bind 写 traffic_binding + 回填 traffic_flow.finding_id，之后按 finding_id 可查；
  *   3. 非法入参：id/which/绑定目标非法时给 bad_input，不静默吞掉；
- *   4. 工具清单：tools-traffic 注册的 4 个工具与 tools.js 的 67 个工具数量正确（防重构漂移）。
+ *   4. 工具清单：tools-traffic 的工具数与 tools.js 的 64 个基线 + 探索工具数正确（防重构漂移）。
  *
  * 工具层测试用真实的 RedteamStore + 真实的流量数据，只把宿主 defineTool 换成恒等实现
  * （`setDefineToolLoader`），因此 execute 走的是与线上完全相同的代码路径。
@@ -19,7 +19,7 @@ import { join } from 'node:path'
 import { RedteamStore } from '../lib/redteam/store-core.js'
 import { writeFlowToSpool, searchFlows, getFlow } from '../lib/redteam/traffic.js'
 import { apply as applyTrafficTools, setDefineToolLoader } from '../lib/redteam/tools-traffic.js'
-import { apply as applyCoreTools } from '../lib/redteam/tools.js'
+import { apply as applyCoreTools, EXPLORE_TOOL_NAMES } from '../lib/redteam/tools.js'
 
 function fresh(tag) {
   const root = mkdtempSync(join(tmpdir(), 'mantis-traffic-tools-' + tag + '-'))
@@ -163,7 +163,7 @@ test('traffic.bind 写入绑定表并回填 flow，可按 finding_id 检索；�
   }
 })
 
-test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数据；tools.js 仍是 64 个', async () => {
+test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数据；tools.js = 64 基线 + 探索工具', async () => {
   const { store, engagement, spool, root } = fresh('tools')
   const previousLoader = setDefineToolLoader((spec) => spec)
   try {
@@ -236,7 +236,7 @@ test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数
     assert.equal(badGet.ok, false)
     assert.match(badGet.error, /流量不存在/)
 
-    /* tools.js 的工具数量回归：重构（host-tools.js 抽出）后仍是 67 个 */
+    /* tools.js 的工具数量回归：既有 64 个基线 + ARTEX P2 探索工具集（§1.4）。 */
     const coreTools = []
     applyCoreTools({
       redteam: store,
@@ -246,10 +246,15 @@ test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数
       logger: { warn() {} },
       get: () => undefined,
     })
-    assert.equal(coreTools.length, 64, 'tools.js 注册的工具数量变了：' + coreTools.length)
+    assert.equal(coreTools.length, 64 + EXPLORE_TOOL_NAMES.length,
+      'tools.js 注册的工具数量变了：' + coreTools.length)
     const coreNames = new Set(coreTools.map((t) => t.name))
     for (const name of ['redteam_engagement_open', 'redteam_asset_query', 'redteam_score_list']) {
       assert.ok(coreNames.has(name), 'tools.js 缺少 ' + name)
+    }
+    /* 探索工具集全部登记，且每个都有 execute/描述/参数 */
+    for (const name of EXPLORE_TOOL_NAMES) {
+      assert.ok(coreNames.has(name), 'tools.js 缺少探索工具 ' + name)
     }
     /* 两包工具名不重叠 */
     for (const name of names) assert.ok(!coreNames.has(name), '工具名重复：' + name)
