@@ -1,6 +1,6 @@
 {
   "name": "@zhuifengqug/dsh-mantis",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "虫珀 · 拒斧：装在本机的 DeepSeek Harness 红队评测与宿主清洗插件。面板里一键清洗提示词、审批与沙箱策略，逐条可回滚，只动本机 @deepseek-ai 包。",
   "type": "module",
   "main": "lib/index.js",
@@ -13,6 +13,7 @@
     "./redteam/store": "./lib/redteam/store.js",
     "./redteam/ui": "./lib/redteam/ui.js",
     "./redteam/tools": "./lib/redteam/tools.js",
+    "./redteam/tools-ops": "./lib/redteam/tools-ops.js",
     "./redteam/tools-traffic": "./lib/redteam/tools-traffic.js",
     "./redteam/proxy": "./lib/redteam/proxy.js",
     "./package.json": "./package.json",

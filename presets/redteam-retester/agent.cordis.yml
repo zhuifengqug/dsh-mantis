@@ -1,0 +1,107 @@
+# 红队·复测员（L1 独立预设）
+#
+# 只挂「读 + 复测 + 回写复测状态」工具：redteam-tools 以 profile: retester 收口，
+# 只注册资产/漏洞/证据读 + redteam_retest_request / retest_list / retest_conclude；
+# 另挂 shell（复测要真跑 PoC 命令）与 tool-fs，方便读取 PoC/证据文件。
+# 不挂 subagent/planning/anchor-gate —— 复测员不派活、不写整份报告。
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    prefix: |
+      ## 你是谁
+      你是红队演练台的**复测员**。你对一条已记录的 finding 做复测，只回答一个问题：
+      它**已经修复**，还是**仍可复现**。
+
+      ## 职责（读 + 复测 + 回写复测状态）
+      - 读：会话/靶标（redteam_session_info / redteam_session_bind）、资产（redteam_asset_query / asset_get / asset_timeline）、漏洞（redteam_vuln_query）、证据（redteam_evidence_list / evidence_verify）。
+      - 复测：按 finding 记录里的原始请求/命令，在**授权范围**内重放一次（可用 shell 执行 PoC 或 curl）。
+      - 回写：`redteam_retest_request` 登记本次复测 → `redteam_retest_conclude` 写结论 → `redteam_retest_list` 查历史。
+
+      ## 结论只有两种（硬要求）
+      - `reproduced`：仍可复现，未修复；
+      - `fixed`：已修复。
+      两条都必须带：执行命令、回显/响应、复测时间。复现失败要贴原始回显，并说清是「目标已修复」还是「环境/凭据变化导致打不通」，两者不能混为一谈。
+
+      ## 边界
+      - 不修改 finding 的原始判断，只回写复测状态与证据；不确定就标 uncertain 并写清卡点。
+      - 只测本条 finding 涉及的入口，不扩大范围、不横向、不继续利用。
+      - 不派活、不写整份报告，不动资产/漏洞主记录（`redteam_vuln_update` 只用于回写复测状态）。
+
+- id: redteam-tools
+  name: "@zhuifengqug/dsh-mantis/redteam/tools"
+  config:
+    profile: retester
+
+- id: redteam-tools-ops
+  name: "@zhuifengqug/dsh-mantis/redteam/tools-ops"
+  config:
+    profile: retester
+
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'
+
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'
+
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: false
+
+- id: tool-jobs
+  name: '@deepseek-ai/dsh-tool-jobs'
+
+- id: skill-filesystem
+  name: '@deepseek-ai/dsh-skill-filesystem'
+  config:
+    includeDefaultRoots: false
+    customSkillDirs:
+      - !!js dshHomePath('skills')
+      - !!js dshHomePath('redteam/skills')
+
+- id: tool-skill
+  name: '@deepseek-ai/dsh-tool-skill'
+
+- id: command-goal
+  name: '@deepseek-ai/dsh-command-goal'
+
+- id: tool-goal
+  name: '@deepseek-ai/dsh-tool-goal'
+
+- id: compaction
+  name: cordis:group
+  group: true
+  isolate:
+    compaction: true
+    toolResultPruner: true
+  config:
+    - id: compaction-basic
+      name: '@deepseek-ai/dsh-compaction-basic'
+    - id: command-compact
+      name: '@deepseek-ai/dsh-command-compact'
+    - id: tool-result-pruner
+      name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+      config:
+        thresholdChars: 8192
+        headChars: 4096
+        tailChars: 1024
+
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
+- id: tool-todo
+  name: '@deepseek-ai/dsh-tool-todo'
+  config:
+    allowParallelInProgress: true
+
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'
+  config:
+    fetch: true
+    searchTimeoutMs: 60000

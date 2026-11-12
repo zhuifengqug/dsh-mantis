@@ -1,0 +1,100 @@
+# 红队·报告员（L1 独立预设）
+#
+# 只挂「读 + 写报告」两路工具：redteam-tools 以 profile: reporter 收口，
+# 只注册资产/漏洞/证据/得分/攻击链的读工具与 redteam_report_build /
+# template_list / template_apply；再挂 redteam-tools-traffic 读流量证据。
+# 不挂 shell、不挂 subagent/planning/anchor-gate —— 报告员不动手、不派活。
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    prefix: |
+      ## 你是谁
+      你是红队演练台的**报告员**。你只做一件事：把已经落库的结果写成**能直接交付的报告**。
+
+      ## 职责（只读 + 写报告）
+      - 读：会话/靶标（redteam_session_info / redteam_session_bind）、资产（redteam_asset_query / asset_get / asset_stats / asset_graph / asset_timeline）、漏洞（redteam_vuln_query）、得分（redteam_score_list / score_report）、证据（redteam_evidence_list / evidence_verify / unverified_count）、攻击链（redteam_attack_chain / attack_path）、POC（redteam_poc_search / poc_get / poc_list）、入口清单（redteam_sessions / web_list / domain_index / shot_list / credential_list / access_list / webshell_list / tunnel_list / chain / report / roles）。
+      - 写：只用 `redteam_report_build` 产出结构化报告（kind=score|finding|coverage|final），可配合 `redteam_template_list` / `redteam_template_apply` 套模板。
+
+      ## 报告口径（硬要求）
+      1. 每条结论必须可复现：目标 → 拿到什么 → 怎么拿到（命令/请求）→ 原始请求或回显。
+      2. 严格区分置信度：observed 可直接写；derived 必须附原始请求；claimed / inferred **禁止**写成「已拿到」，只能写「已上报，待核实」。`redteam_unverified_count` > 0 时，报告开头提醒「还有 N 条未核实」。
+      3. 只收录真实、能复现的成果；没落库的发现当没发生，不写。
+
+      ## 边界
+      - 你不动手：不扫描、不爆破、不利用、不复测、不建隧道。
+      - 你不派活、不规划子智能体；不改资产/漏洞主记录（报告产出本身除外）。
+      - 用户要进度或报告就直接产出；缺数据就列清「还缺哪类证据」，不臆造。
+
+- id: redteam-tools
+  name: "@zhuifengqug/dsh-mantis/redteam/tools"
+  config:
+    profile: reporter
+
+- id: redteam-tools-ops
+  name: "@zhuifengqug/dsh-mantis/redteam/tools-ops"
+  config:
+    profile: reporter
+
+- id: redteam-tools-traffic
+  name: "@zhuifengqug/dsh-mantis/redteam/tools-traffic"
+
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: false
+
+- id: tool-jobs
+  name: '@deepseek-ai/dsh-tool-jobs'
+
+- id: skill-filesystem
+  name: '@deepseek-ai/dsh-skill-filesystem'
+  config:
+    includeDefaultRoots: false
+    customSkillDirs:
+      - !!js dshHomePath('skills')
+      - !!js dshHomePath('redteam/skills')
+
+- id: tool-skill
+  name: '@deepseek-ai/dsh-tool-skill'
+
+- id: command-goal
+  name: '@deepseek-ai/dsh-command-goal'
+
+- id: tool-goal
+  name: '@deepseek-ai/dsh-tool-goal'
+
+- id: compaction
+  name: cordis:group
+  group: true
+  isolate:
+    compaction: true
+    toolResultPruner: true
+  config:
+    - id: compaction-basic
+      name: '@deepseek-ai/dsh-compaction-basic'
+    - id: command-compact
+      name: '@deepseek-ai/dsh-command-compact'
+    - id: tool-result-pruner
+      name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+      config:
+        thresholdChars: 8192
+        headChars: 4096
+        tailChars: 1024
+
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
+- id: tool-todo
+  name: '@deepseek-ai/dsh-tool-todo'
+  config:
+    allowParallelInProgress: true
+
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'
+  config:
+    fetch: true
+    searchTimeoutMs: 60000
