@@ -8043,7 +8043,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
        流量 / 审批（ARTEX P3）：录制流量检索 + 证据绑定 + MITM 审批门 + 自签 CA
        证书页只读信息与导出文件；把 CA 装进系统/浏览器信任库永远由用户手动做。
        ════════════════════════════════════════════════════════════════════ */
-    const TRAFFIC_SUBS = [['flows', '流量'], ['approval', '审批'], ['ca', '证书']]
+    const TRAFFIC_SUBS = [['flows', '流量'], ['approval', '审批']]
     const FLOW_GRID = '62px 52px minmax(0,1fr) 108px'
     const PEND_GRID = '74px 62px minmax(0,1fr) 96px'
     const statusTone = (s) => {
@@ -8123,6 +8123,21 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
           .catch(() => { /* 读不到录制状态不打断流量列表 */ })
       }
       React.useEffect(loadProxy, [eng, refreshKey])
+      /* 零手动（方案 A）：进入靶标的「流量」页即自动开始录制，子进程环境随之注入。
+         已在录（同一靶标）就只贴状态；自动启动失败不打扰，保留按钮手动重试。 */
+      const autoRec = React.useRef(null)
+      React.useEffect(() => {
+        if (autoRec.current === eng) return
+        autoRec.current = eng
+        api({ op: 'proxyStatus', engagement: eng })
+          .then((res) => {
+            if (res && res.ok !== false && res.running === true) { applyProxy(res); return null }
+            return api({ op: 'proxyStart', engagement: eng })
+              .then((r) => { if (r && r.ok !== false) applyProxy(r) })
+              .catch(() => { /* 自动启动失败保留手动按钮 */ })
+          })
+          .catch(() => { /* 读状态失败不阻断列表 */ })
+      }, [eng])
       /* 录制中每 1.5s 拉一次 proxyStatus，刷新端口/flows；发现被外部停掉就回 idle 并重载列表 */
       React.useEffect(() => {
         if (proxyPhase !== 'running') return undefined
@@ -8200,15 +8215,10 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
             h('span', { style: { flex: 1 } }),
             running
               ? h('button', { className: 'rt-btn', onClick: stopProxy, disabled: busy }, phase === 'stopping' ? '停止中…' : '停止录制')
-              : h('button', { className: 'rt-btn rt-btn-primary', onClick: startProxy, disabled: busy }, phase === 'error' ? '重试' : '开始录制'),
-            h('button', { className: 'rt-btn', onClick: () => { if (props.goSub) props.goSub('ca') } }, '导出 / 安装 CA')),
-          proxy && proxy.running && proxy.caReady === false
-            ? h('div', { className: 'rt-hint', style: { marginTop: 8 } },
-                h('b', null, '代理已启动，但 CA 未就绪。'), '到「证书」页导出后由你手动安装到客户端（不回写系统信任库）——不装 CA，HTTPS 流量只显示握手错误。')
-            : null,
+              : h('button', { className: 'rt-btn rt-btn-primary', onClick: startProxy, disabled: busy }, phase === 'error' ? '重试' : '开始录制')),
           proxyMsg ? h('div', { className: 'rt-hint', style: { marginTop: 8 } }, proxyMsg) : null,
           h('div', { className: 'rt-mini', style: { marginTop: 8 } },
-            '代理仅在本机 127.0.0.1 起 MITM 录制，不改系统代理设置；上游证书校验已放宽。请接入你已授权的测试流量。'))
+            '录制期间插件把代理与自签 CA 注入子进程环境：curl / python / git / node 自动走 127.0.0.1，不用改系统代理、不用装信任库。停止录制即还原。'))
       }
 
       const openFlow = (id) => {
@@ -8486,76 +8496,6 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
                   : null)))))
     }
 
-    /** 证书子页：CA 路径/指纹 + 导出到文件 + 安装指引（信任库安装永远由用户手动）。 */
-    function CaPane(props) {
-      const eng = props.engagement
-      const refreshKey = props.refreshKey || 0
-      const seq = useLoadSeq()
-      const [info, setInfo] = React.useState(null)
-      const [loading, setLoading] = React.useState(false)
-      const [err, setErr] = React.useState('')
-      const [to, setTo] = React.useState('')
-      const [msg, setMsg] = React.useState('')
-      const [busy, setBusy] = React.useState(false)
-
-      const load = () => {
-        const my = seq.take()
-        setLoading(true); setErr('')
-        api({ op: 'mitmCaInfo', engagement: eng })
-          .then((res) => { if (seq.live(my)) setInfo(res || null) })
-          .catch((e) => { if (seq.live(my)) setErr((e && e.message) || String(e)) })
-          .then(() => { if (seq.live(my)) setLoading(false) })
-      }
-      React.useEffect(load, [eng, refreshKey])
-
-      const doExport = () => {
-        if (!to.trim()) { setMsg('先填导出路径（例如 D:\\certs\\chongpo-mitm-ca.crt）'); return }
-        setBusy(true); setMsg('导出中…')
-        api({ op: 'mitmCaExport', engagement: eng, to: to.trim() })
-          .then((res) => {
-            if (!res || res.ok === false) { setMsg('导出失败：' + ((res && res.error) || '未知错误')); return }
-            setMsg('已导出到 ' + (res.path || res.to || to.trim()))
-          })
-          .catch((e) => setMsg('导出失败：' + ((e && e.message) || String(e))))
-          .then(() => setBusy(false))
-      }
-
-      if (err) return h('div', { className: 'rt-pane' }, h('div', { className: 'rt-err' }, err))
-
-      const guide = (info && info.guide) || null
-      const guideText = guide && guide.steps && guide.steps.length
-        ? guide.steps.map((s, i) => (i + 1) + '. ' + s).join('\n')
-        : '（还没有生成 CA：先跑一次 MITM 录制或调用 CA 初始化，路径会自动落到 toolkit/ca）'
-      const mitm = (info && info.mitm) || {}
-
-      return h('div', { className: 'rt-pane' },
-        h('div', { className: 'rt-card' },
-          h('h4', null, 'MITM 自签 CA'),
-          info
-            ? h('div', null,
-                h('div', { className: 'rt-kv' }, h('b', null, '目录'), h('span', { className: 'rt-mono' }, info.dir || '—')),
-                h('div', { className: 'rt-kv' }, h('b', null, '证书'), h('span', { className: 'rt-mono' }, (info.crt_path || '—') + (info.exists ? '' : '（未生成）'))),
-                h('div', { className: 'rt-kv' }, h('b', null, '私钥'), h('span', { className: 'rt-mono' }, info.key_path || '—')),
-                h('div', { className: 'rt-kv' }, h('b', null, 'SHA-256'), h('span', { className: 'rt-mono' }, info.sha256 || '—')),
-                h('div', { className: 'rt-kv' }, h('b', null, '录制端口'), h('span', null,
-                  String(mitm.port || '—') + (mitm.portMax ? '–' + mitm.portMax : '') + (mitm.recordBodyMax ? ' · 单方向体上限 ' + mitm.recordBodyMax + ' 字节' : ''))))
-            : h('div', { className: 'rt-hint' }, loading ? '读取中…' : '还没读到 CA 信息'),
-          h('div', { style: { display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' } },
-            h('input', {
-              className: 'rt-input', style: { flex: 1, minWidth: 220 }, placeholder: '导出到（绝对路径，须在工作区或用户目录内）',
-              value: to, 'aria-label': '导出证书路径', onChange: (e) => setTo(e.target.value),
-            }),
-            h('button', { className: 'rt-btn rt-btn-primary', disabled: busy || !info || !info.exists, onClick: doExport }, '导出证书'),
-            h('button', { className: 'rt-btn', onClick: load, disabled: loading }, loading ? '刷新中…' : '刷新')),
-          msg ? h('div', { className: 'rt-mini', style: { marginTop: 6 } }, msg) : null),
-
-        h(Section, { title: '信任安装指引', count: null, sub: '插件只导出文件，不改系统/浏览器信任库', tone: 'target', open: true, always: true },
-          h('div', { style: { padding: '4px 0' } },
-            h(Clip, { label: '安装步骤（' + ((guide && guide.platform) || 'auto') + '）', text: guideText }),
-            h('div', { className: 'rt-hint', style: { marginTop: 8 } },
-              '证书装进信任库这一步必须你手动做（系统证书管理器 / 浏览器设置）；本面板不写入信任设置，卸载时按同样位置删除即可。'))))
-    }
-
     /** 「流量/审批」页：三个子页共用头部，切换不发新请求以外的事。 */
     function TrafficTab(props) {
       const [sub, setSub] = React.useState('flows')
@@ -8565,7 +8505,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
             key: pair[0],
             className: 'rt-subtab' + (sub === pair[0] ? ' on' : ''),
           }, clickable(() => setSub(pair[0]), { label: pair[1], expanded: sub === pair[0] })), pair[1]))),
-        sub === 'flows' ? h(FlowPane, Object.assign({}, props, { goSub: setSub })) : sub === 'approval' ? h(ApprovalPane, props) : h(CaPane, props))
+        sub === 'flows' ? h(FlowPane, Object.assign({}, props, { goSub: setSub })) : h(ApprovalPane, props))
     }
 
     function Panel(props) {

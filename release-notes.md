@@ -2,10 +2,16 @@
 
 ## 中文
 
+- **零配置录制（方案 A）**：录制期间自动把 `HTTP(S)_PROXY/ALL_PROXY`、`NODE_USE_ENV_PROXY` 及 `NODE_EXTRA_CA_CERTS / CURL_CA_BUNDLE / REQUESTS_CA_BUNDLE / SSL_CERT_FILE / GIT_SSL_CAINFO` 注入宿主进程环境（`NO_PROXY` 并回环），子智能体 shell 的 curl/python/git/node 自动走本机 MITM 并信任自签 CA，停止即还原；不改系统代理、不写信任库。进入「流量」页自动开始录制。
+- **插件出站也落库（方案 B）**：插件自身的 HTTP 出站（WebShell 连通性探测）直接写一条 `traffic_flow`（`source='plugin-http'`），与录制/导入同表、同检索、同绑定。
+- **移除方案 C**：删除面板「证书」子页与 `mitmCaInfo/mitmCaExport` 导出/安装指引——CA 只自动生成给子进程用，不再有手动导出/装信任库入口。
 - **流量导入（方案 b）**：新增「导入 HAR」——不启代理、不装 CA，直接把 Burp / mitmproxy / Chrome DevTools 导出的 `.har` 解析进 `traffic_flow`（`source='har'`）。复用现有检索 / 详情 / blob / 绑定，body 按 sha256 落本机 blob；`flow_key = sha256('har'+idx+method+url+startedDateTime)`，同一份 HAR 重复导入幂等。内置 MITM 录制与审批门保留，降为可选。面板「流量/审批 → 流量」工具栏新增按钮；`trafficImport` 走 dispatch，仅面板入口，不新增智能体工具。
 
 ## English
 
+- **Zero-config recording (option A)**: while recording, the plugin injects `HTTP(S)_PROXY/ALL_PROXY`, `NODE_USE_ENV_PROXY` and `NODE_EXTRA_CA_CERTS / CURL_CA_BUNDLE / REQUESTS_CA_BUNDLE / SSL_CERT_FILE / GIT_SSL_CAINFO` into the host process env (`NO_PROXY` includes loopback). Child-agent shells (curl/python/git/node) automatically use the local MITM and trust the self-signed CA; restored on stop. No system proxy, no trust-store write. Recording auto-starts when opening the Traffic tab.
+- **Plugin egress recording (option B)**: the plugin's own HTTP egress (WebShell connectivity probe) writes a `traffic_flow` row (`source='plugin-http'`), same table / search / bind as recorded or imported flows.
+- **Option C removed**: deleted the panel's "证书" sub-tab and the `mitmCaInfo/mitmCaExport` export/install-guide ops — the CA is auto-generated for child processes only; no manual export/trust-store entry.
 - **Traffic import (option b)**: new "Import HAR" — no proxy, no CA. Parses Burp / mitmproxy / Chrome DevTools `.har` files into `traffic_flow` (`source='har'`), reusing the existing search / detail / blob / bind paths. Bodies are stored as local sha256 blobs; `flow_key = sha256('har'+idx+method+url+startedDateTime)` makes re-imports idempotent. The built-in MITM recorder and approval gate remain, now optional. Button lives in the Traffic toolbar; `trafficImport` is panel-only (no new agent tool).
 
 # 1.2.0

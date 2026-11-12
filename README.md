@@ -65,8 +65,8 @@
 - **按靶标隔离（1.2.0）**：`traffic_flow` 带 `engagement_id` / `target` 两列，录制端三层写入（flow 行内 / `buildRow` / spool 的 `owner.json`），`ingest` 只灌本靶标 spool；检索 / 查看 / 绑定默认只作用当前靶标，跨靶标仅在工具 `redteam_traffic_search` 显式 `all_targets:true` 时放行（返回带 `cross:true`），面板不给该开关。旧库自动 `ALTER` 补列并回填，不重建表、不丢数据。
 - **检索与绑定**：`redteam_traffic_search|get|blob` 检索与查看，`redteam_traffic_bind` 可绑到 `finding_id|vuln_id|step_id|asset_id`，重复绑定幂等。
 - **审批门**：规则两源（`<root>/intercept.json` 与 `intercept_rule` 表），命中 `deny` 优先；`mode` 默认 `off` 直接放行；需批的进 `pending`，`redteam_intercept_decide` 记录谁批、何时、什么理由，放行可带 TTL（默认 3600 秒）。
-- **证书**：`CN=ChongPo MITM CA`，落 `$DSH_HOME/redteam/toolkit/ca`（openssl 优先，`node:crypto` + DER 兜底）；面板只展示、导出与给安装步骤，**信任库必须人手动装**，插件不写任何信任设置。
-- 面板「流量/审批」三子页：流量检索与预览 / 绑定、审批处理、证书信息与导出。
+- **证书与零配置（1.3.0）**：`CN=ChongPo MITM CA` 自动生成到 `<toolkit>/ca`（openssl 优先，`node:crypto` + DER 兜底）。录制期间插件把代理与 CA 注入宿主进程环境，子智能体 shell 里的 `curl/python/git/node` 自动走 `127.0.0.1:<port>` 并信任该 CA，停止录制即还原；不再需要导出证书、手动装信任库，也不改系统代理。插件自己的 HTTP 出站（如 WebShell 连通性探测）也直接落一条 `traffic_flow`（`source='plugin-http'`）。
+- 面板「流量/审批」两子页：流量检索与预览 / 绑定、审批处理。
 
 ### 红队工具集
 
