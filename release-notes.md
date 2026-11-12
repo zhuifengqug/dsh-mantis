@@ -1,3 +1,45 @@
+# 1.2.0
+
+## 中文
+
+- 版本 **1.2.0**：三缺口收口 —— **L2 面板「开始 / 停止录制」按钮**、**L1 红队「报告员 / 复测员」两个独立预设**、**L3 `traffic_flow` 按靶标隔离**。三块均先落设计契约（`docs/redteam/L1L2L3-design.md`）再实现，红队工具总量保持 **111 个**（64 基线 + 29 探索 + 11 P4 + 7 流量/审批），既有工具签名未改、关闭与回滚路径未动。版本号 `1.1.0 → 1.2.0`（新增 `./redteam/tools-ops` 导出属发布面 minor 变更）。
+- **L2 · 面板「开始 / 停止录制」按钮**（`lib/redteam/store-core.js` + `lib/redteam/client.js`）：
+  - 后端补齐三个面板 op：同步 `proxyStatus`、异步 `proxyStart` / `proxyStop`，统一经 `proxyView` 返回 `{running, port, mode:'mitm', caPath, caReady, flows, ...}`。此前 `proxy.js` 的启停能力齐备，但 dispatch 表里没有对应 op、面板点不到，这次接上。
+  - 「流量」页签顶部新增录制控制条：开始 / 停止 / 重试、绿脉冲运行态、实时端口与已录条数（录制中每 1.5 秒轮询 `proxyStatus`）、`mode: mitm` 提示；错误按 code 给文案：`EADDRINUSE`（端口 18081–18099 全占 → 改起始端口）、`EACCES`、`ALREADY_RECORDING`（别的靶标在录）、`NO_ENGAGEMENT`（未选靶标，不建库）。
+  - **单活跃录制**：`mitm/state.json` 只存一份，故同一时刻只允许一个靶标录制；`proxyStart` 前先查 `proxyStatus`，别的靶标在录直接返回 `ALREADY_RECORDING`，不覆盖。
+  - **CA 仍只生成、只导出**：`caReady` 只表示证书文件已生成，不代表已被系统信任；未装信任时 HTTPS 站点报证书错，面板提示去「证书」页导出并手动安装。插件任何路径都不执行 `certutil -addstore` / `security add-trusted-cert` / `update-ca-certificates`，**信任库必须人手动装**；`mode` 写死 `mitm`，不设系统代理、不改 `HTTP_PROXY`。
+- **L1 · 红队「报告员 / 复测员」两个独立预设**（`presets/redteam-reporter`、`presets/redteam-retester` + `lib/redteam/index.js` / `tools.js` / `tools-ops.js`）：
+  - 新增两个随包预设：**红队·报告员**（order 11，只读资产/漏洞/证据/得分/攻击链，产出 `redteam_report_build`「score/finding/coverage/final」；不动手攻击、不复测、不派活）与 **红队·复测员**（order 12，对单条 finding 复测，落 `reproduced/fixed/inconclusive` 结论并联动 `vuln.status`，不写整份报告）。
+  - 两者 `name` 均保留「红队」二字以命中 `isRedteamPresetId`；工具面用 `tools.js` 的 `PROFILE_TOOLS` 白名单按 profile 收口 —— 主预设（`full`）零差异，报告员 **41 个**、复测员 **12 个**工具（报告员有 `redteam_report_build`，无提权/复测/通知；复测员有 `redteam_retest_request|list|conclude` + `vuln_update`，无报告/模板）。`tools-ops.js` 补 `name/inject/apply` 导出并作为独立插件行挂载，`package.json exports` 增 `./redteam/tools-ops`；`index.js` 的 `installPreset/apply/buildDefinition/registerOnce` 循环化三个预设。
+  - **何时用**：主预设走全流程（指挥 + 五角色 + 并发≤3）；报告员用于已有 findings/score 之后收尾出报告；复测员用于修复后对 `open` 漏洞逐条回验。三预设共用同一 `RedteamStore` / `engagements/` 目录、靶标互通；从主预设切到报告员是新建会话、需重新绑定同一靶标（不继承会话上下文，有意为之）。
+- **L3 · `traffic_flow` 按靶标隔离**（`lib/redteam/schema.js` / `traffic.js` / `store-core.js` / `proxy.js` / `tools-traffic.js`）：
+  - `traffic_flow` 增两列 `engagement_id`、`target`（`NOT NULL DEFAULT ''`）与索引 `ix_traffic_engagement`；旧库走 `migrate()` 的 `PRAGMA table_info` + `ALTER TABLE ADD COLUMN` 补齐，**不重建表、不丢历史数据**，回填在 `db()` 打开时按当前靶标 id 跑一次。
+  - 写入端三层带靶标：flow 行内、`buildRow` 输出、spool 目录的 `owner.json`；`ingest` 只灌归属本靶标的 spool，别的靶标流量不再串进当前库。
+  - 读取端 `search/get/blob/bind` 默认按当前靶标过滤，跨靶标被拒；仅工具 `redteam_traffic_search` 增 `all_targets:true` 显式跨靶标（返回带 `cross:true`），面板不提供该开关。面板零改。
+- **打包卫生**：`.npmignore` 增补 `docs/agents/` 与 `scripts/tmp-*`，`npm pack --dry-run` 复核结果不含 `default-prompt-inject*` / `*.bak` / `*.old.*` / `docs/agents` / 临时脚本；三组预设（`redteam`、`redteam-reporter`、`redteam-retester`）正常随包。
+- **验证**：`node --test` **98/98 全绿**（新增 `proxy-panel-ops` 4 例、`traffic-isolation` 5 例、`preset-l1` 3 例）；`node --check` 覆盖 `lib/**`、`client.js`、`bin/` 共 **93 个 JS 文件**全通过；`npm pack --dry-run` 文件清单干净。**未做**：真实宿主热重载 L1（需重启宿主才生效）。
+- **残余风险**：① 运行中的宿主不会热重载 L1，需重启后才出现两个新预设；② 旧库历史上已串入的流量无法自动拆回真实靶标，需按 `session_id` / 时间窗手工 SQL 更正（`UPDATE traffic_flow SET engagement_id='<靶标>', target='<名>' WHERE session_id='<key>'`）；③ 旧 spool 无 `owner.json` 时由第一个 ingest 的靶标先到先得认领。
+
+## English
+
+- **1.2.0** — closing three known gaps: the L2 panel **Start/Stop recording** button, two standalone L1 red-team presets (**reporter / retester**), and **per-engagement isolation** of `traffic_flow`. All three were contract-first (`docs/redteam/L1L2L3-design.md`) then implemented; the red-team tool total stays **111** (64 baseline + 29 exploration + 11 P4 + 7 traffic/approval), existing signatures untouched, close/rollback paths unchanged. Version `1.1.0 → 1.2.0` (the new `./redteam/tools-ops` export is a minor surface change).
+- **L2 · panel Start/Stop recording** (`lib/redteam/store-core.js` + `lib/redteam/client.js`):
+  - Three panel ops added: synchronous `proxyStatus`, asynchronous `proxyStart` / `proxyStop`, all normalized through `proxyView` to `{running, port, mode:'mitm', caPath, caReady, flows, ...}`. `proxy.js` already had start/stop; the dispatch table had no matching op so the panel could not reach them — now wired.
+  - A recording bar atop the Traffic tab: start / stop / retry, a green pulse while running, live port and flow count (re-polling `proxyStatus` every 1.5 s), a `mode: mitm` note; errors map by code — `EADDRINUSE` (ports 18081–18099 all taken → change the start port), `EACCES`, `ALREADY_RECORDING` (another engagement is recording), `NO_ENGAGEMENT` (no engagement selected; no DB is created).
+  - **Single active recording**: `mitm/state.json` holds one slot, so only one engagement records at a time; `proxyStart` checks `proxyStatus` first and returns `ALREADY_RECORDING` instead of overwriting.
+  - **CA is still generate-and-export only**: `caReady` means the cert file exists, not that it is trusted; if trust is missing, HTTPS sites report cert errors and the panel says to export in the Certificates tab and install manually. No path ever runs `certutil -addstore` / `security add-trusted-cert` / `update-ca-certificates` — **installing trust is manual**; `mode` is fixed at `mitm`, no system proxy, no `HTTP_PROXY` change.
+- **L1 · standalone reporter / retester presets** (`presets/redteam-reporter`, `presets/redteam-retester` + `lib/redteam/index.js` / `tools.js` / `tools-ops.js`):
+  - **Red-team · Reporter** (order 11: reads assets/vulns/evidence/score/attack chains, produces `redteam_report_build` for `score/finding/coverage/final`; no attacking, no retesting, no delegation) and **Red-team · Retester** (order 12: retests a single finding, records `reproduced/fixed/inconclusive` and updates `vuln.status`; no full report).
+  - Both keep 「红队」 in `name` to satisfy `isRedteamPresetId`; the tool surface is filtered by the `PROFILE_TOOLS` allowlist in `tools.js` — the main preset (`full`) is unchanged, while reporter gets **41** tools and retester **12** (reporter has `redteam_report_build` but no exploit/retest/notify; retester has `redteam_retest_request|list|conclude` + `vuln_update` but no report/templates). `tools-ops.js` gains `name/inject/apply` exports and mounts as its own plugin row; `package.json exports` adds `./redteam/tools-ops`; `index.js` `installPreset/apply/buildDefinition/registerOnce` loop over the three presets.
+  - **When to use**: the main preset runs the full flow (commander + five roles + concurrency ≤ 3); the reporter finishes reporting once findings/score exist; the retester re-verifies `open` vulns after a fix. All three share the same `RedteamStore` / `engagements/` directory (targets interoperate); switching from the main preset to the reporter is a new session and needs the same engagement re-bound (no context carry-over, by design).
+- **L3 · per-engagement `traffic_flow` isolation** (`lib/redteam/schema.js` / `traffic.js` / `store-core.js` / `proxy.js` / `tools-traffic.js`):
+  - `traffic_flow` gains `engagement_id`, `target` (`NOT NULL DEFAULT ''`) and index `ix_traffic_engagement`; old DBs are upgraded via `migrate()`'s `PRAGMA table_info` + `ALTER TABLE ADD COLUMN` — **no table rebuild, no data loss** — with a one-time backfill at `db()` open against the current engagement id.
+  - Three write layers carry the target: the flow row, `buildRow`, and the spool `owner.json`; `ingest` only loads spools owned by the current engagement, so another engagement's traffic no longer leaks into this store.
+  - Reads (`search/get/blob/bind`) filter by the current engagement and reject cross-engagement access; only the `redteam_traffic_search` tool exposes `all_targets:true` for an explicit cross-target query (returns `cross:true`), and the panel does not offer that switch. The panel is unchanged.
+- **Packaging hygiene**: `.npmignore` now excludes `docs/agents/` and `scripts/tmp-*`; `npm pack --dry-run` confirms no `default-prompt-inject*` / `*.bak` / `*.old.*` / `docs/agents` / temp scripts, and all three preset groups (`redteam`, `redteam-reporter`, `redteam-retester`) ship.
+- **Verification**: `node --test` **98/98 green** (new `proxy-panel-ops` ×4, `traffic-isolation` ×5, `preset-l1` ×3); `node --check` passes over **93 JS files** (`lib/**`, `client.js`, `bin/`); `npm pack --dry-run` file list is clean. **Not done**: a live host hot-reload of L1 (a restart is required for the two new presets to appear).
+- **Residual risks**: (1) a running host does not hot-reload L1 — restart to see the two new presets; (2) traffic already cross-contaminated in an old DB cannot be auto-split, fix by hand with SQL keyed on `session_id` / time window (`UPDATE traffic_flow SET engagement_id='<target>', target='<name>' WHERE session_id='<key>'`); (3) a legacy spool with no `owner.json` is claimed first-come-first-served by whichever engagement ingests it.
+
 # 1.1.0
 
 ## 中文

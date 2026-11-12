@@ -4,7 +4,7 @@
 
 <h1 align="center">虫珀 · 拒斧（mantis）</h1>
 
-<p align="center"><strong>1.1.0</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
+<p align="center"><strong>1.2.0</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
 
 > ⚠️ **仅限已获授权的攻防演练、渗透测试与本机自检使用。** 未授权扫描或入侵他人系统违法，责任由使用者自负。
 
@@ -60,7 +60,8 @@
 
 ### 流量录制与审批门（P3）
 
-- **录制**：MITM 代理只监听 `127.0.0.1`，端口从 `18081` 起、占用就 +1 到 `18099`，明文 absolute-form 与 `CONNECT` 解密都抓；默认不自启。启动走包导出 `./redteam/proxy`：脚本或其它插件调 `startMitmProxy({ root })` 即开录（传入靶标库句柄 `db` 时同时记录制会话并挂审批门），插件卸载由 `stopAllProxies` 自动收尾；本版面板不带启停按钮。代理只写 spool，宿主进程是唯一写库者并幂等 ingest，重复跑不重复入库；响应体按 sha256 去重，单方向上限 `recordBodyMax`（默认 2 MiB）。
+- **录制**：MITM 代理只监听 `127.0.0.1`，端口从 `18081` 起、占用就 +1 到 `18099`，明文 absolute-form 与 `CONNECT` 解密都抓；默认不自启。**面板「流量/审批 → 流量」页顶部有「开始录制 / 停止录制」按钮**（录制中每 1.5 秒刷新端口与已录条数；同一时刻只允许一个靶标录制，别的靶标在录提示 `ALREADY_RECORDING`、端口全占提示 `EADDRINUSE` 去改起始端口）；也可走包导出 `./redteam/proxy` 的 `startMitmProxy({ root })` 由脚本/其它插件拉起，插件卸载由 `stopAllProxies` 自动收尾。代理只写 spool，宿主进程是唯一写库者并幂等 ingest，重复跑不重复入库；响应体按 sha256 去重，单方向上限 `recordBodyMax`（默认 2 MiB）。
+- **按靶标隔离（1.2.0）**：`traffic_flow` 带 `engagement_id` / `target` 两列，录制端三层写入（flow 行内 / `buildRow` / spool 的 `owner.json`），`ingest` 只灌本靶标 spool；检索 / 查看 / 绑定默认只作用当前靶标，跨靶标仅在工具 `redteam_traffic_search` 显式 `all_targets:true` 时放行（返回带 `cross:true`），面板不给该开关。旧库自动 `ALTER` 补列并回填，不重建表、不丢数据。
 - **检索与绑定**：`redteam_traffic_search|get|blob` 检索与查看，`redteam_traffic_bind` 可绑到 `finding_id|vuln_id|step_id|asset_id`，重复绑定幂等。
 - **审批门**：规则两源（`<root>/intercept.json` 与 `intercept_rule` 表），命中 `deny` 优先；`mode` 默认 `off` 直接放行；需批的进 `pending`，`redteam_intercept_decide` 记录谁批、何时、什么理由，放行可带 TTL（默认 3600 秒）。
 - **证书**：`CN=ChongPo MITM CA`，落 `$DSH_HOME/redteam/toolkit/ca`（openssl 优先，`node:crypto` + DER 兜底）；面板只展示、导出与给安装步骤，**信任库必须人手动装**，插件不写任何信任设置。
@@ -69,6 +70,18 @@
 ### 红队工具集
 
 红队工具共 **111 个**：既有 64 个（资产、漏洞、链路、得分、报告、知识库等）+ 29 个 `redteam_explore_*` + 11 个 P4 `redteam_*` + 7 个 `redteam_traffic_*` / `redteam_intercept_*`。既有工具签名未改，关闭与回滚路径未动。
+
+### 红队预设（L1）
+
+随包三个红队预设，新建会话时选其一，各有分工（都保留「红队」标识，共用同一靶标库、靶标互通）：
+
+| 预设 | 序号 | 何时用 |
+|---|---|---|
+| **红队模式**（主） | 10 | 完整攻防流程：指挥 + 信息收集 / 资产梳理 / 漏洞发现 / 漏洞利用 / 内网渗透五角色，并发 ≤ 3。 |
+| **红队·报告员** | 11 | 已有 findings / 得分后收尾出报告：只读资产 / 漏洞 / 证据 / 得分 / 攻击链，产出 `redteam_report_build`（`score\|finding\|coverage\|final`）；不动手、不复测、不派活。 |
+| **红队·复测员** | 12 | 漏洞修复后逐条回验：对 `open` 漏洞复测，落 `reproduced\|fixed\|inconclusive` 结论并联动漏洞状态；不写整份报告。 |
+
+工具面按预设收口：主预设 `full` 零差异，报告员 41 个（读 + 报告，无提权 / 复测 / 通知）、复测员 12 个（读 + 复测，无报告 / 模板）。从主预设切到报告员 / 复测员是**新建会话**，需重新绑定同一靶标（不继承原会话上下文，报告从事实库读）。三预设都跳过环境适配门禁。
 
 ### 宿主清洗
 
@@ -140,7 +153,7 @@ mantis --edit        # 打开提示词
 **从 npm 装（推荐）**：
 
 ```powershell
-dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.1.0
+dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.2.0
 ```
 
 包页面：https://www.npmjs.com/package/@zhuifengqug/dsh-mantis
@@ -148,8 +161,8 @@ dsh plugin --profile desktop add @zhuifengqug/dsh-mantis@1.1.0
 **用 GitHub Release 的 tgz**：
 
 ```powershell
-# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.1.0
-dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.1.0.tgz
+# 下载页 https://github.com/zhuifengqug/dsh-mantis/releases/tag/v1.2.0
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.2.0.tgz
 ```
 
 **在仓库目录里直接装（本地改动、开发时用）**：
@@ -162,7 +175,7 @@ dsh plugin --profile desktop add .
 
 ```powershell
 npm pack
-dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.1.0.tgz
+dsh plugin --profile desktop add .\zhuifengqug-dsh-mantis-1.2.0.tgz
 ```
 
 这一步会做两件事：把包写进该 profile 的 `dependencies`，并把 `@zhuifengqug/dsh-mantis` 追加到 `dsh.profile.bundles`。**只加依赖、不加 bundles，宿主不会加载插件面板。**
