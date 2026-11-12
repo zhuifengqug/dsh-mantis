@@ -1,7 +1,7 @@
 # 拒斧三缺口设计契约（L1 / L2 / L3）
 
 > **读者分工**：后端实现者读 §1（L2 代理启停）、§2（L3 流量隔离）、§3.5（预设安装循环化）；前端实现者读 §1.4（按钮状态机）、§1.6（返回字段）、§2.6（面板不改造点）；验收者读 §4、§5。
-> **依据**：本文件全部落点对齐当前仓库实现（`lib/redteam/*.js`、`presets/redteam/*`、`package.json`），行号为撰写时的实测行号。
+> **依据**：本文件全部落点对齐当前仓库实现（`lib/redteam/*.js`、`presets/redteam/*`、`package.json`），行号为撰写时（提交 c32a571）的实测行号。实现落地后部分文件整体下移（例：`dispatch` :819→862、未知操作 :1041→1089、`dispatchAsync` :1051→1099），交叉核对以附录 A 的「文件 + 符号」为准，行号仅作定位参考。
 > **硬边界**：本文件只写设计与落点，不改实现。**插件绝不自动写系统/浏览器信任库**——CA 只生成、只导出文件，信任安装一律由用户手动执行（`lib/redteam/ca.js:499 guideText()` 的每一步都写明「以上命令由你手动执行」）。
 > **术语**：靶标 = engagement，`id` 为其目录名（`slugify(name)`），数据根 `root = $DSH_HOME/redteam`（`lib/redteam/store.js resolveRoot`），每靶标一个独立 SQLite 库 `engagements/<id>/assets.db`。
 
