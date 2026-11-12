@@ -1,3 +1,13 @@
+# 未发布 / Unreleased
+
+## 中文
+
+- **流量导入（方案 b）**：新增「导入 HAR」——不启代理、不装 CA，直接把 Burp / mitmproxy / Chrome DevTools 导出的 `.har` 解析进 `traffic_flow`（`source='har'`）。复用现有检索 / 详情 / blob / 绑定，body 按 sha256 落本机 blob；`flow_key = sha256('har'+idx+method+url+startedDateTime)`，同一份 HAR 重复导入幂等。内置 MITM 录制与审批门保留，降为可选。面板「流量/审批 → 流量」工具栏新增按钮；`trafficImport` 走 dispatch，仅面板入口，不新增智能体工具。
+
+## English
+
+- **Traffic import (option b)**: new "Import HAR" — no proxy, no CA. Parses Burp / mitmproxy / Chrome DevTools `.har` files into `traffic_flow` (`source='har'`), reusing the existing search / detail / blob / bind paths. Bodies are stored as local sha256 blobs; `flow_key = sha256('har'+idx+method+url+startedDateTime)` makes re-imports idempotent. The built-in MITM recorder and approval gate remain, now optional. Button lives in the Traffic toolbar; `trafficImport` is panel-only (no new agent tool).
+
 # 1.2.0
 
 ## 中文

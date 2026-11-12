@@ -32,7 +32,7 @@
 | 资产测绘 / 环境适配 / 智能体 / 会话隧道 | 资产树、环境指纹、智能体与子会话、隧道会话 |
 | 漏洞战果 / 攻击链 / 得分目标 / 报告 | 漏洞台账、链路视图、计分与目标、报告生成与历史 |
 | **探索** | 探索图：目标、轮次、意图前沿、节点 / 边 / 约束、资产覆盖率（P2） |
-| **流量/审批** | 抓到的流量检索与绑定、待批请求放行 / 拒绝、MITM CA 信息与导出（P3） |
+| **流量/审批** | 导入外部 HAR（Burp / mitmproxy / DevTools）或内置 MITM 录制；流量检索与绑定、待批请求放行 / 拒绝、CA 信息与导出（P3） |
 | 知识库 / 技能库 | 本机知识条目与随包技能 |
 
 ### 探索图（P2）
@@ -61,6 +61,7 @@
 ### 流量录制与审批门（P3）
 
 - **录制**：MITM 代理只监听 `127.0.0.1`，端口从 `18081` 起、占用就 +1 到 `18099`，明文 absolute-form 与 `CONNECT` 解密都抓；默认不自启。**面板「流量/审批 → 流量」页顶部有「开始录制 / 停止录制」按钮**（录制中每 1.5 秒刷新端口与已录条数；同一时刻只允许一个靶标录制，别的靶标在录提示 `ALREADY_RECORDING`、端口全占提示 `EADDRINUSE` 去改起始端口）；也可走包导出 `./redteam/proxy` 的 `startMitmProxy({ root })` 由脚本/其它插件拉起，插件卸载由 `stopAllProxies` 自动收尾。代理只写 spool，宿主进程是唯一写库者并幂等 ingest，重复跑不重复入库；响应体按 sha256 去重，单方向上限 `recordBodyMax`（默认 2 MiB）。
+- **导入外部 HAR（方案 b）**：不启代理、不装 CA —— 在「流量/审批 → 流量」页点「导入 HAR」，选 Burp / mitmproxy / Chrome DevTools 导出的 `.har`。解析后按 `flow_key` 幂等写入 `traffic_flow`（`source='har'`），请求/响应体按 sha256 落本机 blob；同一份 HAR 重复导入只算第一次。内置代理与审批门仍在，按需启用。
 - **按靶标隔离（1.2.0）**：`traffic_flow` 带 `engagement_id` / `target` 两列，录制端三层写入（flow 行内 / `buildRow` / spool 的 `owner.json`），`ingest` 只灌本靶标 spool；检索 / 查看 / 绑定默认只作用当前靶标，跨靶标仅在工具 `redteam_traffic_search` 显式 `all_targets:true` 时放行（返回带 `cross:true`），面板不给该开关。旧库自动 `ALTER` 补列并回填，不重建表、不丢数据。
 - **检索与绑定**：`redteam_traffic_search|get|blob` 检索与查看，`redteam_traffic_bind` 可绑到 `finding_id|vuln_id|step_id|asset_id`，重复绑定幂等。
 - **审批门**：规则两源（`<root>/intercept.json` 与 `intercept_rule` 表），命中 `deny` 优先；`mode` 默认 `off` 直接放行；需批的进 `pending`，`redteam_intercept_decide` 记录谁批、何时、什么理由，放行可带 TTL（默认 3600 秒）。
