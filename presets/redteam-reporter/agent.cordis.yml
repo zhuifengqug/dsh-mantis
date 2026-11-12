@@ -38,6 +38,8 @@
 
 - id: redteam-tools-traffic
   name: "@zhuifengqug/dsh-mantis/redteam/tools-traffic"
+  config:
+    profile: reporter
 
 - id: tool-fs
   name: '@deepseek-ai/dsh-tool-fs'

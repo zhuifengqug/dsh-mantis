@@ -10,7 +10,7 @@
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync, existsSync, readFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -19,6 +19,7 @@ import { setDefineToolLoader } from '../lib/redteam/host-tools.js'
 import { apply as applyCoreTools, PROFILE_TOOLS, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES } from '../lib/redteam/tools.js'
 import { apply as applyOpsTools } from '../lib/redteam/tools-ops.js'
 import { installPreset } from '../lib/redteam/index.js'
+import { removeStaleRedteamPresetDirs, REDTEAM_PRESET_IDS } from '../lib/preset-default.js'
 
 const ROOT = process.cwd()
 const PRESETS = [
@@ -180,6 +181,20 @@ test('installPreset 把三个预设装进 $DSH_HOME/.agent-presets 且幂等', (
   } finally {
     if (prevHome === undefined) delete process.env.DSH_HOME
     else process.env.DSH_HOME = prevHome
+    rmSync(home, { recursive: true, force: true })
+  }
+})
+test('停用/卸载清理：三个红队预设目录一起删，不动无关目录', () => {
+  const home = mkdtempSync(join(tmpdir(), 'dsh-stale-'))
+  try {
+    for (const id of REDTEAM_PRESET_IDS) mkdirSync(join(home, '.agent-presets', id), { recursive: true })
+    mkdirSync(join(home, '.agent-presets', 'some-other'), { recursive: true })
+    assert.equal(removeStaleRedteamPresetDirs(home), true)
+    for (const id of REDTEAM_PRESET_IDS) {
+      assert.equal(existsSync(join(home, '.agent-presets', id)), false, `${id} 未清干净`)
+    }
+    assert.ok(existsSync(join(home, '.agent-presets', 'some-other')), '误删了无关预设目录')
+  } finally {
     rmSync(home, { recursive: true, force: true })
   }
 })

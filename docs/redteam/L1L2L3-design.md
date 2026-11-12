@@ -474,13 +474,13 @@ export const PRESET_SPECS = [
 | 文件 | 位置（函数） | 动作 |
 |---|---|---|
 | `presets/redteam-reporter/preset.yml` | 新文件 | `name: 红队·报告员`、`description` 单行、`order: 11` |
-| `presets/redteam-reporter/agent.cordis.yml` | 新文件 | persona prefix（§3.4）+ `redteam-tools`(profile:reporter) + `redteam-tools-traffic` + `redteam-tools-ops` + fs/jobs/skill/ask/todo/goal |
+| `presets/redteam-reporter/agent.cordis.yml` | 新文件 | persona prefix（§3.4）+ `redteam-tools`(profile:reporter) + `redteam-tools-traffic`(profile:reporter，只读 traffic_search/get/blob) + `redteam-tools-ops`(profile:reporter) + fs/jobs/skill/ask/todo/goal |
 | `presets/redteam-retester/preset.yml` | 新文件 | `name: 红队·复测员`、`order: 12` |
 | `presets/redteam-retester/agent.cordis.yml` | 新文件 | persona prefix（§3.4）+ `redteam-tools`(profile:retester) + `redteam-tools-ops` + fs/jobs/skill/ask/todo/goal |
 | `lib/redteam/tools-ops.js` | 顶部 | 增 `name/inject/apply` 导出（`registerOpsTools` `:189` 已存在） |
 | `package.json` | `exports` | 增 `"./redteam/tools-ops": "./lib/redteam/tools-ops.js"`；`version` 1.1.0→1.2.0 |
 | `lib/redteam/tools.js` | `apply(ctx)` `:290`；64 处 `ctx.tools.register` | 增 `config` 参 + `register` 收口 + `PROFILE_TOOLS` 白名单（方案 B） |
-| `lib/redteam/tools-traffic.js` | `apply(ctx)` | 增 `config` 参，可选按 profile 过滤（traffic 工具两角色都可读，默认全给；如要收紧再说） |
+| `lib/redteam/tools-traffic.js` | `apply(ctx, config)` | 增 `config` 参 + `TRAFFIC_PROFILE_TOOLS` 白名单：`full`/无 config 挂全部 7 个；`reporter` 只挂 `traffic_search/get/blob` 三个只读（不含 `traffic_bind` 与 `intercept_*`） |
 | `lib/redteam/index.js` | `:25`、`PRESET_SPECS` 新增、`installPreset` `:449`、`apply` `:533`、`buildDefinition` `:601`、`registerOnce` `:611`、`writeStatus` | 循环化三预设（§3.5） |
 | `lib/redteam/identity.js` | `isRedteamPresetId` `:515` | 不改（`name` 含「红队」即命中） |
 | `lib/redteam/ui.js` | `:1091-1108` env 门禁 | 不改（reporter/retester id 非 `'redteam'`，自动跳过） |
