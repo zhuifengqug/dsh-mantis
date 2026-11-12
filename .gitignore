@@ -10,6 +10,9 @@ Thumbs.db
 docs/agents/
 .cursor/
 
+# AgentTeams 运行状态，不属于源码
+.agent-teams/
+
 # 本地草稿，不进仓库
 scripts/tmp-*.mjs
 scripts/test-*.mjs
