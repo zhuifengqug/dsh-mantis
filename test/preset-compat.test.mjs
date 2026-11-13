@@ -3,8 +3,9 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { adaptListAgentsText, ensureToolExecutorText } from '../lib/preset-compat.js'
+import { adaptListAgentsText, ensureToolExecutorText, liangshenPresence } from '../lib/preset-compat.js'
 import { atomicWriteSync } from '../lib/atomic-files.js'
+import { rollupLayers } from '../lib/selfcheck.js'
 
 const SAMPLE = [
   'plugins:',
@@ -64,4 +65,44 @@ test('atomic write replaces existing file', () => {
   } finally {
     fs.rmSync(dir, { recursive: true, force: true })
   }
+})
+
+test('liangshenPresence 区分未装、装在预设目录、装在依赖与读不了的 home', () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'mantis-presence-'))
+  try {
+    assert.equal(liangshenPresence(home), 'absent')
+
+    const presetDir = path.join(home, '.agent-presets', 'liangshen')
+    fs.mkdirSync(presetDir, { recursive: true })
+    assert.equal(liangshenPresence(home), 'present')
+    fs.rmSync(path.join(home, '.agent-presets'), { recursive: true, force: true })
+
+    const profile = path.join(home, 'profiles', 'web')
+    fs.mkdirSync(profile, { recursive: true })
+    fs.writeFileSync(path.join(profile, 'package.json'), JSON.stringify({ dependencies: { '@linxin666/dsh-liangshen': '^1.0.0' } }), 'utf8')
+    assert.equal(liangshenPresence(home), 'present')
+    fs.rmSync(path.join(home, 'profiles'), { recursive: true, force: true })
+
+    const installed = path.join(home, 'profiles', 'web', 'node_modules', '@linxin666', 'dsh-liangshen', 'presets', 'liangshen')
+    fs.mkdirSync(installed, { recursive: true })
+    assert.equal(liangshenPresence(home), 'present')
+
+    const broken = { readdirSync() { const e = new Error('denied'); e.code = 'EACCES'; throw e; } }
+    assert.equal(liangshenPresence(home, broken), 'unknown')
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true })
+  }
+})
+
+test('rollupLayers 用良神存在性把 na 说成「没装」或「装了但锚点漂了」', () => {
+  const status = { 26: 'na', 28: 'na' }
+
+  const absent = rollupLayers(status, true, { liangshen: 'absent' }).find((l) => l.ids.includes(26))
+  assert.match(absent.note, /梁神预设未安装/)
+
+  const present = rollupLayers(status, true, { liangshen: 'present' }).find((l) => l.ids.includes(26))
+  assert.match(present.note, /梁神预设已安装/)
+
+  const unknown = rollupLayers(status, true, {}).find((l) => l.ids.includes(26))
+  assert.match(unknown.note, /目标插件\/预设未安装/)
 })
