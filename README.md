@@ -4,7 +4,7 @@
 
 <h1 align="center">虫珀 · 拒斧（mantis）</h1>
 
-<p align="center"><strong>1.2.0</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.1</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
+<p align="center"><strong>1.4.0</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.3</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
 
 > ⚠️ **仅限已获授权的攻防演练、渗透测试与本机自检使用。** 未授权扫描或入侵他人系统违法，责任由使用者自负。
 
@@ -141,7 +141,7 @@ mantis --edit        # 打开提示词
 
 ## 安装
 
-前置：Node.js ≥ **22.13**（事实库用 `node:sqlite`）；`dsh` 在 PATH 上；宿主是 **0.2.2-rc.1**。本版不再承诺 0.2.1 及更早版本。
+前置：Node.js ≥ **24.9**（宿主 0.2.2-rc.3 的引擎要求；事实库用 `node:sqlite`）；`dsh` 在 PATH 上；宿主是 **0.2.2-rc.3**。本版不再承诺 0.2.2-rc.1 及更早版本。
 
 建议在一次性虚拟机（如 Kali）里跑，用完即弃；插件**不代装**任何扫描或渗透工具，环境里的工具由使用者自备。
 
