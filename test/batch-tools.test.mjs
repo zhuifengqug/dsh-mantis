@@ -19,6 +19,7 @@ import { setDefineToolLoader } from '../lib/redteam/host-tools.js'
 import { apply as applyCoreTools, BATCH_TOOL_NAMES } from '../lib/redteam/tools.js'
 import { ipv4Int, targetIpv4, ipInCidr, scopeCheck } from '../lib/redteam/tools-batch.js'
 import { checkSkill } from '../lib/redteam/skill-availability.js'
+import { SKILL_FIXES, fixesForIssue } from '../lib/redteam/skill-fixes.js'
 
 /* 临时目录：优先系统 tmp；个别沙箱里 os.tmpdir() 返回 undefined，退回工作区目录。 */
 const RAW_TMP = (() => {
@@ -318,4 +319,72 @@ test('BATCH_TOOL_NAMES 全登记且不与既有工具重名', () => {
   } finally {
     h.close()
   }
+})
+
+test('skill-fixes 覆盖会缺外部依赖的 8 个新技能，纯方法类不硬加占位条目', () => {
+  /* 键 = 技能名；值 = 修复文案里必须出现的锚点（缺什么 + 去哪里填 + 怎么复验之一） */
+  const deps = {
+    'icp-query': ['icpquery', 'MCP', 'ICP_PROXY_TUNNEL'],
+    'oob-verify': ['interactsh', '回调'],
+    'asset-deep-scan': ['pd-httpx', 'nuclei', 'setup.sh'],
+    'host-post-exploit': ['proxychains4', 'pivot_probe', 'REDTEAM_VPS_HOST'],
+    'network-device': ['snmpwalk', 'netdev'],
+    'cloud-k8s': ['kubectl', 'KUBECONFIG'],
+    'ad-attack': ['impacket', 'certipy'],
+    'c2-infra': ['REDTEAM_VPS_HOST', 'pivot_probe'],
+  }
+  for (const [name, anchors] of Object.entries(deps)) {
+    assert.ok(Object.prototype.hasOwnProperty.call(SKILL_FIXES, name), name + ' 缺 skill-fixes 条目')
+    const text = fixesForIssue({ kind: 'needs-user', skill: name })
+    assert.ok(text.length > 0, name + ' 的修复文案为空')
+    assert.match(text, /[\u4e00-\u9fa5]/, name + ' 的修复文案不是中文')
+    for (const a of anchors) assert.ok(text.includes(a), name + ' 的修复文案没提到 ' + a + '：' + text)
+  }
+  /* 纯方法类：已有的三条保持“不依赖外部工具”口径，opsec-hygiene 不硬加条目 */
+  for (const name of ['score-coverage', 'campaign-planning', 'specialist-paths']) {
+    assert.match(SKILL_FIXES[name], /不依赖外部工具|不依赖任何外部工具/, name + ' 口径不对')
+  }
+  assert.equal(Object.prototype.hasOwnProperty.call(SKILL_FIXES, 'opsec-hygiene'), false, 'opsec-hygiene 不需要占位条目')
+})
+
+test('模拟缺环境：12 个新技能报出的缺口都带可执行修复文案', () => {
+  const names = [
+    'icp-query', 'oob-verify', 'asset-deep-scan', 'host-post-exploit', 'network-device',
+    'cloud-k8s', 'ad-attack', 'c2-infra', 'opsec-hygiene', 'score-coverage',
+    'campaign-planning', 'specialist-paths',
+  ]
+  /* 注入一段缺口声明：一个 shell 必需变量 + 一个本机不存在的工具路径，模拟“这台机器没配”。 */
+  const gaps = [
+    '',
+    '故障模拟（测试注入，不属于技能正文）：',
+    '`${DSH_SIM_MISSING_TOKEN:?}`',
+    '`$DSH_HOME/redteam/toolkit/dshsim/dsh-sim-missing-tool`',
+    '',
+  ].join('\n')
+  for (const name of names) {
+    const content = readFileSync(join(SKILLS, name + '.md'), 'utf8') + gaps
+    const verdict = checkSkill({ name, content, path: join(SKILLS, name + '.md') }, { env: {} })
+    const envIssue = verdict.issues.find((x) => x.kind === 'env-missing')
+    const pathIssue = verdict.issues.find((x) => x.kind === 'path-missing')
+    assert.ok(envIssue, name + ' 没报出 env-missing：' + JSON.stringify(verdict.issues))
+    assert.ok(pathIssue, name + ' 没报出 path-missing：' + JSON.stringify(verdict.issues))
+    for (const issue of verdict.issues) {
+      assert.equal(typeof issue.fix, 'string', name + ' 的 ' + issue.kind + ' 缺口没有修复文案')
+      assert.ok(issue.fix.trim().length > 0, name + ' 的 ' + issue.kind + ' 缺口修复文案为空')
+      assert.ok(issue.fix.includes('`'), name + ' 的 ' + issue.kind + ' 缺口文案没给命令')
+    }
+    /* 缺变量 → 说清写进哪里、什么时候生效 */
+    assert.ok(envIssue.fix.includes('DSH_SIM_MISSING_TOKEN'), name + ' 的环境变量文案没点名缺哪一个')
+    assert.ok(envIssue.fix.includes('.env') && envIssue.fix.includes('dsh web'), name + ' 没说清填哪个文件/何时生效')
+    /* 缺工具 → 给统一的补齐入口，而不是只说“不可用” */
+    assert.ok(pathIssue.fix.includes('setup.sh'), name + ' 的工具路径文案没给补齐入口')
+  }
+})
+
+test('ICP_PROXY_TUNNEL / KUBECONFIG 的缺变量提示指向真实填法', () => {
+  const icp = fixesForIssue({ kind: 'env-missing', skill: 'icp-query', env: 'ICP_PROXY_TUNNEL' })
+  assert.ok(icp.includes('代理出口'), '没说明 ICP_PROXY_TUNNEL 是代理出口：' + icp)
+  assert.ok(icp.includes('重启 `dsh web`'), '没说明改完要重启：' + icp)
+  const k8s = fixesForIssue({ kind: 'env-missing', skill: 'cloud-k8s', env: 'KUBECONFIG' })
+  assert.ok(k8s.includes('kubeconfig'), '没说明 KUBECONFIG 填什么：' + k8s)
 })
