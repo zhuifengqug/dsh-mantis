@@ -4,7 +4,7 @@
 
 <h1 align="center">虫珀 · 拒斧（mantis）</h1>
 
-<p align="center"><strong>1.5.0</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.5</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
+<p align="center"><strong>1.5.1</strong> · 适配 DeepSeek Harness <strong>0.2.2-rc.5</strong>（桌面版 / 官方 <code>dsh web</code>）</p>
 
 > ⚠️ **仅限已获授权的攻防演练、渗透测试与本机自检使用。** 未授权扫描或入侵他人系统违法，责任由使用者自负。
 
