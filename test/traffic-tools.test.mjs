@@ -19,7 +19,7 @@ import { join } from 'node:path'
 import { RedteamStore } from '../lib/redteam/store-core.js'
 import { writeFlowToSpool, searchFlows, getFlow } from '../lib/redteam/traffic.js'
 import { apply as applyTrafficTools, setDefineToolLoader } from '../lib/redteam/tools-traffic.js'
-import { apply as applyCoreTools, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES } from '../lib/redteam/tools.js'
+import { apply as applyCoreTools, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES, BATCH_TOOL_NAMES } from '../lib/redteam/tools.js'
 
 function fresh(tag) {
   const root = mkdtempSync(join(tmpdir(), 'mantis-traffic-tools-' + tag + '-'))
@@ -247,7 +247,7 @@ test('工具清单：tools-traffic 注册 7 个工具且 execute 走通真实数
       logger: { warn() {} },
       get: () => undefined,
     })
-    assert.equal(coreTools.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length,
+    assert.equal(coreTools.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length + BATCH_TOOL_NAMES.length,
       'tools.js 注册的工具数量变了：' + coreTools.length)
     const coreNames = new Set(coreTools.map((t) => t.name))
     for (const name of ['redteam_engagement_open', 'redteam_asset_query', 'redteam_score_list']) {

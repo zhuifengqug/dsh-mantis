@@ -25,7 +25,7 @@ import { join } from 'node:path'
 import { DDL } from '../lib/redteam/schema.js'
 import { RedteamStore, dispatch } from '../lib/redteam/store-core.js'
 import { setDefineToolLoader } from '../lib/redteam/host-tools.js'
-import { apply as applyCoreTools, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES } from '../lib/redteam/tools.js'
+import { apply as applyCoreTools, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES, BATCH_TOOL_NAMES } from '../lib/redteam/tools.js'
 import * as ops from '../lib/redteam/ops.js'
 import { notifyConfigOf, saveNotifyConfig, NOTIFY_EVENTS } from '../lib/redteam/settings.js'
 
@@ -627,7 +627,7 @@ test('验收：ops.js / tools-ops.js 零网络出站能力、零外部依赖、�
 test('工具清单数量自检：64 基线 + 探索工具集 + P4 工具集，全登记且无重名', () => {
   const h = harness()
   try {
-    assert.equal(h.tools.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length,
+    assert.equal(h.tools.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length + BATCH_TOOL_NAMES.length,
       'tools.js 注册总数变了：' + h.tools.length)
     const names = h.tools.map((t) => t.name)
     assert.equal(new Set(names).size, names.length, '存在重复注册的工具名')
@@ -640,8 +640,8 @@ test('工具清单数量自检：64 基线 + 探索工具集 + P4 工具集，�
       assert.ok(t.parameters && typeof t.parameters === 'object', t.name + ' 缺参数定义')
     }
     /* 两批新增工具互不重名、也不撞既有工具名 */
-    assert.equal(new Set([...EXPLORE_TOOL_NAMES, ...OPS_TOOL_NAMES]).size,
-      EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length)
+    assert.equal(new Set([...EXPLORE_TOOL_NAMES, ...OPS_TOOL_NAMES, ...BATCH_TOOL_NAMES]).size,
+      EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length + BATCH_TOOL_NAMES.length)
     for (const name of ['redteam_engagement_open', 'redteam_asset_query', 'redteam_unknown_list']) {
       assert.ok(!new Set(OPS_TOOL_NAMES).has(name), 'P4 工具名撞上既有工具：' + name)
     }

@@ -16,7 +16,7 @@ import { join } from 'node:path'
 
 import { readPresetDefinition } from '../lib/redteam/preset-composition.js'
 import { setDefineToolLoader } from '../lib/redteam/host-tools.js'
-import { apply as applyCoreTools, PROFILE_TOOLS, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES } from '../lib/redteam/tools.js'
+import { apply as applyCoreTools, PROFILE_TOOLS, EXPLORE_TOOL_NAMES, OPS_TOOL_NAMES, BATCH_TOOL_NAMES } from '../lib/redteam/tools.js'
 import { apply as applyOpsTools } from '../lib/redteam/tools-ops.js'
 import { installPreset } from '../lib/redteam/index.js'
 import { removeStaleRedteamPresetDirs, REDTEAM_PRESET_IDS } from '../lib/preset-default.js'
@@ -117,7 +117,7 @@ function presetTools(profile) {
 
 test('profile 收口：full 注册全部，reporter/retester 只挂子集', () => {
   const full = runApply(undefined)
-  assert.equal(full.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length)
+  assert.equal(full.length, 64 + EXPLORE_TOOL_NAMES.length + OPS_TOOL_NAMES.length + BATCH_TOOL_NAMES.length)
   assert.equal(new Set(full).size, full.length, '不得有重名工具')
 
   /* tools-ops 单挂 full = 11 个 ops */
